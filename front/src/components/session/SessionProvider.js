@@ -1,0 +1,58 @@
+import React, { useState, useEffect, useContext } from 'react'
+import SessionContext from './SessionContext'
+import { getCookie } from '../../cookie'
+import { castBool } from '../../utils';
+import API from '../../API'
+
+export default function SessionProvider({ children }) {
+
+    const [session, updateSession] = useState({
+        user: {
+            username: getCookie('username'),
+            id: getCookie('id'),
+            token: getCookie('token'),
+            isAdmin: castBool(getCookie('isAdmin')),
+            role_id: parseInt(getCookie('role_id'))
+        }
+    });
+
+    function setSession(nextSession) {
+        updateSession(prevSession => ({
+            ...prevSession,
+            ...nextSession
+        }));
+    }
+
+    async function initializeUser() {
+        let token = getCookie('token');
+        let username = getCookie('username');
+
+        if (token && username) {
+            await API.post(`getusername`, session.user)
+                .then(res => {
+                    const data = res.data.result;
+                    // setSession({ user: { ...data, token: data.token } });
+                    updateSession(prevSession => ({
+                        ...prevSession,
+                        user: {
+                            ...prevSession.user,
+                            ...data,
+                            token: data.token
+                        }
+                    }));
+                });
+        }
+    }
+
+    useEffect(() => {
+        initializeUser()
+    }, [])
+
+    let context = { session, actions: { setSession } }
+
+    return (
+        <SessionContext.Provider value={context}>
+            {children}
+        </SessionContext.Provider>
+    )
+}
