@@ -9,8 +9,7 @@ export default function Update_Profile() {
 
     const history = useHistory();
 
-    let { session: { user } } = useContext(SessionContext);
-    let id = user.id;
+    const { session: { user: { id } } } = useContext(SessionContext);
 
     const [state, updateState] = useState({
         phone: "",
@@ -35,40 +34,48 @@ export default function Update_Profile() {
 
     async function handleSubmit(e) {
         e.preventDefault();
-        let reqBody = {
-            phone: state.phone,
-            marital: state.marital,
-            health: state.health,
-            address: state.address,
-        };
+        try {
+            let reqBody = {
+                phone: state.phone,
+                marital: state.marital,
+                health: state.health,
+                address: state.address,
+            };
 
-        await API.get(`phonenumber`)
-            .then(async res => {
-                const phones = res.data.result;
-                const isPhon = phones.filter(r => r.phone !== state.lastPhone)
-                    .find(r => r.phone === state.phone);
-                if (isPhon) {
-                    setState({ errPhon: "Phone Number alredy token" });
-                } else {
-                    await API.put(`patient/${id}`, reqBody);
-                    history.push({ pathname: '/patient/panel' })
-                }
-            })
+            await API.get(`phonenumber`)
+                .then(async res => {
+                    const phones = res.data.result;
+                    const isPhon = phones.filter(r => r.phone !== state.lastPhone)
+                        .find(r => r.phone === state.phone);
+                    if (isPhon) {
+                        setState({ errPhon: "Phone Number alredy token" });
+                    } else {
+                        await API.put(`patient/${id}`, reqBody);
+                        history.push({ pathname: '/patient/panel' })
+                    }
+                });
+        } catch (e) {
+            console.log("ERROR", e);
+        }
     }
 
     useEffect(() => {
         async function fetData() {
-            await API.get(`patient/${id}`)
-                .then(res => {
-                    const data = res.data.result;
-                    setState({
-                        phone: data.phone,
-                        marital: data.marital,
-                        health: data.health,
-                        address: data.address,
-                        lastPhone: data.phone
+            try {
+                await API.get(`patient/${id}`)
+                    .then(res => {
+                        const data = res.data.result;
+                        setState({
+                            phone: data.phone,
+                            marital: data.marital,
+                            health: data.health,
+                            address: data.address,
+                            lastPhone: data.phone
+                        });
                     });
-                });
+            } catch (e) {
+                console.log("ERROR", e);
+            }
         }
         fetData();
     }, []);

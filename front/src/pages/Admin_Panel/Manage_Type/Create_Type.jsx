@@ -27,6 +27,7 @@ export default function Create_Type() {
     async function handleSubmit(e) {
         e.preventDefault();
         let reqBody = state;
+        try{
         await API.get(`type`)
             .then(async res => {
                 const result = res.data.result;
@@ -36,7 +37,10 @@ export default function Create_Type() {
                     await API.post(`type`, reqBody);
                     history.push({ pathname: '/type/list' })
                 }
-            })
+            });
+        } catch (e) {
+            console.log("ERROR", e);
+        }
     }
 
     return (

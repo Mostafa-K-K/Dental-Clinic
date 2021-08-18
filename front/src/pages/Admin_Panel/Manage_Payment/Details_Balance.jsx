@@ -27,24 +27,28 @@ export default function Details_Balance() {
     }
 
     useEffect(() => {
+
         async function fetchData() {
+            try {
+                if (state.isTrue) {
+                    await API.post(`balance`, { id: id })
+                        .then(res => {
+                            const data = res.data.result;
+                            setState({ patient: data })
+                        });
+                    setState({ isTrue: false });
+                }
 
-            if (state.isTrue) {
-                await API.post(`balance`, { id: id })
+                await API.get(`balance/${id}`)
                     .then(res => {
-                        const data = res.data.result;
-                        setState({ patient: data })
+                        let data = res.data.result;
+                        if (state.date && state.date != "")
+                            data = data.filter(d => d.date.substring(0, 10) == state.date)
+                        setState({ details: data })
                     });
-                setState({ isTrue: false })
+            } catch (e) {
+                console.log("ERROR", e);
             }
-
-            await API.get(`balance/${id}`)
-                .then(res => {
-                    let data = res.data.result;
-                    if (state.date && state.date != "")
-                        data = data.filter(d => d.date.substring(0, 10) == state.date)
-                    setState({ details: data })
-                });
         }
         fetchData();
     }, [state.date])

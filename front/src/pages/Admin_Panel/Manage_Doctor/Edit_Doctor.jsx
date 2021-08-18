@@ -15,40 +15,47 @@ export default function Edit_Doctor() {
         errPhon: ""
     });
 
-    function setState(nextState){
+    function setState(nextState) {
         updateState(prevState => ({
             ...prevState,
             ...nextState
         }));
     }
 
-    function handleChange(e){
+    function handleChange(e) {
         let { name, value } = e.target;
         setState({ [name]: value });
     }
 
     async function handleSubmit(e) {
         e.preventDefault();
-        let reqBody = state;
-
-        await API.get(`doctor`)
-            .then(async res => {
-                const result = res.data.result;
-                const isPhon = result.find(r => r.phone === state.phone && String(r.id) !== String(id));
-                if (isPhon) setState({ errPhon: "Phone Number alredy token" });
-                if (!isPhon) {
-                    await API.put(`doctor/${id}`, reqBody);
-                    history.push({ pathname: '/doctor/list' })
-                }
-            })
+        try {
+            let reqBody = state;
+            await API.get(`doctor`)
+                .then(async res => {
+                    const result = res.data.result;
+                    const isPhon = result.find(r => r.phone === state.phone && String(r.id) !== String(id));
+                    if (isPhon) setState({ errPhon: "Phone Number alredy token" });
+                    if (!isPhon) {
+                        await API.put(`doctor/${id}`, reqBody);
+                        await history.push({ pathname: '/doctor/list' });
+                    }
+                });
+        } catch (e) {
+            console.log("ERROR", e);
+        }
     }
 
     async function fetData() {
-        await API.get(`doctor/${id}`)
-            .then(res => {
-                const data = res.data.result;
-                setState(data)
-            });
+        try {
+            await API.get(`doctor/${id}`)
+                .then(res => {
+                    const data = res.data.result;
+                    setState(data)
+                });
+        } catch (e) {
+            console.log("ERROR", e);
+        }
     }
 
     useEffect(() => {

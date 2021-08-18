@@ -11,31 +11,35 @@ export default function Create_Clinic() {
         err: ""
     });
 
-    function setState(nextState){
+    function setState(nextState) {
         updateState(prevState => ({
             ...prevState,
             ...nextState
         }));
     }
 
-    function handleChange(e){
+    function handleChange(e) {
         let { name, value } = e.target;
         setState({ [name]: value });
     }
 
     async function handleSubmit(e) {
         e.preventDefault();
-        let reqBody = state;
-        await API.get(`clinic`)
-            .then(async res => {
-                const result = res.data.result;
-                const isClinic = result.find(r => r.name === state.name);
-                if (isClinic) setState({ err: "This clinic alredy exist" });
-                if (!isClinic) {
-                    await API.post(`clinic`, reqBody);
-                    history.push({ pathname: '/clinic/list' })
-                }
-            })
+        try {
+            let reqBody = state;
+            await API.get(`clinic`)
+                .then(async res => {
+                    const result = res.data.result;
+                    const isClinic = result.find(r => r.name === state.name);
+                    if (isClinic) setState({ err: "This clinic alredy exist" });
+                    if (!isClinic) {
+                        await API.post(`clinic`, reqBody);
+                        await history.push({ pathname: '/clinic/list' })
+                    }
+                });
+        } catch (e) {
+            console.log("ERROR", e);
+        }
     }
 
     return (

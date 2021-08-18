@@ -14,34 +14,37 @@ export default function Create_Doctor() {
         errPhon: ""
     });
 
-    function setState(nextState){
+    function setState(nextState) {
         updateState(prevState => ({
             ...prevState,
             ...nextState
         }));
     }
 
-    function handleChange(e){
+    function handleChange(e) {
         let { name, value } = e.target;
         setState({ [name]: value });
     }
 
     async function handleSubmit(e) {
         e.preventDefault();
-        let reqBody = state;
+        try {
+            let reqBody = state;
+            await API.get(`phonenumber`)
+                .then(async res => {
+                    const result = res.data.result;
+                    const isPhon = result.find(r => r.phone === state.phone);
 
-        await API.get(`phonenumber`)
-            .then(async res => {
-                const result = res.data.result;
-                const isPhon = result.find(r => r.phone === state.phone);
-
-                if (isPhon) {
-                    setState({ errPhon: "Phone number alredy token" });
-                } else {
-                    await API.post(`doctor`, reqBody);
-                    history.push({ pathname: '/doctor/list' })
-                }
-            })
+                    if (isPhon) {
+                        setState({ errPhon: "Phone number alredy token" });
+                    } else {
+                        await API.post(`doctor`, reqBody);
+                        await history.push({ pathname: '/doctor/list' })
+                    }
+                });
+        } catch (e) {
+            console.log("ERROR", e);
+        }
     }
 
     return (

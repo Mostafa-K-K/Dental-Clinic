@@ -11,18 +11,23 @@ export default function Upcoming_Appointment() {
     const [date, setDate] = useState("")
 
     async function fetchData() {
-        await API.get('ACP')
-            .then(res => {
-                const data = res.data.result;
-                let result = data.filter(d => d.status === "Waiting")
-                if (date && date !== "") result = result.filter(d => d.start_at.substring(0, 10) === date);
-                setAppointments(result);
-            })
+        try {
+            await API.get('ACP')
+                .then(res => {
+                    const data = res.data.result;
+                    let result = data.filter(d => d.status === "Waiting")
+                    if (date && date !== "") result = result.filter(d => d.start_at.substring(0, 10) === date);
+                    setAppointments(result);
+                });
+        } catch (e) {
+            console.log("ERROR", e);
+        }
     }
 
     useEffect(() => {
         fetchData();
     }, [date])
+
     return (
 
         <div className="container-xl">

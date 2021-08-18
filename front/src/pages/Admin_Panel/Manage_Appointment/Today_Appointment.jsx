@@ -11,27 +11,36 @@ export default function Today_Appointment() {
     const [appointments, setAppointments] = useState([]);
 
     async function fetchData() {
-        await API.get('ACP')
-            .then(res => {
-                const data = res.data.result;
-                const result = data.filter(d =>
-                    d.date.substring(0, 10) == date.substring(0, 10)
-                    &&
-                    d.status === "Waiting"
-                );
-                setAppointments(result);
-            })
+        try {
+            await API.get('ACP')
+                .then(res => {
+                    const data = res.data.result;
+                    const result = data.filter(d =>
+                        d.date.substring(0, 10) == date.substring(0, 10)
+                        &&
+                        d.status === "Waiting"
+                    );
+                    setAppointments(result);
+                });
+        } catch (e) {
+            console.log("ERROR", e);
+        }
     }
 
     async function handleUpdate(id, status) {
-        const del = window.confirm("are you sure");
-        if (del) await API.put(`appointment/${id}`, { status: status });
-        await fetchData();
+        try {
+            const del = window.confirm("are you sure");
+            if (del) await API.put(`appointment/${id}`, { status: status });
+            await fetchData();
+        } catch (e) {
+            console.log("ERROR", e);
+        }
     }
 
     useEffect(() => {
         fetchData();
     }, [])
+
     return (
 
         <div className="container-xl">

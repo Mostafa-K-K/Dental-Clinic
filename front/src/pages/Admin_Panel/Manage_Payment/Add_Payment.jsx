@@ -30,29 +30,37 @@ export default function Add_Payment() {
 
     async function handleSubmit(e) {
         e.preventDefault();
+        try {
+            let dd = state.date.replace("T", " ");
 
-        let dd = state.date.replace("T", " ");
+            let reqBody = {
+                payment: state.payment,
+                date: dd,
+                id_patient: state.id_patient
+            };
 
-        let reqBody = {
-            payment: state.payment,
-            date: dd,
-            id_patient: state.id_patient
-        };
-
-        await API.post(`procedure`, reqBody);
-        await history.push({ pathname: `/balance/details/${id}` })
+            await API.post(`procedure`, reqBody);
+            await history.push({ pathname: `/balance/details/${id}` });
+        } catch (e) {
+            console.log("ERROR", e);
+        }
     }
 
     useEffect(() => {
         async function fetchData() {
-            await API.get(`patient/${id}`)
-                .then(res => {
-                    const result = res.data.result;
-                    setState({ patient: result })
-                });
+            try {
+                await API.get(`patient/${id}`)
+                    .then(res => {
+                        const result = res.data.result;
+                        setState({ patient: result })
+                    });
+            } catch (e) {
+                console.log("ERROR", e);
+            }
         }
         fetchData();
     }, [])
+    
     return (
         <div>
             <h1>add payment</h1>

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"
 import { useHistory } from "react-router-dom"
 import API from '../../API'
 import { setCookie } from '../../cookie'
-import SessionContext from '../../components/session/SessionContext';
+import SessionContext from '../../components/session/SessionContext'
 
 export default function Login() {
 
@@ -11,7 +11,7 @@ export default function Login() {
 
     const [state, updateState] = useState({
         username: "",
-        password: ""
+        password: "" 
     });
 
     let { actions: { setSession } } = useContext(SessionContext);
@@ -30,33 +30,46 @@ export default function Login() {
 
     async function handleSubmit(e) {
         e.preventDefault();
+
         try {
             await API.post('login', state)
                 .then(res => {
                     const answer = res.data.result;
                     if (answer) {
-
                         if (answer.isAdmin || answer.isAdmin == true) {
 
-                            if (answer.admin.role_id === 0 || answer.admin.role_id === 1) {
-                                setCookie('role_id', `${answer.admin.role_id}`, 30);
+                            let user = {
+                                id: answer.admin.id,
+                                username: state.username,
+                                token: answer.token,
+                                isAdmin: answer.isAdmin,
+                                role_id: `${answer.admin.role_id}`
                             }
 
                             setCookie('token', answer.token, 30);
                             setCookie('username', state.username, 30);
                             setCookie('id', answer.admin.id, 30);
                             setCookie('isAdmin', answer.isAdmin, 30);
-                            setSession({ user: { ...answer, token: answer.token } });
+                            setCookie('role_id', `${answer.admin.role_id}`, 30);
+                            setSession({ user });
                         }
                         else if (!answer.isAdmin || answer.isAdmin == false) {
+
+                            let user = {
+                                id: answer.patient.id,
+                                username: state.username,
+                                token: answer.token,
+                                isAdmin: answer.isAdmin
+                            }
+
                             setCookie('token', answer.token, 30);
                             setCookie('username', state.username, 30);
                             setCookie('id', answer.patient.id, 30);
                             setCookie('isAdmin', answer.isAdmin, 30);
-                            setSession({ user: { ...answer, token: answer.token } });
+                            setSession({ user });
                         }
                     } else {
-                        setSession({ username: "", password: "" });
+                        setState({ username: "", password: "" });
                     }
                 });
         } catch (e) {

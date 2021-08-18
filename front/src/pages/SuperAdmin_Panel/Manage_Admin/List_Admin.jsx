@@ -10,11 +10,15 @@ export default function List_Admin() {
     const [admins, setAdmins] = useState([]);
 
     async function fetchData() {
-        await API.get('admin')
-            .then(res => {
-                const data = res.data.result;
-                setAdmins(data);
-            })
+        try {
+            await API.get('admin')
+                .then(res => {
+                    const data = res.data.result;
+                    setAdmins(data);
+                });
+        } catch (e) {
+            console.log("ERROR", e);
+        }
     }
 
     useEffect(() => {
@@ -53,7 +57,7 @@ export default function List_Admin() {
                                     <td>{admin.username}</td>
                                     <td>{admin.phone}</td>
                                     <td>
-                                        <a href="" onClick={() =>  history.push({ pathname: `/admin/edit/${admin.id}` })} className="settings" title="Settings" data-toggle="tooltip"><i className="material-icons">&#xE8B8;</i></a>
+                                        <a href="" onClick={() => history.push({ pathname: `/admin/edit/${admin.id}` })} className="settings" title="Settings" data-toggle="tooltip"><i className="material-icons">&#xE8B8;</i></a>
                                         <ConfirmDelete
                                             path={`admin/${admin.id}`}
                                             name="admin"

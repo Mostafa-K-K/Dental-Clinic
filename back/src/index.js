@@ -1486,6 +1486,9 @@ const start = async () => {
 
                 connection.query(query, [token, id], (err, data) => {
                     if (err) throw err;
+                    data['id'] = id;
+                    data['token'] = token;
+                    data['isAdmin'] = false;
                     res.json({ success: true, result: data });
                 });
 

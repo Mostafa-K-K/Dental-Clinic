@@ -4,37 +4,40 @@ import SessionContext from '../../components/session/SessionContext'
 
 export default function All_Procedure() {
 
-    const { session: { user } } = useContext(SessionContext);
-    const id = user.id;
+    const { session: { user: { id } } } = useContext(SessionContext);
 
     const [procuders, setProcedures] = useState([]);
     const [works, setWorks] = useState([]);
 
     useEffect(() => {
         async function fetchData() {
-            await API.get('PTCDP')
-                .then(res => {
-                    const result = res.data.result;
-                    setWorks(result);
-                });
+            try {
+                await API.get('PTCDP')
+                    .then(res => {
+                        const result = res.data.result;
+                        setWorks(result);
+                    });
 
-            await API.get('PDP')
-                .then(res => {
-                    const result = res.data.result;
-                    const data = result.filter(r => r.id_patient == id);
-                    let proc = [];
-                    data.map(d =>
-                        proc.push({
-                            id_procedure: d.id,
-                            f_n_doctor: d.f_n_doctor,
-                            m_n_doctor: d.m_n_doctor,
-                            l_n_doctor: d.l_n_doctor,
-                            date: d.date,
-                            payment: (d.payment && d.payment != "" && d.payment != 0) ? d.payment : 0
-                        })
-                    )
-                    setProcedures(proc)
-                })
+                await API.get('PDP')
+                    .then(res => {
+                        const result = res.data.result;
+                        const data = result.filter(r => r.id_patient == id);
+                        let proc = [];
+                        data.map(d =>
+                            proc.push({
+                                id_procedure: d.id,
+                                f_n_doctor: d.f_n_doctor,
+                                m_n_doctor: d.m_n_doctor,
+                                l_n_doctor: d.l_n_doctor,
+                                date: d.date,
+                                payment: (d.payment && d.payment != "" && d.payment != 0) ? d.payment : 0
+                            })
+                        );
+                        setProcedures(proc);
+                    });
+            } catch (e) {
+                console.log("ERROR", e);
+            }
         }
         fetchData();
     }, [])

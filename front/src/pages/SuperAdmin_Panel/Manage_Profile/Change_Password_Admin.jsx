@@ -31,42 +31,49 @@ export default function Change_Password_Admin() {
     }
 
     async function handleSubmit(e) {
-        e.nativeEvent.preventDefault();
+        e.preventDefault();
+        try {
+            let reqBody = { password: state.newPass }
+            let isMatch = await bcrypt.compare(state.password, state.oldPass);
 
-        let reqBody = { password: state.newPass }
-        let isMatch = await bcrypt.compare(state.password, state.oldPass);
+            if (isMatch && state.newPass === state.newPassC) {
+                await API.put(`admin/${id}`, reqBody);
 
-        if (isMatch && state.newPass === state.newPassC) {
-            await API.put(`admin/${id}`, reqBody);
+                setState({
+                    oldPass: "",
+                    newPass: "",
+                    newPassC: "",
+                    msg: "Password changed successfully"
+                });
 
-            setState({
-                oldPass: "",
-                newPass: "",
-                newPassC: "",
-                msg: "Password changed successfully"
-            })
+                await history.push({ pathname: '/admin/profile' });
+            }
 
-            history.push({ pathname: '/admin/profile' })
-        }
-
-        else {
-            setState({
-                oldPass: "",
-                newPass: "",
-                newPassC: "",
-                msg: "Password incorrect"
-            })
+            else {
+                setState({
+                    oldPass: "",
+                    newPass: "",
+                    newPassC: "",
+                    msg: "Password incorrect"
+                });
+            }
+        } catch (e) {
+            console.log("ERROR", e);
         }
     }
 
     useEffect(() => {
         async function fetchData() {
-            await API.get(`admin/${id}`)
-                .then(res => {
-                    const result = res.data.result;
-                    setState({ id: result.id })
-                    setState({ password: result.password })
-                })
+            try {
+                await API.get(`admin/${id}`)
+                    .then(res => {
+                        const result = res.data.result;
+                        setState({ id: result.id })
+                        setState({ password: result.password })
+                    });
+            } catch (e) {
+                console.log("ERROR", e);
+            }
         }
         fetchData();
     }, [])

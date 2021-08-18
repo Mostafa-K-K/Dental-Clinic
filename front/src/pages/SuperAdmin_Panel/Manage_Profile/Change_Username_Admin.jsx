@@ -3,7 +3,7 @@ import { useHistory } from 'react-router'
 import API from "../../../API"
 
 const bcrypt = require("bcryptjs")
-\
+
 export default function Change_Username_Admin() {
 
     const id = 1;
@@ -31,56 +31,62 @@ export default function Change_Username_Admin() {
     }
 
     async function handleSubmit(e) {
-        e.nativeEvent.preventDefault();
+        e.preventDefault();
+        try {
+            let reqBody = { username: state.username }
+            let isMatch = await bcrypt.compare(state.password, state.oldPass);
 
-        let reqBody = { username: state.username }
-        let isMatch = await bcrypt.compare(state.password, state.oldPass);
+            await API.get(`username`)
+                .then(async res => {
+                    const usernames = res.data.result;
+                    const isUser = usernames.filter(r => r.username !== state.lastUsername)
+                        .find(r => r.username === state.username);
 
-        await API.get(`username`)
-            .then(async res => {
-                const usernames = res.data.result;
-                const isUser = usernames.filter(r => r.username !== state.lastUsername)
-                    .find(r => r.username === state.username);
+                    if (isUser) {
+                        setState({ msg: "Username alredy token" });
+                    } else {
+                        if (isMatch) {
+                            await API.put(`admin/${id}`, reqBody);
 
-                if (isUser) {
-                    setState({ msg: "Username alredy token" });
-                } else {
-                    if (isMatch) {
-                        await API.put(`admin/${id}`, reqBody);
+                            setState({
+                                oldPass: "",
+                                newPass: "",
+                                newPassC: "",
+                                msg: "Password changed successfully"
+                            });
 
-                        setState({
-                            oldPass: "",
-                            newPass: "",
-                            newPassC: "",
-                            msg: "Password changed successfully"
-                        });
-
-                        history.push({ pathname: '/admin/profile' });
+                            await history.push({ pathname: '/admin/profile' });
+                        }
+                        else {
+                            setState({
+                                conPass: "",
+                                msg: "Password incorrect"
+                            });
+                        }
                     }
-                    else {
-                        setState({
-                            conPass: "",
-                            msg: "Password incorrect"
-                        });
-                    }
-                }
-            });
+                });
+        } catch (e) {
+            console.log("ERROR", e);
+        }
     }
 
     useEffect(() => {
         async function fetchData() {
-            await API.get(`admin/${id}`)
-                .then(res => {
-                    const result = res.data.result;
-                    setState({
-                        id: result.id,
-                        username: result.username,
-                        lastUsername: result.username,
-                        password: result.password
-                    })
-                })
+            try {
+                await API.get(`admin/${id}`)
+                    .then(res => {
+                        const result = res.data.result;
+                        setState({
+                            id: result.id,
+                            username: result.username,
+                            lastUsername: result.username,
+                            password: result.password
+                        });
+                    });
+            } catch (e) {
+                console.log("ERROR", e);
+            }
         }
-
         fetchData();
     }, [])
 

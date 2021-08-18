@@ -22,60 +22,63 @@ export default function List_Patient() {
         marital: "Single"
     });
 
-    function setState(nextState){
+    function setState(nextState) {
         updateState(prevState => ({
             ...prevState,
             ...nextState
         }));
     }
 
-    function handleChange(e){
+    function handleChange(e) {
         let { name, value } = e.target;
         setState({ [name]: value });
     }
 
     async function fetchData() {
+        try {
+            let reqBody = {
+                rows: state.rows,
+                orderBy: state.orderBy,
+                desc: state.desc,
+                name: state.name
+            }
 
-        let reqBody = {
-            rows: state.rows,
-            orderBy: state.orderBy,
-            desc: state.desc,
-            name: state.name
-        }
+            await API.post(`paginpatient`, reqBody)
+                .then(res => {
+                    const data = res.data.result;
+                    setState({ patients: data });
+                });
 
-        await API.post(`paginpatient`, reqBody)
-            .then(res => {
-                const data = res.data.result;
-                setState({ patients: data });
-            });
+            await API.post(`patientcount`, reqBody)
+                .then(res => {
+                    const result = res.data.result;
+                    setState({ nbPatient: result });
+                    let pages = Math.ceil(result / 10);
+                    setState({ pages: pages });
 
-        await API.post(`patientcount`, reqBody)
-            .then(res => {
-                const result = res.data.result;
-                setState({ nbPatient: result });
-                let pages = Math.ceil(result / 10);
-                setState({ pages: pages });
+                    if (pages !== state.pages) {
 
-                if (pages !== state.pages) {
+                        setState({
+                            page: 1,
+                            rows: 0
+                        });
 
-                    setState({
-                        page: 1,
-                        rows: 0
-                    });
-
-                    if (pages >= 10) {
-                        setState({ pagination: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] });
-                    } else {
-                        var i = 1;
-                        let arr = [];
-                        while (i <= pages) {
-                            arr.push(i);
-                            i++;
+                        if (pages >= 10) {
+                            setState({ pagination: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] });
+                        } else {
+                            var i = 1;
+                            let arr = [];
+                            while (i <= pages) {
+                                arr.push(i);
+                                i++;
+                            }
+                            setState({ pagination: arr });
                         }
-                        setState({ pagination: arr });
                     }
-                }
-            });
+                });
+        } catch (e) {
+            console.log("ERROR", e);
+        }
     }
 
     async function handlePagination(pg) {

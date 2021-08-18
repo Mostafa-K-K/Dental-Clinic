@@ -56,36 +56,39 @@ export default function Create_Procedure() {
         (work.length) ?
             id = work[work.length - 1].id + 1 :
             id = 0;
+        try {
+            if (state.id_teeth != "" && state.id_type != "") {
 
-        if (state.id_teeth != "" && state.id_type != "") {
+                API.get(`type/${state.id_type}`)
+                    .then(res => {
+                        const result = res.data.result;
 
-            API.get(`type/${state.id_type}`)
-                .then(res => {
-                    const result = res.data.result;
+                        work.push({
+                            id: id,
+                            teeth: (state.id_teeth == 1 || state.id_teeth == 2) ? "All Teeth" : state.id_teeth,
+                            type: result.description,
+                            id_teeth: state.id_teeth,
+                            id_type: result.id,
+                            price: result.bill
+                        });
 
-                    work.push({
-                        id: id,
-                        teeth: (state.id_teeth == 1 || state.id_teeth == 2) ? "All Teeth" : state.id_teeth,
-                        type: result.description,
-                        id_teeth: state.id_teeth,
-                        id_type: result.id,
-                        price: result.bill
+                        setState({ works: work });
+
+                        setState({
+                            category: "Adult",
+                            id_teeth: "",
+                            id_type: ""
+                        });
+
+                    })
+                    .then(() => {
+                        let total = 0;
+                        work.map(w => { if (w.price != "") total += parseInt(w.price) });
+                        setState({ total: total });
                     });
-
-                    setState({ works: work });
-
-                    setState({
-                        category: "Adult",
-                        id_teeth: "",
-                        id_type: ""
-                    });
-
-                })
-                .then(() => {
-                    let total = 0;
-                    work.map(w => { if (w.price != "") total += parseInt(w.price) });
-                    setState({ total: total });
-                });
+            }
+        } catch (e) {
+            console.log("ERROR", e);
         }
     }
 
@@ -102,45 +105,48 @@ export default function Create_Procedure() {
     async function handleSubmit(e) {
         e.preventDefault();
 
-        let p_id = "";
-        let d_id = "";
+        try {
+            let p_id = "";
+            let d_id = "";
 
-        if (state.id_patient && state.id_patient !== '') {
-            let p_arr = state.id_patient.split('-');
-            p_id = p_arr[1];
+            if (state.id_patient && state.id_patient !== '') {
+                let p_arr = state.id_patient.split('-');
+                p_id = p_arr[1];
+            }
+            if (state.id_doctor && state.id_doctor !== '') {
+                let d_arr = state.id_doctor.split('-');
+                d_id = d_arr[1];
+            }
+            let dd = state.date.replace("T", " ");
+
+            let reqBody = {
+                payment: state.payment,
+                date: dd,
+                id_patient: p_id,
+                id_doctor: d_id,
+                balance: state.total
+            };
+
+            await API.post(`procedure`, reqBody)
+                .then(res => {
+                    const result = res.data.result;
+                    const id_procedure = result.insertId;
+
+                    state.works.map(work => {
+                        let PTCReqBody = {
+                            id_procedure: id_procedure,
+                            id_type: work.id_type,
+                            id_teeth: work.id_teeth,
+                            price: (work.price == "" || !work.price) ? 0 : work.price
+                        };
+
+                        API.post(`PTC`, PTCReqBody);
+                    });
+                })
+                .then(history.push({ pathname: "/procedure/list" }));
+        } catch (e) {
+            console.log("ERROR", e);
         }
-        if (state.id_doctor && state.id_doctor !== '') {
-            let d_arr = state.id_doctor.split('-');
-            d_id = d_arr[1];
-        }
-        let dd = state.date.replace("T", " ");
-
-        let reqBody = {
-            payment: state.payment,
-            date: dd,
-            id_patient: p_id,
-            id_doctor: d_id,
-            balance: state.total
-        };
-
-        await API.post(`procedure`, reqBody)
-            .then(res => {
-                const result = res.data.result;
-                const id_procedure = result.insertId;
-
-                state.works.map(work => {
-                    let PTCReqBody = {
-                        id_procedure: id_procedure,
-                        id_type: work.id_type,
-                        id_teeth: work.id_teeth,
-                        price: (work.price == "" || !work.price) ? 0 : work.price
-                    };
-
-                    API.post(`PTC`, PTCReqBody);
-                });
-            })
-            .then(history.push({ pathname: "/procedure/list" }))
-
     }
 
     return (

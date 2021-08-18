@@ -5,26 +5,33 @@ import SessionContext from '../../../components/session/SessionContext'
 
 export default function Remove_Request() {
 
-    const { session: { user } } = useContext(SessionContext);
-    const id = user.id;
+    const { session: { user: { id } } } = useContext(SessionContext);
 
     const history = useHistory();
 
     const [requests, setRequests] = useState([]);
 
     async function handleDelete(id) {
-        await API.delete(`request/${id}`);
-        fetchData();
+        try {
+            await API.delete(`request/${id}`);
+            fetchData();
+        } catch (e) {
+            console.log("ERROR", e);
+        }
     }
 
     async function fetchData() {
-        await API.get('request')
-            .then(res => {
-                let data = res.data.result;
-                data = data.filter(res => res.status === "Watting");
-                data = data.filter(res => res.id_patient === id)
-                setRequests(data);
-            })
+        try {
+            await API.get('request')
+                .then(res => {
+                    let data = res.data.result;
+                    data = data.filter(res => res.status === "Watting");
+                    data = data.filter(res => res.id_patient === id)
+                    setRequests(data);
+                });
+        } catch (e) {
+            console.log("ERROR", e);
+        }
     }
 
     useEffect(() => {

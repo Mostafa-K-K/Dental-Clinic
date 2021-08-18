@@ -4,18 +4,21 @@ import SessionContext from '../../components/session/SessionContext'
 
 export default function Next_Appointment() {
 
-    let { session: { user } } = useContext(SessionContext);
-    let id = user.id;
+    const { session: { user: { id } } } = useContext(SessionContext);
 
     const [appointments, setAppointments] = useState([]);
 
     async function fetchData() {
-        await API.get('ACP')
-            .then(res => {
-                const data = res.data.result;
-                let result = data.filter(d => d.status === "Waiting" && d.id_patient == id)
-                setAppointments(result);
-            })
+        try {
+            await API.get('ACP')
+                .then(res => {
+                    const data = res.data.result;
+                    let result = data.filter(d => d.status === "Waiting" && d.id_patient == id)
+                    setAppointments(result);
+                });
+        } catch (e) {
+            console.log("ERROR", e);
+        }
     }
 
     useEffect(() => {

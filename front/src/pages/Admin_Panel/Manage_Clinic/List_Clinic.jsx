@@ -10,16 +10,21 @@ export default function List_Clinic() {
     const [clinics, setClinics] = useState([]);
 
     async function fetchData() {
-        await API.get('clinic')
-            .then(res => {
-                const result = res.data.result;
-                setClinics(result);
-            })
+        try {
+            await API.get('clinic')
+                .then(res => {
+                    const result = res.data.result;
+                    setClinics(result);
+                });
+        } catch (e) {
+            console.log("ERROR", e);
+        }
     }
 
     useEffect(() => {
         fetchData();
     }, [])
+    
     return (
         <div className="container-xl">
             <div className="table-responsive">

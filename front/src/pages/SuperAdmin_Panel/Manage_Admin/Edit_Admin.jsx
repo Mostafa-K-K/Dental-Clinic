@@ -35,60 +35,68 @@ export default function Change_Information() {
     async function handleSubmit(e) {
         e.preventDefault();
 
-        let reqBody = {
-            username: state.username,
-            first_name: state.first_name,
-            middle_name: state.middle_name,
-            last_name: state.last_name,
-            phone: state.phone,
-        };
-        if (state.password && state.password !== "") reqBody['password'] = state.password;
+        try {
+            let reqBody = {
+                username: state.username,
+                first_name: state.first_name,
+                middle_name: state.middle_name,
+                last_name: state.last_name,
+                phone: state.phone,
+            };
+            if (state.password && state.password !== "") reqBody['password'] = state.password;
 
-        await API.get(`username`)
-            .then(async res => {
-                const usernames = res.data.result;
-                const isUser = usernames.filter(r => r.username !== state.lastUsername)
-                    .find(r => r.username === state.username);
+            await API.get(`username`)
+                .then(async res => {
+                    const usernames = res.data.result;
+                    const isUser = usernames.filter(r => r.username !== state.lastUsername)
+                        .find(r => r.username === state.username);
 
-                await API.get(`phonenumber`)
-                    .then(async res => {
-                        const phones = res.data.result;
-                        const isPhon = phones.filter(r => r.phone !== state.lastPhone)
-                        .find(r => r.phone === state.phone);
+                    await API.get(`phonenumber`)
+                        .then(async res => {
+                            const phones = res.data.result;
+                            const isPhon = phones.filter(r => r.phone !== state.lastPhone)
+                                .find(r => r.phone === state.phone);
 
-                        if (isUser) {
-                            setState({ errUser: "Username alredy token" });
-                        }
-                        if (isPhon) {
-                            setState({ errPhon: "Phone Number alredy token" });
-                        }
+                            if (isUser) {
+                                setState({ errUser: "Username alredy token" });
+                            }
+                            if (isPhon) {
+                                setState({ errPhon: "Phone Number alredy token" });
+                            }
 
-                        if (!isUser && !isPhon) {
-                            await API.put(`admin/${id}`, reqBody);
-                            history.push({ pathname: '/admin/list' })
-                        }
-                    });
-            });
+                            if (!isUser && !isPhon) {
+                                await API.put(`admin/${id}`, reqBody);
+                                history.push({ pathname: '/admin/list' })
+                            }
+                        });
+                });
+        } catch (e) {
+            console.log("ERROR", e);
+        }
     }
 
     useEffect(() => {
         async function fetData() {
-            await API.get(`admin/${id}`)
-                .then(res => {
-                    const data = res.data.result;
-                    setState({
-                        username: data.username,
-                        lastUsername: data.username,
-                        first_name: data.first_name,
-                        middle_name: data.middle_name,
-                        last_name: data.last_name,
-                        phone: data.phone,
-                        lastPhone: data.phone
+            try {
+                await API.get(`admin/${id}`)
+                    .then(res => {
+                        const data = res.data.result;
+                        setState({
+                            username: data.username,
+                            lastUsername: data.username,
+                            first_name: data.first_name,
+                            middle_name: data.middle_name,
+                            last_name: data.last_name,
+                            phone: data.phone,
+                            lastPhone: data.phone
+                        });
                     });
-                });
+            } catch (e) {
+                console.log("ERROR", e);
+            }
         }
         fetData();
-    }, []);
+    }, [])
 
     return (
         <div>

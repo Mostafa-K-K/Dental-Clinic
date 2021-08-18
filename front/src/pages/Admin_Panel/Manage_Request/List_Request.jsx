@@ -12,18 +12,26 @@ export default function List_Request() {
     }
 
     async function handleReject(id) {
-        const del = window.confirm("are you sure");
-        if (del) await API.put(`request/${id}`, { status: "Rejected" });
-        fetchData();
+        try {
+            const del = window.confirm("are you sure");
+            if (del) await API.put(`request/${id}`, { status: "Rejected" });
+            fetchData();
+        } catch (e) {
+            console.log("ERROR", e);
+        }
     }
 
     async function fetchData() {
-        await API.get('RP')
-            .then(res => {
-                let data = res.data.result;
-                data = data.filter(res => res.status === "Watting");
-                setRequests(data);
-            })
+        try {
+            await API.get('RP')
+                .then(res => {
+                    let data = res.data.result;
+                    data = data.filter(res => res.status === "Watting");
+                    setRequests(data);
+                });
+        } catch (e) {
+            console.log("ERROR", e);
+        }
     }
 
     useEffect(() => {
@@ -39,7 +47,7 @@ export default function List_Request() {
                             <div className="col-sm-5">
                                 <h2><b>Request</b></h2>
                             </div>
-                            </div>
+                        </div>
                         <button className="addnew" onClick={() => history.push({ pathname: '/request/old' })}>History</button>
                     </div>
 

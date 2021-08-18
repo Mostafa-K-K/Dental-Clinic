@@ -30,21 +30,24 @@ export default function Create_Payment() {
 
     async function handleSubmit(e) {
         e.preventDefault();
+        try {
+            let p_arr = state.id_patient.split(' ');
+            let p_str = p_arr.length - 1;
+            let p_id = p_arr[p_str];
 
-        let p_arr = state.id_patient.split(' ');
-        let p_str = p_arr.length - 1;
-        let p_id = p_arr[p_str];
+            let dd = state.date.replace("T", " ");
 
-        let dd = state.date.replace("T", " ");
+            let reqBody = {
+                payment: state.payment,
+                date: dd,
+                id_patient: p_id
+            };
 
-        let reqBody = {
-            payment: state.payment,
-            date: dd,
-            id_patient: p_id
-        };
-
-        await API.post(`procedure`, reqBody);
-        await history.push({ pathname: `/balance/list` })
+            await API.post(`procedure`, reqBody);
+            await history.push({ pathname: `/balance/list` });
+        } catch (e) {
+            console.log("ERROR", e);
+        }
     }
 
     return (

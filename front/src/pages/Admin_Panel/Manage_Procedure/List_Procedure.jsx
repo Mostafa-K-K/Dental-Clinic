@@ -11,16 +11,20 @@ export default function List_Procedure() {
     const [works, setWorks] = useState([]);
 
     async function fetchData() {
-        await API.get('PDP')
-            .then(res => {
-                const result = res.data.result;
-                setProcedures(result);
-            });
-        await API.get('PTCDP')
-            .then(res => {
-                const result = res.data.result;
-                setWorks(result);
-            });
+        try {
+            await API.get('PDP')
+                .then(res => {
+                    const result = res.data.result;
+                    setProcedures(result);
+                });
+            await API.get('PTCDP')
+                .then(res => {
+                    const result = res.data.result;
+                    setWorks(result);
+                });
+        } catch (e) {
+            console.log("ERROR", e);
+        }
     }
 
     useEffect(() => {

@@ -1,6 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { Link } from "react-router-dom"
 import API from '../../API'
+import { setCookie } from '../../cookie'
+import SessionContext from '../../components/session/SessionContext'
 
 import Radio from '../../components/Radio'
 
@@ -24,6 +26,8 @@ export default function Register() {
         errUser: ""
     });
 
+    let { actions: { setSession } } = useContext(SessionContext);
+
     function setState(nextState) {
         updateState(prevState => ({
             ...prevState,
@@ -39,32 +43,51 @@ export default function Register() {
     async function handleSubmit(e) {
         e.preventDefault();
         let reqBody = state;
+        try {
+            await API.get(`username`)
+                .then(async res => {
+                    const usernames = res.data.result;
+                    const isUser = usernames.find(r => r.username === state.username);
 
-        await API.get(`username`)
-            .then(async res => {
-                const usernames = res.data.result;
-                const isUser = usernames.find(r => r.username === state.username);
+                    await API.get(`phonenumber`)
+                        .then(async res => {
+                            const phones = res.data.result;
+                            const isPhon = phones.find(r => r.phone === state.phone);
 
-                await API.get(`phonenumber`)
-                    .then(async res => {
-                        const phones = res.data.result;
-                        const isPhon = phones.find(r => r.phone === state.phone);
+                            if (isUser) {
+                                setState({ errUser: "Username alredy token" });
+                            }
+                            if (isPhon) {
+                                setState({ errPhon: "Phone Number alredy token" });
+                            }
+                            if (state.conPassword !== state.password) {
+                                setState({ errPass: "Password incorrect" });
+                            }
 
-                        if (isUser) {
-                            setState({ errUser: "Username alredy token" });
-                        }
-                        if (isPhon) {
-                            setState({ errPhon: "Phone Number alredy token" });
-                        }
-                        if (state.conPassword !== state.password) {
-                            setState({ errPass: "Password incorrect" });
-                        }
+                            if (!isUser && !isPhon && state.conPassword === state.password) {
+                                await API.post(`signup`, reqBody)
+                                    .then(res => {
+                                        const answer = res.data.result;
 
-                        if (!isUser && !isPhon && state.conPassword === state.password) {
-                            await API.post(`signup`, reqBody);
-                        }
-                    });
-            });
+                                        let user = {
+                                            id: answer.id,
+                                            username: state.username,
+                                            token: answer.token,
+                                            isAdmin: answer.isAdmin
+                                        }
+
+                                        setCookie('id', answer.id, 30);
+                                        setCookie('username', state.username, 30);
+                                        setCookie('token', answer.token, 30);
+                                        setCookie('isAdmin', answer.isAdmin, 30);
+                                        setSession({ user });
+                                    })
+                            }
+                        });
+                });
+        } catch (e) {
+            console.log("ERROR", e);
+        }
     }
 
     return (

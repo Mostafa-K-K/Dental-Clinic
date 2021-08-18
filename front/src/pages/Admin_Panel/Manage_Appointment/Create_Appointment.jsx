@@ -38,53 +38,56 @@ export default function Create_Appointment() {
 
     async function handleSubmit(e) {
         e.preventDefault();
+        try {
+            let arr = state.id_patient.split('-');
+            let id = arr[1];
 
-        let arr = state.id_patient.split('-');
-        let id = arr[1];
+            let reqBody = {
+                description: state.description,
+                date: state.date,
+                start_at: state.start_at,
+                end_at: state.end_at,
+                status: state.status,
+                id_patient: id,
+                id_clinic: state.id_clinic,
+            };
+            await API.get('appointment')
+                .then(res => {
+                    const data = res.data.result;
 
-        let reqBody = {
-            description: state.description,
-            date: state.date,
-            start_at: state.start_at,
-            end_at: state.end_at,
-            status: state.status,
-            id_patient: id,
-            id_clinic: state.id_clinic,
-        };
-        await API.get('appointment')
-            .then(res => {
-                const data = res.data.result;
-
-                const isApp = data.find(d => (
-                    (
+                    const isApp = data.find(d => (
                         (
-                            d.data == state.date
-                            &&
-                            new Date(state.start_at).getTime() > new Date(d.start_at).getTime()
-                            &&
-                            new Date(state.start_at).getTime() < new Date(d.end_at).getTime()
+                            (
+                                d.data == state.date
+                                &&
+                                new Date(state.start_at).getTime() > new Date(d.start_at).getTime()
+                                &&
+                                new Date(state.start_at).getTime() < new Date(d.end_at).getTime()
+                            )
+                            ||
+                            (
+                                d.data == state.date
+                                &&
+                                new Date(state.end_at).getTime() > new Date(d.start_at).getTime()
+                                &&
+                                new Date(state.end_at).getTime() < new Date(d.end_at).getTime()
+                            )
                         )
-                        ||
-                        (
-                            d.data == state.date
-                            &&
-                            new Date(state.end_at).getTime() > new Date(d.start_at).getTime()
-                            &&
-                            new Date(state.end_at).getTime() < new Date(d.end_at).getTime()
-                        )
-                    )
-                    &&
-                    (String(d.id_clinic) === String(state.id_clinic))
-                ));
+                        &&
+                        (String(d.id_clinic) === String(state.id_clinic))
+                    ));
 
-                if (isApp) setState({ errExist: "Time not available" });
-                if (state.id_patient === "" || !state.id_patient) setState({ err: "select a patient" });
+                    if (isApp) setState({ errExist: "Time not available" });
+                    if (state.id_patient === "" || !state.id_patient) setState({ err: "select a patient" });
 
-                if (!isApp && state.id_patient !== "") {
-                    API.post('appointment', reqBody);
-                    history.push({ pathname: '/appointment/upcoming' })
-                }
-            });
+                    if (!isApp && state.id_patient !== "") {
+                        API.post('appointment', reqBody);
+                        history.push({ pathname: '/appointment/upcoming' })
+                    }
+                });
+        } catch (e) {
+            console.log("ERROR", e);
+        }
     }
 
     return (

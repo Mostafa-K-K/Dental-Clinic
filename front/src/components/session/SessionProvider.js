@@ -8,8 +8,8 @@ export default function SessionProvider({ children }) {
 
     const [session, updateSession] = useState({
         user: {
-            username: getCookie('username'),
             id: getCookie('id'),
+            username: getCookie('username'),
             token: getCookie('token'),
             isAdmin: castBool(getCookie('isAdmin')),
             role_id: parseInt(getCookie('role_id'))
@@ -23,30 +23,31 @@ export default function SessionProvider({ children }) {
         }));
     }
 
-    async function initializeUser() {
-        let token = getCookie('token');
-        let username = getCookie('username');
-
-        if (token && username) {
-            await API.post(`getusername`, session.user)
-                .then(res => {
-                    const data = res.data.result;
-                    // setSession({ user: { ...data, token: data.token } });
-                    updateSession(prevSession => ({
-                        ...prevSession,
-                        user: {
-                            ...prevSession.user,
-                            ...data,
-                            token: data.token
-                        }
-                    }));
-                });
-        }
-    }
-
     useEffect(() => {
-        initializeUser()
-    }, [])
+
+        async function initializeUser() {
+            let token = getCookie('token');
+            let username = getCookie('username');
+
+            if (token && username) {
+                await API.post(`getusername`, session.user)
+                    .then(res => {
+                        const data = res.data.result;
+                        if (data)
+                            updateSession(prevSession => ({
+                                ...prevSession,
+                                user: {
+                                    ...prevSession.user,
+                                    ...data,
+                                    token: data.token
+                                }
+                            }));
+                    });
+            }
+        }
+
+        initializeUser();
+    }, [session.user.id]);
 
     let context = { session, actions: { setSession } }
 

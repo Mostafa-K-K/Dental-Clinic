@@ -10,11 +10,15 @@ export default function List_Type() {
     const [types, setTypes] = useState([]);
 
     async function fetchData() {
-        await API.get('type')
-            .then(res => {
-                const result = res.data.result;
-                setTypes(result);
-            })
+        try {
+            await API.get('type')
+                .then(res => {
+                    const result = res.data.result;
+                    setTypes(result);
+                });
+        } catch (e) {
+            console.log("ERROR", e);
+        }
     }
 
     useEffect(() => {

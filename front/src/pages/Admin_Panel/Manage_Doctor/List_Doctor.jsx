@@ -10,11 +10,15 @@ export default function List_Doctor() {
     const [doctors, setDoctors] = useState([]);
 
     async function fetchData() {
-        await API.get('doctor')
-            .then(res => {
-                const data = res.data.result;
-                setDoctors(data);
-            })
+        try {
+            await API.get('doctor')
+                .then(res => {
+                    const data = res.data.result;
+                    setDoctors(data);
+                });
+        } catch (e) {
+            console.log("ERROR", e);
+        }
     }
 
     useEffect(() => {

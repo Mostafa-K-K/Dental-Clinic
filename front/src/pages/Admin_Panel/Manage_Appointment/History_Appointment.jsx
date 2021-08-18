@@ -27,19 +27,24 @@ export default function Today_Appointment() {
     }
 
     async function fetchData() {
-        await API.get('ACP')
-            .then(res => {
-                const data = res.data.result;
-                let result = data.filter(d => d.status !== "Waiting")
-                if (state.date && state.date !== "") result = result.filter(d => d.start_at.substring(0, 10) === state.date);
-                if (state.status && state.status !== "") result = result.filter(d => d.status === state.status);
-                setAppointments(result);
-            })
+        try {
+            await API.get('ACP')
+                .then(res => {
+                    const data = res.data.result;
+                    let result = data.filter(d => d.status !== "Waiting")
+                    if (state.date && state.date !== "") result = result.filter(d => d.start_at.substring(0, 10) === state.date);
+                    if (state.status && state.status !== "") result = result.filter(d => d.status === state.status);
+                    setAppointments(result);
+                });
+        } catch (e) {
+            console.log("ERROR", e);
+        }
     }
 
     useEffect(() => {
         fetchData();
     }, [JSON.stringify(state)])
+
     return (
 
         <div className="container-xl">

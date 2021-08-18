@@ -49,41 +49,46 @@ export default function Create_Appointment_Patient() {
             id_patient: state.id_patient,
             id_clinic: state.id_clinic,
         };
-        await API.get('appointment')
-            .then(res => {
-                const data = res.data.result;
 
-                const isApp = data.find(d => (
-                    (
+        try {
+            await API.get('appointment')
+                .then(res => {
+                    const data = res.data.result;
+
+                    const isApp = data.find(d => (
                         (
-                            d.data == state.date
-                            &&
-                            new Date(state.start_at).getTime() > new Date(d.start_at).getTime()
-                            &&
-                            new Date(state.start_at).getTime() < new Date(d.end_at).getTime()
+                            (
+                                d.data == state.date
+                                &&
+                                new Date(state.start_at).getTime() > new Date(d.start_at).getTime()
+                                &&
+                                new Date(state.start_at).getTime() < new Date(d.end_at).getTime()
+                            )
+                            ||
+                            (
+                                d.data == state.date
+                                &&
+                                new Date(state.end_at).getTime() > new Date(d.start_at).getTime()
+                                &&
+                                new Date(state.end_at).getTime() < new Date(d.end_at).getTime()
+                            )
                         )
-                        ||
-                        (
-                            d.data == state.date
-                            &&
-                            new Date(state.end_at).getTime() > new Date(d.start_at).getTime()
-                            &&
-                            new Date(state.end_at).getTime() < new Date(d.end_at).getTime()
-                        )
-                    )
-                    &&
-                    (String(d.id_clinic) === String(state.id_clinic))
-                ));
+                        &&
+                        (String(d.id_clinic) === String(state.id_clinic))
+                    ));
 
-                if (isApp) setState({ errExist: "Time not available" });
-                if (state.id_patient === "" || !state.id_patient) setState({ err: "select a patient" });
+                    if (isApp) setState({ errExist: "Time not available" });
+                    if (state.id_patient === "" || !state.id_patient) setState({ err: "select a patient" });
 
-                if (!isApp && state.id_patient !== "") {
-                    API.post('appointment', reqBody)
-                        .then(API.put(`request/${id}`, { status: "Accepted" }))
-                        .then(history.push({ pathname: '/appointment/upcoming' }))
-                }
-            });
+                    if (!isApp && state.id_patient !== "") {
+                        API.post('appointment', reqBody)
+                            .then(API.put(`request/${id}`, { status: "Accepted" }))
+                            .then(history.push({ pathname: '/appointment/upcoming' }))
+                    }
+                });
+        } catch (e) {
+            console.log("ERROR", e);
+        }
     }
 
     useEffect(() => {

@@ -17,14 +17,16 @@ export default function Sidebar(props) {
         actions: { setSession }
     } = useContext(SessionContext);
 
+    console.log({ user });
+
     async function handleLogout() {
         try {
             await API.post('logout', { username: name });
         } catch (e) {
             console.log(e);
         }
-        removeCookie('username');
         removeCookie('id');
+        removeCookie('username');
         removeCookie('token');
         removeCookie('isAdmin');
         removeCookie('role_id');

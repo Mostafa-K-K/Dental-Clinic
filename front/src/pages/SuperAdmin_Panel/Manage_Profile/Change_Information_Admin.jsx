@@ -31,38 +31,46 @@ export default function Change_Information_Admin() {
 
     async function handleSubmit(e) {
         e.preventDefault();
-        let reqBody = state;
+        try {
+            let reqBody = state;
 
-        await API.get(`phonenumber`)
-            .then(async res => {
-                const phones = res.data.result;
-                const isPhon = phones.filter(r => r.phone !== state.lastPhone)
-                    .find(r => r.phone === state.phone);
-                if (isPhon) {
-                    setState({ errPhon: "Phone Number alredy token" });
-                } else {
-                    await API.put(`admin/${id}`, reqBody);
-                    await history.push({ pathname: '/admin/profile' });
-                }
-            });
+            await API.get(`phonenumber`)
+                .then(async res => {
+                    const phones = res.data.result;
+                    const isPhon = phones.filter(r => r.phone !== state.lastPhone)
+                        .find(r => r.phone === state.phone);
+                    if (isPhon) {
+                        setState({ errPhon: "Phone Number alredy token" });
+                    } else {
+                        await API.put(`admin/${id}`, reqBody);
+                        await history.push({ pathname: '/admin/profile' });
+                    }
+                });
+        } catch (e) {
+            console.log("ERROR", e);
+        }
     }
 
     useEffect(() => {
         async function fetData() {
-            await API.get(`admin/${id}`)
-                .then(res => {
-                    const data = res.data.result;
-                    setState({
-                        first_name: data.first_name,
-                        middle_name: data.middle_name,
-                        last_name: data.last_name,
-                        phone: data.phone,
-                        lastPhone: data.phone
+            try {
+                await API.get(`admin/${id}`)
+                    .then(res => {
+                        const data = res.data.result;
+                        setState({
+                            first_name: data.first_name,
+                            middle_name: data.middle_name,
+                            last_name: data.last_name,
+                            phone: data.phone,
+                            lastPhone: data.phone
+                        });
                     });
-                });
+            } catch (e) {
+                console.log("ERROR", e);
+            }
         }
         fetData();
-    }, []);
+    }, [])
 
     return (
         <div>

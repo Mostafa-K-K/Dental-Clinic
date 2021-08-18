@@ -6,18 +6,26 @@ export default function List_Request() {
     const [requests, setRequests] = useState([]);
 
     async function handleDelete(id) {
-        const del = window.confirm("are you sure");
-        if (del) await API.delete(`request/${id}`);
-        fetchData();
+        try {
+            const del = window.confirm("are you sure");
+            if (del) await API.delete(`request/${id}`);
+            fetchData();
+        } catch (e) {
+            console.log("ERROR", e);
+        }
     }
 
     async function fetchData() {
-        await API.get('RP')
-            .then(res => {
-                let data = res.data.result;
-                data = data.filter(res => res.status !== "Watting");
-                setRequests(data);
-            })
+        try {
+            await API.get('RP')
+                .then(res => {
+                    let data = res.data.result;
+                    data = data.filter(res => res.status !== "Watting");
+                    setRequests(data);
+                });
+        } catch (e) {
+            console.log("ERROR", e);
+        }
     }
 
     useEffect(() => {

@@ -13,14 +13,14 @@ export default function Edit_Type() {
         err: ""
     });
 
-    function setState(nextState){
+    function setState(nextState) {
         updateState(prevState => ({
             ...prevState,
             ...nextState
         }));
     }
 
-    function handleChange(e){
+    function handleChange(e) {
         let { name, value } = e.target;
         setState({ [name]: value });
     }
@@ -28,17 +28,20 @@ export default function Edit_Type() {
     async function handleSubmit(e) {
         e.preventDefault();
         let reqBody = state;
-
-        await API.get(`type`)
-            .then(async res => {
-                const result = res.data.result;
-                const isDesc = result.find(r => r.description === state.description && String(r.id) !== String(id));
-                if (isDesc) setState({ err: "This type alredy exist" });
-                if (!isDesc) {
-                    await API.put(`type/${id}`, reqBody);
-                    history.push({ pathname: '/type/list' })
-                }
-            })
+        try {
+            await API.get(`type`)
+                .then(async res => {
+                    const result = res.data.result;
+                    const isDesc = result.find(r => r.description === state.description && String(r.id) !== String(id));
+                    if (isDesc) setState({ err: "This type alredy exist" });
+                    if (!isDesc) {
+                        await API.put(`type/${id}`, reqBody);
+                        history.push({ pathname: '/type/list' })
+                    }
+                });
+        } catch (e) {
+            console.log("ERROR", e);
+        }
     }
 
     useEffect(() => {
