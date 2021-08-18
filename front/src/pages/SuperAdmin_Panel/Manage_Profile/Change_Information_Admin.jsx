@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { useHistory } from 'react-router'
 import API from '../../../API'
-import SessionContext from '../../components/session/SessionContext'
+import SessionContext from '../../../components/session/SessionContext'
 
 export default function Change_Information_Admin() {
 

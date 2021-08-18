@@ -1346,7 +1346,7 @@ const start = async () => {
         const { username, isAdmin } = req.body;
         let sql = '';
         try {
-            (isAdmin) ?
+            (isAdmin == true || !isAdmin) ?
                 sql = `SELECT * FROM admins WHERE username = '${username}'` :
                 sql = `SELECT * FROM patients WHERE username = '${username}'`;
 

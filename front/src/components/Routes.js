@@ -136,20 +136,6 @@ export default function Routes() {
                 <PrivateRouteAdmin user={user} path="/balance/details/:id" component={Details_Balance} />
                 <PrivateRouteAdmin user={user} path="/balance/add/payment/:id" component={Add_Payment} />
 
-
-
-
-                <PrivateRoutePatient user={user} path="/patient/panel" component={Patient_Panel} />
-
-                <PrivateRoutePatient user={user} path="/patient/panel" component={Patient_Panel} />
-                <PrivateRoutePatient user={user} path="/patient/profile" component={Update_Profile} />
-
-                <PrivateRoutePatient user={user} path="/patient/procedure" component={All_Procedure} />
-                <PrivateRoutePatient user={user} path="/patient/appointment" component={Next_Appointment} />
-
-                <PrivateRoutePatient user={user} path="/request/create" component={Create_Request} />
-                <PrivateRoutePatient user={user} path="/request/remove" component={Remove_Request} />
-
             </Switch>
         </div>
     )

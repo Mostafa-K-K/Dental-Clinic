@@ -29,8 +29,13 @@ export default function SessionProvider({ children }) {
             let token = getCookie('token');
             let username = getCookie('username');
 
+            let reqBody = {
+                username: getCookie('username'),
+                isAdmin: castBool(getCookie('isAdmin'))
+            }
+
             if (token && username) {
-                await API.post(`getusername`, session.user)
+                await API.post(`getusername`, reqBody)
                     .then(res => {
                         const data = res.data.result;
                         if (data)
@@ -45,7 +50,6 @@ export default function SessionProvider({ children }) {
                     });
             }
         }
-
         initializeUser();
     }, [session.user.id]);
 
