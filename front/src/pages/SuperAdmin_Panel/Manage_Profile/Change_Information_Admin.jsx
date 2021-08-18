@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { useHistory } from 'react-router'
 import API from '../../../API'
+import SessionContext from '../../components/session/SessionContext'
 
 export default function Change_Information_Admin() {
 
-    const id = 1;
+    const { session: { user: { id } } } = useContext(SessionContext);
     const history = useHistory();
 
     const [state, updateState] = useState({

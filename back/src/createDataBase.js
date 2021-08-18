@@ -1,5 +1,7 @@
 let { connection } = require("./config");
 
+const bcrypt = require("bcryptjs");
+
 const createDataBase = async () => {
 
     var admin = `CREATE TABLE IF NOT EXISTS admins (
@@ -106,11 +108,16 @@ const createDataBase = async () => {
     });
 
 
-    connection.query(`SELECT * FROM admins`, function (err, result) {
+    connection.query(`SELECT * FROM admins`, async function (err, result) {
         if (err) throw err;
+
         if (!result || result.length == 0) {
             var sql = `INSERT INTO admins(username, password, first_name, middle_name, last_name, phone, role_id) VALUES(?,?,?,?,?,?,?)`;
-            var val = ['admin', 'admin', 'admin', 'admin', 'admin', '00000000', 0];
+
+            let salt = await bcrypt.genSalt(10);
+            let hashedPassword = await bcrypt.hash("admin", salt);
+
+            var val = ['admin', hashedPassword, 'admin', 'admin', 'admin', '00000000', 0];
             connection.query(sql, val, function (err, result) {
                 if (err) throw err;
             });
@@ -120,9 +127,9 @@ const createDataBase = async () => {
     connection.query(`SELECT * FROM teeth`, function (err, result) {
         if (err) throw err;
         if (!result || result.length == 0) {
-            var sql = 
-            
-            `INSERT INTO teeth VALUES 
+            var sql =
+
+                `INSERT INTO teeth VALUES 
 
             (1, 'Adult'),
             (2, 'Child'),
