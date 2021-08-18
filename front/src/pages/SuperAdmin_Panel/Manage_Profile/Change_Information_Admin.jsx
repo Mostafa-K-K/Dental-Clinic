@@ -2,14 +2,13 @@ import React, { useState, useEffect } from 'react'
 import { useHistory } from 'react-router'
 import API from '../../../API'
 
-export default function Edit_Doctor() {
+export default function Change_Information_Admin() {
 
     const id = 1;
     const history = useHistory();
 
     const [state, updateState] = useState({
         id: id,
-        username: "",
         first_name: "",
         middle_name: "",
         last_name: "",
@@ -43,7 +42,7 @@ export default function Edit_Doctor() {
                     setState({ errPhon: "Phone Number alredy token" });
                 } else {
                     await API.put(`admin/${id}`, reqBody);
-                    history.push({ pathname: '/admin/profile' });
+                    await history.push({ pathname: '/admin/profile' });
                 }
             });
     }
@@ -54,7 +53,6 @@ export default function Edit_Doctor() {
                 .then(res => {
                     const data = res.data.result;
                     setState({
-                        username: data.username,
                         first_name: data.first_name,
                         middle_name: data.middle_name,
                         last_name: data.last_name,

@@ -42,7 +42,6 @@ export default function Edit_Patient() {
         e.preventDefault();
         let reqBody = {
             username: state.username,
-            password: state.password,
             first_name: state.first_name,
             middle_name: state.middle_name,
             last_name: state.last_name,
@@ -53,6 +52,7 @@ export default function Edit_Patient() {
             health: state.health,
             address: state.address
         };
+        if (state.password && state.password !== "") reqBody['password'] = state.password;
 
         await API.get(`username`)
             .then(async res => {
@@ -85,7 +85,7 @@ export default function Edit_Patient() {
                     setState({
                         username: data.username,
                         lastUsername: data.username,
-                        password: data.password,
+                        // password: data.password,
                         first_name: data.first_name,
                         middle_name: data.middle_name,
                         last_name: data.last_name,
@@ -118,10 +118,10 @@ export default function Edit_Patient() {
                 <span>{state.errUser}</span>
 
                 <input
-                    type="text"
+                    type="password"
                     name="password"
                     value={state.password}
-                    placeholder="Password"
+                    placeholder="New Password"
                     onChange={handleChange}
                 />
 

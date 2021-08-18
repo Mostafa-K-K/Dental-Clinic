@@ -35,7 +35,7 @@ export function PublicRoute({ user, component, ...props }) {
 export function PrivateRouteSuperAdmin({ user, component, ...props }) {
     let Comp = component;
     return (
-        <Route {...props} render={props => user.token && user.isAdmin && user.role_id === 0 ?
+        <Route {...props} render={props => user.token && user.isAdmin && user.role_id == 0 ?
             <Comp {...props} /> :
             <Redirect {...props} to="/" />
         } />

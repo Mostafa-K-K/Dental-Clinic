@@ -40,7 +40,6 @@ export default function List_Admin() {
                                 <th>#</th>
                                 <th>Full Name</th>
                                 <th>Username</th>
-                                <th>Password</th>
                                 <th>Phone</th>
                                 <th>Manage</th>
                             </tr>
@@ -52,7 +51,6 @@ export default function List_Admin() {
                                     <td>{admin.id}</td>
                                     <td>{admin.first_name} {admin.middle_name} {admin.last_name}</td>
                                     <td>{admin.username}</td>
-                                    <td>{admin.password}</td>
                                     <td>{admin.phone}</td>
                                     <td>
                                         <a href="" onClick={() =>  history.push({ pathname: `/admin/edit/${admin.id}` })} className="settings" title="Settings" data-toggle="tooltip"><i className="material-icons">&#xE8B8;</i></a>

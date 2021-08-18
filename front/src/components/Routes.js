@@ -2,9 +2,9 @@ import React, { useContext } from 'react'
 import { Switch } from 'react-router-dom'
 
 import Update_Profile_Admin from '../pages/SuperAdmin_Panel/Manage_Profile/Update_Profile'
-import Change_Password_Admin from '../pages/SuperAdmin_Panel/Manage_Profile/Change_Password'
-import Change_Username_Admin from '../pages/SuperAdmin_Panel/Manage_Profile/Change_Username'
-import Change_Information_Admin from '../pages/SuperAdmin_Panel/Manage_Profile/Change_Information'
+import Change_Password_Admin from '../pages/SuperAdmin_Panel/Manage_Profile/Change_Password_Admin'
+import Change_Username_Admin from '../pages/SuperAdmin_Panel/Manage_Profile/Change_Username_Admin'
+import Change_Information_Admin from '../pages/SuperAdmin_Panel/Manage_Profile/Change_Information_Admin'
 
 import List_Admin from '../pages/SuperAdmin_Panel/Manage_Admin/List_Admin'
 import Create_Admin from '../pages/SuperAdmin_Panel/Manage_Admin/Create_Admin'
@@ -69,7 +69,7 @@ import { PublicRoute, PrivateRouteSuperAdmin, PrivateRouteAdmin, PrivateRoutePat
 export default function Routes() {
 
     let { session: { user } } = useContext(SessionContext);
-    
+
     return (
         <div>
             {(user.isAdmin) ?
@@ -86,7 +86,7 @@ export default function Routes() {
 
 
 
-                <PrivateRouteSuperAdmin user={user} path="/admin/profile" component={Update_Profile_Admin} />
+                <PrivateRouteSuperAdmin user={user} path="/admin/profile" component={Update_Profile_Admin} exact />
 
                 <PrivateRouteSuperAdmin user={user} path="/admin/profile/information" component={Change_Information_Admin} />
                 <PrivateRouteSuperAdmin user={user} path="/admin/profile/username" component={Change_Username_Admin} />

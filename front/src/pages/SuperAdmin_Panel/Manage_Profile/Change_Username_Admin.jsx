@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react"
 import { useHistory } from 'react-router'
 import API from "../../../API"
 
-export default function Change_Password() {
+const bcrypt = require("bcryptjs")
+\
+export default function Change_Username_Admin() {
 
     const id = 1;
     const history = useHistory();
@@ -28,13 +30,11 @@ export default function Change_Password() {
         setState({ [name]: value });
     }
 
-    async function updateAdmin() {
-        let reqBody = { username: state.username }
-        await API.put(`admin/${id}`, reqBody);
-    }
-
     async function handleSubmit(e) {
         e.nativeEvent.preventDefault();
+
+        let reqBody = { username: state.username }
+        let isMatch = await bcrypt.compare(state.password, state.oldPass);
 
         await API.get(`username`)
             .then(async res => {
@@ -45,8 +45,8 @@ export default function Change_Password() {
                 if (isUser) {
                     setState({ msg: "Username alredy token" });
                 } else {
-                    if (state.password === state.conPass) {
-                        updateAdmin();
+                    if (isMatch) {
+                        await API.put(`admin/${id}`, reqBody);
 
                         setState({
                             oldPass: "",

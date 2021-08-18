@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react"
 import { useHistory } from 'react-router'
 import API from "../../../API"
 
-export default function Change_Password() {
+const bcrypt = require("bcryptjs")
+
+export default function Change_Password_Admin() {
 
     const id = 1;
     const history = useHistory();
@@ -16,28 +18,26 @@ export default function Change_Password() {
         msg: ""
     });
 
-    function setState(nextState){
+    function setState(nextState) {
         updateState(prevState => ({
             ...prevState,
             ...nextState
         }));
     }
 
-    function handleChange(e){
+    function handleChange(e) {
         let { name, value } = e.target;
         setState({ [name]: value });
-    }
-
-    async function updateAdmin() {
-        let reqBody = { password: state.newPass }
-        await API.put(`admin/${id}`, reqBody);
     }
 
     async function handleSubmit(e) {
         e.nativeEvent.preventDefault();
 
-        if (state.password === state.oldPass && state.newPass === state.newPassC) {
-            updateAdmin();
+        let reqBody = { password: state.newPass }
+        let isMatch = await bcrypt.compare(state.password, state.oldPass);
+
+        if (isMatch && state.newPass === state.newPassC) {
+            await API.put(`admin/${id}`, reqBody);
 
             setState({
                 oldPass: "",

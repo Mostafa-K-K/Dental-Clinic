@@ -66,8 +66,11 @@ const start = async () => {
             attValues.push(username);
         }
         if (password) {
+            let salt = await bcrypt.genSalt(10);
+            let hashedPassword = await bcrypt.hash(password, salt);
+
             att += ` password = ? ,`;
-            attValues.push(password);
+            attValues.push(hashedPassword);
         }
         if (first_name) {
             att += ` first_name = ? ,`;
@@ -461,8 +464,11 @@ const start = async () => {
             attValues.push(username);
         }
         if (password) {
+            let salt = await bcrypt.genSalt(10);
+            let hashedPassword = await bcrypt.hash(password, salt);
+
             att += ` password = ? ,`;
-            attValues.push(password);
+            attValues.push(hashedPassword);
         }
         if (first_name) {
             att += ` first_name = ? ,`;
@@ -1361,13 +1367,13 @@ const start = async () => {
             let sql_p = `SELECT * FROM patients`;
             let log = ``;
 
-            connection.query(sql_a, function (err, data) {
+            connection.query(sql_a, async function (err, data) {
                 if (err) throw err;
                 let admin = data.find(r => r.username == username);
 
                 if (admin) {
                     log = `UPDATE admins SET token = ? WHERE id = ?`;
-                    let isMatch = bcrypt.compare(password, admin.password);
+                    let isMatch = await bcrypt.compare(password, admin.password);
                     if (isMatch) {
                         let payload = { id: admin.id };
                         let token = jwt.sign(payload, "randomString", { expiresIn: 10000 });
@@ -1382,9 +1388,9 @@ const start = async () => {
                     }
                 }
                 else {
-                    connection.query(sql_p, function (err, datas) {
+                    connection.query(sql_p, async function (err, datas) {
                         if (err) throw err;
-                        let patient = datas.find(r => r.username == username);
+                        let patient = await datas.find(r => r.username == username);
 
                         if (patient) {
                             log = `UPDATE patients SET token = ? WHERE id = ?`;
