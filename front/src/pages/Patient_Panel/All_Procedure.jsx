@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useContext } from "react"
 import API from "../../API"
+import moment from "moment"
 import SessionContext from '../../components/session/SessionContext'
 
 export default function All_Procedure() {
 
     const { session: { user: { id } } } = useContext(SessionContext);
 
-    const [procuders, setProcedures] = useState([]);
+    const [procedures, setProcedures] = useState([]);
     const [works, setWorks] = useState([]);
 
     useEffect(() => {
@@ -15,7 +16,9 @@ export default function All_Procedure() {
                 await API.get('PTCDP')
                     .then(res => {
                         const result = res.data.result;
-                        setWorks(result);
+                        const success = res.data.success;
+                        if (success)
+                            setWorks(result);
                     });
 
                 await API.get('PDP')
@@ -69,25 +72,25 @@ export default function All_Procedure() {
                         </thead>
                         <tbody>
 
-                            {procuders.map((procuder, i = 1) =>
+                            {procedures.map((procedure, i = 1) =>
                                 <tr>
                                     <td>{i += 1}</td>
-                                    <td>{procuder.date.substring(0, 10)}</td>
-                                    <td>{procuder.date.substring(11, 19)}</td>
-                                    <td>{procuder.f_n_doctor} {procuder.m_n_doctor} {procuder.l_n_doctor} </td>
-                                    <td>{procuder.payment}</td>
+                                    <td>{moment(procedure.date).format("YYYY-MM-DD")}  &nbsp;&nbsp;&nbsp;</td>
+                                    <td>{moment(procedure.date).format("h:mm A")}  &nbsp;&nbsp;&nbsp;</td>
+                                    <td>{procedure.f_n_doctor} {procedure.m_n_doctor} {procedure.l_n_doctor}</td>
+                                    <td>{procedure.payment}</td>
                                     <td>
-                                        {works.filter(work => work.id_procedure == procuder.id_procedure).map(work => (
+                                        {works.filter(work => work.id_procedure == procedure.id_procedure).map(work => (
                                             <li>{(work.id_teeth == 1 || work.id_teeth == 2) ? "All" : work.id_teeth}</li>
                                         ))}
                                     </td>
                                     <td>
-                                        {works.filter(work => work.id_procedure == procuder.id_procedure).map(work => (
+                                        {works.filter(work => work.id_procedure == procedure.id_procedure).map(work => (
                                             <li>{work.description}</li>
                                         ))}
                                     </td>
                                     <td>
-                                        {works.filter(work => work.id_procedure == procuder.id_procedure).map(work => (
+                                        {works.filter(work => work.id_procedure == procedure.id_procedure).map(work => (
                                             <li>{work.price}</li>
                                         ))}
                                     </td>

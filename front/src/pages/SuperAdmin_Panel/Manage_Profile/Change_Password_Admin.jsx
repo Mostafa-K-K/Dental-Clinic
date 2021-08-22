@@ -69,8 +69,12 @@ export default function Change_Password_Admin() {
                 await API.get(`admin/${id}`)
                     .then(res => {
                         const result = res.data.result;
-                        setState({ id: result.id })
-                        setState({ password: result.password })
+                        const success = res.data.success;
+                        if (success)
+                            setState({
+                                id: result.id,
+                                password: result.password
+                            });
                     });
             } catch (e) {
                 console.log("ERROR", e);

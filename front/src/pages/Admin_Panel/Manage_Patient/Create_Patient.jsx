@@ -45,28 +45,34 @@ export default function Create_Patient() {
             await API.get(`username`)
                 .then(async res => {
                     const usernames = res.data.result;
-                    const isUser = usernames.find(r => r.username === state.username);
+                    const success = res.data.success;
+                    if (success) {
+                        const isUser = usernames.find(r => r.username === state.username);
 
-                    await API.get(`phonenumber`)
-                        .then(async res => {
-                            const phones = res.data.result;
-                            const isPhon = phones.find(r => r.phone === state.phone);
+                        await API.get(`phonenumber`)
+                            .then(async res => {
+                                const phones = res.data.result;
+                                const suc = res.data.success;
+                                if (suc) {
+                                    const isPhon = phones.find(r => r.phone === state.phone);
 
-                            if (isUser) {
-                                setState({ errUser: "Username alredy token" });
-                            }
-                            if (isPhon) {
-                                setState({ errPhon: "Phone Number alredy token" });
-                            }
-                            if (state.conPassword !== state.password) {
-                                setState({ errPass: "Password incorrect" });
-                            }
+                                    if (isUser) {
+                                        setState({ errUser: "Username alredy token" });
+                                    }
+                                    if (isPhon) {
+                                        setState({ errPhon: "Phone Number alredy token" });
+                                    }
+                                    if (state.conPassword !== state.password) {
+                                        setState({ errPass: "Password incorrect" });
+                                    }
 
-                            if (!isUser && !isPhon && state.conPassword === state.password) {
-                                await API.post(`patient`, reqBody);
-                                history.push({ pathname: '/patient/list' })
-                            }
-                        });
+                                    if (!isUser && !isPhon && state.conPassword === state.password) {
+                                        await API.post(`patient`, reqBody);
+                                        history.push({ pathname: '/patient/list' })
+                                    }
+                                }
+                            });
+                    }
                 });
         } catch (e) {
             console.log("ERROR", e);

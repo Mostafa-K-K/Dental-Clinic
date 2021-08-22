@@ -14,7 +14,9 @@ export default function List_Doctor() {
             await API.get('doctor')
                 .then(res => {
                     const data = res.data.result;
-                    setDoctors(data);
+                    const success = res.data.success;
+                    if (success)
+                        setDoctors(data);
                 });
         } catch (e) {
             console.log("ERROR", e);

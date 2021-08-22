@@ -3,6 +3,8 @@ import { useHistory } from 'react-router'
 import API from '../../../API'
 import ConfirmDelete from '../../../components/ConfirmDelete'
 
+import moment from 'moment'
+
 export default function List_Patient() {
 
     const history = useHistory();
@@ -46,33 +48,35 @@ export default function List_Patient() {
             await API.post(`paginpatient`, reqBody)
                 .then(res => {
                     const data = res.data.result;
-                    setState({ patients: data });
+                    const success = res.data.success;
+                    if (success)
+                        setState({ patients: data });
                 });
 
             await API.post(`patientcount`, reqBody)
                 .then(res => {
                     const result = res.data.result;
-                    setState({ nbPatient: result });
-                    let pages = Math.ceil(result / 10);
-                    setState({ pages: pages });
+                    const success = res.data.success;
+                    if (success) {
+                        setState({ nbPatient: result });
+                        let pages = Math.ceil(result / 10);
+                        setState({ pages: pages });
 
-                    if (pages !== state.pages) {
+                        if (pages !== state.pages) {
 
-                        setState({
-                            page: 1,
-                            rows: 0
-                        });
+                            setState({ page: 1, rows: 0 });
 
-                        if (pages >= 10) {
-                            setState({ pagination: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] });
-                        } else {
-                            var i = 1;
-                            let arr = [];
-                            while (i <= pages) {
-                                arr.push(i);
-                                i++;
+                            if (pages >= 10) {
+                                setState({ pagination: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] });
+                            } else {
+                                var i = 1;
+                                let arr = [];
+                                while (i <= pages) {
+                                    arr.push(i);
+                                    i++;
+                                }
+                                setState({ pagination: arr });
                             }
-                            setState({ pagination: arr });
                         }
                     }
                 });
@@ -83,22 +87,19 @@ export default function List_Patient() {
 
     async function handlePagination(pg) {
         if ((pg >= 1) && (pg <= state.pages)) {
-            setState({ page: pg });
-            setState({ rows: (pg - 1) * 10 });
+            setState({
+                page: pg,
+                rows: (pg - 1) * 10
+            });
 
             let arr = [];
             if (pg > state.pagination[9]) {
-
-                state.pagination.forEach(i => {
-                    arr.push(i + 1);
-                })
+                state.pagination.forEach(i => { arr.push(i + 1); });
                 setState({ pagination: arr });
             }
 
             if (pg < state.pagination[0]) {
-                state.pagination.forEach(i => {
-                    arr.push(i - 1);
-                })
+                state.pagination.forEach(i => { arr.push(i - 1); });
                 setState({ pagination: arr });
             }
         }
@@ -178,7 +179,7 @@ export default function List_Patient() {
                                     <td>{patient.first_name} {patient.middle_name} {patient.last_name}</td>
                                     <td>{patient.gender}</td>
                                     <td>{patient.marital}</td>
-                                    <td>{patient.birth.substring(0, 10)}</td>
+                                    <td>{moment(patient.birth).format("YYYY-MM-DD")}</td>
                                     <td>{patient.phone}</td>
                                     <td>{patient.address}</td>
                                     <td>{patient.health}</td>

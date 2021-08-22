@@ -1,22 +1,23 @@
 import React, { useEffect, useState } from "react"
 import moment from "moment"
 import API from "../../../API"
-import { useHistory } from "react-router"
+import { useHistory, useParams } from "react-router"
 
-import Patients from "../../../components/Patients"
 import Doctors from "../../../components/Doctors"
 import Teeth from "../../../components/Teeth"
 import Types from "../../../components/Types"
 
-export default function Create_Procedure() {
+export default function Add_Procedure() {
 
+    const { id_appointment, id_patient } = useParams();
     const history = useHistory();
     const date = moment().format("YYYY-MM-DDTHH:mm");
 
     const [state, updateState] = useState({
+        patient: "",
         payment: "",
         date: date,
-        id_patient: "",
+        id_patient: id_patient,
         id_doctor: "",
 
         works: [],
@@ -106,13 +107,8 @@ export default function Create_Procedure() {
         e.preventDefault();
 
         try {
-            let p_id = "";
             let d_id = "";
 
-            if (state.id_patient && state.id_patient !== '') {
-                let p_arr = state.id_patient.split('-');
-                p_id = p_arr[1];
-            }
             if (state.id_doctor && state.id_doctor !== '') {
                 let d_arr = state.id_doctor.split('-');
                 d_id = d_arr[1];
@@ -122,7 +118,7 @@ export default function Create_Procedure() {
             let reqBody = {
                 payment: state.payment,
                 date: dd,
-                id_patient: p_id,
+                id_patient: state.id_patient,
                 id_doctor: d_id,
                 balance: state.total
             };
@@ -143,11 +139,25 @@ export default function Create_Procedure() {
                         API.post(`PTC`, PTCReqBody);
                     });
                 })
+                .then(API.put(`appointment/${id_appointment}`, { status: "Present" }))
                 .then(history.push({ pathname: "/procedure/list" }));
         } catch (e) {
             console.log("ERROR", e);
         }
     }
+
+    useEffect(() => {
+        async function fetchData() {
+            await API.get(`patient/${state.id_patient}`)
+                .then(res => {
+                    const data = res.data.result;
+                    const success = res.data.success;
+                    if (success)
+                        setState({ patient: data.first_name + " " + data.middle_name + " " + data.last_name })
+                })
+        }
+        fetchData();
+    }, []);
 
     return (
         <div>
@@ -168,12 +178,7 @@ export default function Create_Procedure() {
                     onChange={handleChange}
                 />
 
-                <Patients
-                    value={state.id_patient}
-                    name="id_patient"
-                    onChange={handleChange}
-                    resetValue={() => setState({ id_patient: "" })}
-                />
+                <h3>{state.id_patient} - {state.patient}</h3>
 
                 <Doctors
                     value={state.id_doctor}

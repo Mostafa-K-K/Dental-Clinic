@@ -14,7 +14,9 @@ export default function List_Type() {
             await API.get('type')
                 .then(res => {
                     const result = res.data.result;
-                    setTypes(result);
+                    const success = res.data.success;
+                    if (success)
+                        setTypes(result);
                 });
         } catch (e) {
             console.log("ERROR", e);

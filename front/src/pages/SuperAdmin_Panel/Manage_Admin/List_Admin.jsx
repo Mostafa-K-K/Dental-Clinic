@@ -5,8 +5,7 @@ import ConfirmDelete from '../../../components/ConfirmDelete'
 
 export default function List_Admin() {
 
-    const history = useHistory()
-
+    const history = useHistory();
     const [admins, setAdmins] = useState([]);
 
     async function fetchData() {
@@ -14,7 +13,9 @@ export default function List_Admin() {
             await API.get('admin')
                 .then(res => {
                     const data = res.data.result;
-                    setAdmins(data);
+                    const success = res.data.success;
+                    if (success)
+                        setAdmins(data);
                 });
         } catch (e) {
             console.log("ERROR", e);

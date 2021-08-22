@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react"
 import { useHistory } from 'react-router'
 import API from "../../../API"
+import moment from "moment"
 
 export default function List_Request() {
 
@@ -8,7 +9,8 @@ export default function List_Request() {
     const [requests, setRequests] = useState([]);
 
     async function handleAccept(id, id_patient) {
-        await history.push({ pathname: `/create/appointment/patient/${id}/${id_patient}` });
+        const del = window.confirm("are you sure");
+        if (del) await history.push({ pathname: `/create/appointment/patient/${id}/${id_patient}` });
     }
 
     async function handleReject(id) {
@@ -26,8 +28,11 @@ export default function List_Request() {
             await API.get('RP')
                 .then(res => {
                     let data = res.data.result;
-                    data = data.filter(res => res.status === "Watting");
-                    setRequests(data);
+                    const success = res.data.success;
+                    if (success) {
+                        data = data.filter(res => res.status === "Watting");
+                        setRequests(data);
+                    }
                 });
         } catch (e) {
             console.log("ERROR", e);
@@ -58,23 +63,25 @@ export default function List_Request() {
                                 <th>Patient</th>
                                 <th>Description</th>
                                 <th>Date</th>
+                                <th>Hours</th>
                                 <th>Status</th>
                                 <th>Manage</th>
                             </tr>
                         </thead>
                         <tbody>
 
-                            {requests.map(r => (
-                                <tr key={r.id}>
-                                    <td>{r.id}</td>
-                                    <td>{r.first_name} {r.middle_name} {r.last_name}</td>
-                                    <td>{r.description}</td>
-                                    <td>{r.date}</td>
-                                    <td>{r.status}</td>
+                            {requests.map(request => (
+                                <tr key={request.id}>
+                                    <td>{request.id}</td>
+                                    <td>{request.first_name} {request.middle_name} {request.last_name}</td>
+                                    <td>{request.description}</td>
+                                    <td>{moment(request.date).format("YYYY-MM-DD")}  &nbsp;&nbsp;&nbsp;</td>
+                                    <td>{moment(request.date).format("h:mm A")}  &nbsp;&nbsp;&nbsp;</td>
+                                    <td>{request.status}</td>
                                     <td>
                                         <a
                                             href="#"
-                                            onClick={() => handleAccept(r.id, r.id_patient)}
+                                            onClick={() => handleAccept(request.id, request.id_patient)}
                                             className="settings"
                                             title="settings"
                                             data-toggle="tooltip"
@@ -86,7 +93,7 @@ export default function List_Request() {
 
                                         <a
                                             href="#"
-                                            onClick={() => handleReject(r.id)}
+                                            onClick={() => handleReject(request.id)}
                                             className="delete" title="Delete"
                                             data-toggle="tooltip"
                                         >

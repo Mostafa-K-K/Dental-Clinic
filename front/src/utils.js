@@ -1,4 +1,4 @@
-import {  Route, Redirect } from 'react-router-dom';
+import { Route, Redirect } from 'react-router-dom';
 
 /**
  * Cast variable to Boolean
@@ -20,7 +20,7 @@ export function PublicRoute({ user, component, ...props }) {
     let Comp = component;
     return (
         <Route {...props} render={props => user.token ?
-            <Redirect {...props} to={(user.isAdmin) ? "/admin/panel" : "/patient/panel"} /> :
+            <Redirect {...props} to={(user.isAdmin) ? "/number/patient" : "/patient/panel"} /> :
             <Comp {...props} />
         } />
     )

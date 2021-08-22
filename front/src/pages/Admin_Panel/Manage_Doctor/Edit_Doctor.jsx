@@ -34,11 +34,14 @@ export default function Edit_Doctor() {
             await API.get(`doctor`)
                 .then(async res => {
                     const result = res.data.result;
-                    const isPhon = result.find(r => r.phone === state.phone && String(r.id) !== String(id));
-                    if (isPhon) setState({ errPhon: "Phone Number alredy token" });
-                    if (!isPhon) {
-                        await API.put(`doctor/${id}`, reqBody);
-                        await history.push({ pathname: '/doctor/list' });
+                    const success = res.data.success;
+                    if (success) {
+                        const isPhon = result.find(r => r.phone === state.phone && String(r.id) !== String(id));
+                        if (isPhon) setState({ errPhon: "Phone Number alredy token" });
+                        if (!isPhon) {
+                            await API.put(`doctor/${id}`, reqBody);
+                            await history.push({ pathname: '/doctor/list' });
+                        }
                     }
                 });
         } catch (e) {
@@ -46,19 +49,20 @@ export default function Edit_Doctor() {
         }
     }
 
-    async function fetData() {
-        try {
-            await API.get(`doctor/${id}`)
-                .then(res => {
-                    const data = res.data.result;
-                    setState(data)
-                });
-        } catch (e) {
-            console.log("ERROR", e);
-        }
-    }
-
     useEffect(() => {
+        async function fetData() {
+            try {
+                await API.get(`doctor/${id}`)
+                    .then(res => {
+                        const data = res.data.result;
+                        const success = res.data.success;
+                        if (success)
+                            setState(data)
+                    });
+            } catch (e) {
+                console.log("ERROR", e);
+            }
+        }
         fetData();
     }, []);
 

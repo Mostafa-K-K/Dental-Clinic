@@ -28,17 +28,18 @@ import Create_Type from '../pages/Admin_Panel/Manage_Type/Create_Type'
 
 import Old_Request from '../pages/Admin_Panel/Manage_Request/Old_Request'
 import List_Request from '../pages/Admin_Panel/Manage_Request/List_Request'
-import Create_Appointment_Patient from '../pages/Admin_Panel/Manage_Request/Create_Appointment_Patient'
 
 import Today_Appointment from '../pages/Admin_Panel/Manage_Appointment/Today_Appointment'
 import History_Appointment from '../pages/Admin_Panel/Manage_Appointment/History_Appointment'
 import Upcoming_Appointment from '../pages/Admin_Panel/Manage_Appointment/Upcoming_Appointment'
 import Edit_Appointment from '../pages/Admin_Panel/Manage_Appointment/Edit_Appointment'
 import Create_Appointment from '../pages/Admin_Panel/Manage_Appointment/Create_Appointment'
+import Add_Appointment from '../pages/Admin_Panel/Manage_Appointment/Add_Appointment'
 
 import List_Procedure from '../pages/Admin_Panel/Manage_Procedure/List_Procedure'
 import Edit_Procedure from '../pages/Admin_Panel/Manage_Procedure/Edit_Procedure'
 import Create_Procedure from '../pages/Admin_Panel/Manage_Procedure/Create_Procedure'
+import Add_Procedure from '../pages/Admin_Panel/Manage_Procedure/Add_Procedure'
 
 import Create_Payment from '../pages/Admin_Panel/Manage_Payment/Create_Payment'
 import List_Balance from '../pages/Admin_Panel/Manage_Payment/List_Balance'
@@ -56,12 +57,15 @@ import Create_Request from '../pages/Patient_Panel/Manage_Request/Create_Request
 import Patient_Panel from '../pages/Patient_Panel/Patient_Panel'
 import Admin_Panel from '../pages/Admin_Panel/Admin_Panel'
 
+import Number_Patient from '../pages/SuperAdmin_Panel/Number_Patient'
+
 import Home from '../pages/Home/Home'
 import Login from '../pages/Home/Login'
 import Register from '../pages/Home/Register'
 
 import SidebarAdmin from './SidebarAdmin'
 import SidebarPatient from './SidebarPatient'
+
 
 import SessionContext from './session/SessionContext'
 import { PublicRoute, PrivateRouteSuperAdmin, PrivateRouteAdmin, PrivateRoutePatient } from '../utils'
@@ -96,6 +100,7 @@ export default function Routes() {
                 <PrivateRouteSuperAdmin user={user} path="/admin/edit/:id" component={Edit_Admin} />
                 <PrivateRouteSuperAdmin user={user} path="/admin/create" component={Create_Admin} />
 
+                <PrivateRouteSuperAdmin user={user} path="/number/patient" component={Number_Patient} />
 
 
 
@@ -122,14 +127,15 @@ export default function Routes() {
                 <PrivateRouteAdmin user={user} path="/appointment/upcoming" component={Upcoming_Appointment} />
                 <PrivateRouteAdmin user={user} path="/appointment/edit/:id" component={Edit_Appointment} />
                 <PrivateRouteAdmin user={user} path="/appointment/create" component={Create_Appointment} />
+                <PrivateRouteAdmin user={user} path="/create/appointment/patient/:id/:id_patient" component={Add_Appointment} />
 
                 <PrivateRouteAdmin user={user} path="/request/old" component={Old_Request} />
                 <PrivateRouteAdmin user={user} path="/request/list" component={List_Request} />
-                <PrivateRouteAdmin user={user} path="/create/appointment/patient/:id/:id_patient" component={Create_Appointment_Patient} />
 
                 <PrivateRouteAdmin user={user} path="/procedure/list" component={List_Procedure} />
                 <PrivateRouteAdmin user={user} path="/procedure/edit/:id" component={Edit_Procedure} />
                 <PrivateRouteAdmin user={user} path="/procedure/create" component={Create_Procedure} />
+                <PrivateRouteAdmin user={user} path="/create/procedure/patient/:id_appointment/:id_patient" component={Add_Procedure} />
 
                 <PrivateRouteAdmin user={user} path="/payment/create" component={Create_Payment} />
                 <PrivateRouteAdmin user={user} path="/balance/list" component={List_Balance} />

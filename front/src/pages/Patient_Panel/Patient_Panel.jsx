@@ -14,11 +14,13 @@ export default function Patient_Panel() {
                 await API.post(`balance`)
                     .then(res => {
                         let data = res.data.result;
-                        const result = data.find(d => d.id == id);
-                        console.log(result);
-                        let balance = (result.balance) ? result.balance : 0;
-                        let payment = (result.payment) ? result.payment : 0;
-                        setRemaining(balance - payment);
+                        const success = res.data.success;
+                        if (success) {
+                            const result = data.find(d => d.id == id);
+                            let balance = (result.balance) ? result.balance : 0;
+                            let payment = (result.payment) ? result.payment : 0;
+                            setRemaining(balance - payment);
+                        }
                     });
             } catch (e) {
                 console.log("ERROR", e);

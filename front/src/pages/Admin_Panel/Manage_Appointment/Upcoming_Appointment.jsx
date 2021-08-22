@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react"
 import { useHistory } from 'react-router'
 import API from "../../../API"
+import moment from "moment"
+
 import ConfirmDelete from "../../../components/ConfirmDelete"
 
 export default function Upcoming_Appointment() {
@@ -15,9 +17,12 @@ export default function Upcoming_Appointment() {
             await API.get('ACP')
                 .then(res => {
                     const data = res.data.result;
-                    let result = data.filter(d => d.status === "Waiting")
-                    if (date && date !== "") result = result.filter(d => d.start_at.substring(0, 10) === date);
-                    setAppointments(result);
+                    const success = res.data.success;
+                    if (success) {
+                        let result = data.filter(d => d.status === "Waiting");
+                        if (date && date !== "") result = result.filter(d => d.date.substring(0, 10) === date);
+                        setAppointments(result);
+                    }
                 });
         } catch (e) {
             console.log("ERROR", e);
@@ -68,9 +73,9 @@ export default function Upcoming_Appointment() {
                                     <td>{appointment.id}</td>
                                     <td>{appointment.first_name} {appointment.middle_name} {appointment.last_name}</td>
                                     <td>{appointment.name}</td>
-                                    <td>{appointment.date.substring(0, 10)}</td>
-                                    <td>{appointment.start_at.substring(0, 5)}</td>
-                                    <td>{appointment.end_at.substring(0, 5)}</td>
+                                    <td>{moment(appointment.date).format("YYYY-MM-DD")}</td>
+                                    <td>{moment(appointment.start_at, "HH:mm").format('h:mm A')}</td>
+                                    <td>{moment(appointment.end_at, "HH:mm").format('h:mm A')}</td>
                                     <td>{appointment.description}</td>
                                     <td>{appointment.status}</td>
                                     <td>

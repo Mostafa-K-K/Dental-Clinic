@@ -49,7 +49,9 @@ export default function Edit_Clinic() {
                 await API.get(`clinic/${id}`)
                     .then(res => {
                         const data = res.data.result;
-                        setState(data)
+                        const success = res.data.success;
+                        if (success)
+                            setState(data);
                     });
             } catch (e) {
                 console.log("ERROR", e);

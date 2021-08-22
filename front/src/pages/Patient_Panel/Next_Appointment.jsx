@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext } from "react"
 import API from "../../API"
+import moment from "moment"
 import SessionContext from '../../components/session/SessionContext'
 
 export default function Next_Appointment() {
@@ -13,8 +14,11 @@ export default function Next_Appointment() {
             await API.get('ACP')
                 .then(res => {
                     const data = res.data.result;
-                    let result = data.filter(d => d.status === "Waiting" && d.id_patient == id)
-                    setAppointments(result);
+                    const success = res.data.success;
+                    if (success) {
+                        let result = data.filter(d => d.status === "Waiting" && d.id_patient == id);
+                        setAppointments(result);
+                    }
                 });
         } catch (e) {
             console.log("ERROR", e);
@@ -53,9 +57,9 @@ export default function Next_Appointment() {
                             {appointments.map((appointment, i = 1) => (
                                 <tr key={appointment.id}>
                                     <td>{i += 1}</td>
-                                    <td>{appointment.date.substring(0, 10)}</td>
-                                    <td>{appointment.start_at.substring(0, 5)}</td>
-                                    <td>{appointment.end_at.substring(0, 5)}</td>
+                                    <td>{moment(appointment.date).format("YYYY-MM-DD")}</td>
+                                    <td>{moment(appointment.start_at, "HH:mm").format('h:mm A')}</td>
+                                    <td>{moment(appointment.end_at, "HH:mm").format('h:mm A')}</td>
                                     <td>{appointment.name}</td>
                                     <td>{appointment.description}</td>
                                 </tr>

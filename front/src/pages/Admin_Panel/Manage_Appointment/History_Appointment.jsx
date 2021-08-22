@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { useHistory } from 'react-router'
 import API from "../../../API"
-import ConfirmDelete from "../../../components/ConfirmDelete"
+import moment from "moment"
 
 export default function Today_Appointment() {
 
@@ -31,10 +31,15 @@ export default function Today_Appointment() {
             await API.get('ACP')
                 .then(res => {
                     const data = res.data.result;
-                    let result = data.filter(d => d.status !== "Waiting")
-                    if (state.date && state.date !== "") result = result.filter(d => d.start_at.substring(0, 10) === state.date);
-                    if (state.status && state.status !== "") result = result.filter(d => d.status === state.status);
-                    setAppointments(result);
+                    const success = res.data.success;
+                    if (success) {
+                        let result = data.filter(d => d.status !== "Waiting");
+                        if (state.date && state.date !== "")
+                            result = result.filter(d => d.start_at.substring(0, 10) === state.date);
+                        if (state.status && state.status !== "")
+                            result = result.filter(d => d.status === state.status);
+                        setAppointments(result);
+                    }
                 });
         } catch (e) {
             console.log("ERROR", e);
@@ -102,6 +107,7 @@ export default function Today_Appointment() {
                                 <th>#</th>
                                 <th>Patient</th>
                                 <th>Clinic</th>
+                                <th>Date</th>
                                 <th>Start</th>
                                 <th>End</th>
                                 <th>Description</th>
@@ -115,8 +121,9 @@ export default function Today_Appointment() {
                                     <td>{appointment.id}</td>
                                     <td>{appointment.first_name} {appointment.middle_name} {appointment.last_name}</td>
                                     <td>{appointment.name}</td>
-                                    <td>{appointment.start_at.substring(0, 19).replace("T", " ")}</td>
-                                    <td>{appointment.end_at.substring(0, 19).replace("T", " ")}</td>
+                                    <td>{moment(appointment.date).format("YYYY-MM-DD")}</td>
+                                    <td>{moment(appointment.start_at, "HH:mm").format('h:mm A')}</td>
+                                    <td>{moment(appointment.end_at, "HH:mm").format('h:mm A')}</td>
                                     <td>{appointment.description}</td>
                                     <td>{appointment.status}</td>
                                 </tr>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react"
 import { useHistory, useParams } from 'react-router'
-import API from "../../../API";
+import API from "../../../API"
+import moment from "moment"
 
 export default function Details_Balance() {
 
@@ -34,7 +35,9 @@ export default function Details_Balance() {
                     await API.post(`balance`, { id: id })
                         .then(res => {
                             const data = res.data.result;
-                            setState({ patient: data })
+                            const success = res.data.success;
+                            if (success)
+                                setState({ patient: data });
                         });
                     setState({ isTrue: false });
                 }
@@ -42,9 +45,13 @@ export default function Details_Balance() {
                 await API.get(`balance/${id}`)
                     .then(res => {
                         let data = res.data.result;
-                        if (state.date && state.date != "")
-                            data = data.filter(d => d.date.substring(0, 10) == state.date)
-                        setState({ details: data })
+                        const success = res.data.success;
+                        if (success) {
+                            if (state.date && state.date != "") {
+                                data = data.filter(d => d.date.substring(0, 10) == state.date);
+                                setState({ details: data });
+                            }
+                        }
                     });
             } catch (e) {
                 console.log("ERROR", e);
@@ -88,8 +95,8 @@ export default function Details_Balance() {
                 </tr>
                 {state.details.map(detail =>
                     <tr key={detail.id}>
-                        <td>{detail.date.substring(0, 10)} &nbsp;&nbsp;&nbsp;</td>
-                        <td>{detail.date.substring(11, 16)} &nbsp;&nbsp;&nbsp;</td>
+                        <td>{moment(detail.date).format("YYYY-MM-DD")}  &nbsp;&nbsp;&nbsp;</td>
+                        <td>{moment(detail.date).format("h:mm A")}  &nbsp;&nbsp;&nbsp;</td>
                         <td>{detail.balance}</td>
                         <td>{detail.payment}</td>
                     </tr>

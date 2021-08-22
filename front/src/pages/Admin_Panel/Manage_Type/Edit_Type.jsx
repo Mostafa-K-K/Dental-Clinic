@@ -32,11 +32,14 @@ export default function Edit_Type() {
             await API.get(`type`)
                 .then(async res => {
                     const result = res.data.result;
-                    const isDesc = result.find(r => r.description === state.description && String(r.id) !== String(id));
-                    if (isDesc) setState({ err: "This type alredy exist" });
-                    if (!isDesc) {
-                        await API.put(`type/${id}`, reqBody);
-                        history.push({ pathname: '/type/list' })
+                    const success = res.data.success;
+                    if (success) {
+                        const isDesc = result.find(r => r.description === state.description && String(r.id) !== String(id));
+                        if (isDesc) setState({ err: "This type alredy exist" });
+                        if (!isDesc) {
+                            await API.put(`type/${id}`, reqBody);
+                            history.push({ pathname: '/type/list' })
+                        }
                     }
                 });
         } catch (e) {

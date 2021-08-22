@@ -65,13 +65,15 @@ export default function Update_Profile() {
                 await API.get(`patient/${id}`)
                     .then(res => {
                         const data = res.data.result;
-                        setState({
-                            phone: data.phone,
-                            marital: data.marital,
-                            health: data.health,
-                            address: data.address,
-                            lastPhone: data.phone
-                        });
+                        const success = res.data.success;
+                        if (success)
+                            setState({
+                                phone: data.phone,
+                                marital: data.marital,
+                                health: data.health,
+                                address: data.address,
+                                lastPhone: data.phone
+                            });
                     });
             } catch (e) {
                 console.log("ERROR", e);

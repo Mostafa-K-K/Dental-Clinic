@@ -31,7 +31,7 @@ export default function Add_Payment() {
     async function handleSubmit(e) {
         e.preventDefault();
         try {
-            let dd = state.date.replace("T", " ");
+            let dd = moment().format("YYYY-MM-DD hh:mm:ss");
 
             let reqBody = {
                 payment: state.payment,
@@ -52,7 +52,9 @@ export default function Add_Payment() {
                 await API.get(`patient/${id}`)
                     .then(res => {
                         const result = res.data.result;
-                        setState({ patient: result })
+                        const success = res.data.success;
+                        if (success)
+                            setState({ patient: result });
                     });
             } catch (e) {
                 console.log("ERROR", e);
@@ -60,7 +62,7 @@ export default function Add_Payment() {
         }
         fetchData();
     }, [])
-    
+
     return (
         <div>
             <h1>add payment</h1>

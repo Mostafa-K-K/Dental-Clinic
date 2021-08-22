@@ -6,6 +6,7 @@ import Patients from "../../../components/Patients"
 import Doctors from "../../../components/Doctors"
 import Teeth from "../../../components/Teeth"
 import Types from "../../../components/Types"
+import moment from "moment"
 
 export default function Edit_Procedure() {
 
@@ -118,7 +119,7 @@ export default function Edit_Procedure() {
                 let d_arr = state.id_doctor.split('-');
                 d_id = d_arr[1];
             }
-            let dd = state.date.replace("T", " ");
+            let dd = moment(state.date).format("YYYY-MM-DD HH:mm");
 
             let reqBody = {
                 payment: state.payment,
@@ -156,35 +157,43 @@ export default function Edit_Procedure() {
                 await API.get(`procedure/${id}`)
                     .then(res => {
                         const result = res.data.result;
-                        if (result.id_patient && result.id_patient !== "") {
-                            API.get(`patient/${result.id_patient}`)
-                                .then(res => {
-                                    const patient = res.data.result;
-                                    const str = patient.first_name + " " + patient.middle_name + " " + patient.last_name + " - " + patient.id;
-                                    console.log(str);
-                                    setState({ id_patient: str });
-                                });
+                        const success = res.data.success;
+                        if (success) {
+                            if (result.id_patient && result.id_patient !== "") {
+                                API.get(`patient/${result.id_patient}`)
+                                    .then(res => {
+                                        const patient = res.data.result;
+                                        const str = patient.first_name + " " + patient.middle_name + " " + patient.last_name + " - " + patient.id;
+                                        console.log(str);
+                                        setState({ id_patient: str });
+                                    });
+                            }
+
+                            if (result.id_doctor && result.id_doctor !== "") {
+                                API.get(`doctor/${result.id_doctor}`)
+                                    .then(res => {
+                                        const doctor = res.data.result;
+                                        const str = doctor.first_name + " " + doctor.middle_name + " " + doctor.last_name + " - " + doctor.id;
+                                        console.log(str);
+                                        setState({ id_doctor: str });
+                                    });
+                            }
+                            setState({
+                                payment: result.payment,
+                                date: moment(result.date).format("YYYY-MM-DDTHH:mm"),
+                                total: result.balance
+                            });
                         }
-                        if (result.id_doctor && result.id_doctor !== "") {
-                            API.get(`doctor/${result.id_doctor}`)
-                                .then(res => {
-                                    const doctor = res.data.result;
-                                    const str = doctor.first_name + " " + doctor.middle_name + " " + doctor.last_name + " - " + doctor.id;
-                                    console.log(str);
-                                    setState({ id_doctor: str });
-                                });
-                        }
-                        setState({
-                            payment: result.payment,
-                            date: result.date.substring(0, 19),
-                            total: result.balance
-                        });
                     });
+
                 await API.get('PTCDP')
                     .then(res => {
-                        const result = res.data.result;
-                        let data = result.filter(r => r.id_procedure == id);
-                        setState({ works: data });
+                        let data = res.data.result;
+                        const success = res.data.success;
+                        if (success) {
+                            data = data.filter(r => r.id_procedure == id);
+                            setState({ works: data });
+                        }
                     });
             } catch (e) {
                 console.log("ERROR", e);

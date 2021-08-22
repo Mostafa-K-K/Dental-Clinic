@@ -38,12 +38,14 @@ export default function List_Balance() {
                     await API.get(`maxmindate`)
                         .then(res => {
                             const result = res.data.result;
-                            setState({
-                                dateFrom: result.min.substring(0, 10),
-                                dateTo: result.max.substring(0, 10),
-                                min: result.min.substring(0, 10),
-                                max: result.max.substring(0, 10)
-                            });
+                            const success = res.data.success;
+                            if (success)
+                                setState({
+                                    dateFrom: result.min.substring(0, 10),
+                                    dateTo: result.max.substring(0, 10),
+                                    min: result.min.substring(0, 10),
+                                    max: result.max.substring(0, 10)
+                                });
                         });
                     setState({ isFetch: false });
                 }
@@ -53,25 +55,30 @@ export default function List_Balance() {
                     dateFrom: moment(state.dateFrom).add(-1, 'days').format("YYYY-MM-DD"),
                     dateTo: moment(state.dateTo).add(1, 'days').format("YYYY-MM-DD")
                 }
-                console.log(reqBody);
+
                 await API.post(`balance`, reqBody)
                     .then(res => {
                         const data = res.data.result;
-                        console.log(data);
-                        if (state.name && state.name != "") {
-                            let length = state.name.length;
-                            let result = data.filter(d =>
-                                ((d.first_name.substring(0, length)).toLowerCase() == (state.name).toLowerCase())
-                                ||
-                                ((d.last_name.substring(0, length)).toLowerCase() == (state.name).toLowerCase())
-                                ||
-                                (((d.first_name + " " + d.last_name).substring(0, length)).toLowerCase() == (state.name).toLowerCase())
-                                ||
-                                (((d.first_name + " " + d.middle_name + " " + d.last_name).substring(0, length)).toLowerCase() == (state.name).toLowerCase())
-                            );
-                            setState({ balances: result });
-                        } else {
-                            setState({ balances: data });
+                        const success = res.data.success;
+                        if (success) {
+                            console.log(data);
+                            if (state.name && state.name != "") {
+                                let length = state.name.length;
+                                let result = data.filter(d =>
+                                    ((d.first_name.substring(0, length)).toLowerCase() == (state.name).toLowerCase())
+                                    ||
+                                    ((d.last_name.substring(0, length)).toLowerCase() == (state.name).toLowerCase())
+                                    ||
+                                    (((d.first_name + " " + d.last_name).substring(0, length)).toLowerCase() == (state.name).toLowerCase())
+                                    ||
+                                    (((d.first_name + " " + d.middle_name + " " + d.last_name).substring(0, length)).toLowerCase() == (state.name).toLowerCase())
+                                    ||
+                                    (d.id == parseInt(state.name))
+                                );
+                                setState({ balances: result });
+                            } else {
+                                setState({ balances: data });
+                            }
                         }
                     });
             } catch (e) {

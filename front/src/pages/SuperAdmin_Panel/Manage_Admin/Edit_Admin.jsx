@@ -81,15 +81,17 @@ export default function Change_Information() {
                 await API.get(`admin/${id}`)
                     .then(res => {
                         const data = res.data.result;
-                        setState({
-                            username: data.username,
-                            lastUsername: data.username,
-                            first_name: data.first_name,
-                            middle_name: data.middle_name,
-                            last_name: data.last_name,
-                            phone: data.phone,
-                            lastPhone: data.phone
-                        });
+                        const success = res.data.success;
+                        if (success)
+                            setState({
+                                username: data.username,
+                                lastUsername: data.username,
+                                first_name: data.first_name,
+                                middle_name: data.middle_name,
+                                last_name: data.last_name,
+                                phone: data.phone,
+                                lastPhone: data.phone
+                            });
                     });
             } catch (e) {
                 console.log("ERROR", e);

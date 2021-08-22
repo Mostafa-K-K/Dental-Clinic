@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { useHistory } from 'react-router'
 import API from "../../../API"
+import moment from "moment"
 import ConfirmDelete from "../../../components/ConfirmDelete"
 
 export default function List_Procedure() {
@@ -15,12 +16,16 @@ export default function List_Procedure() {
             await API.get('PDP')
                 .then(res => {
                     const result = res.data.result;
-                    setProcedures(result);
+                    const success = res.data.success;
+                    if (success)
+                        setProcedures(result);
                 });
             await API.get('PTCDP')
                 .then(res => {
                     const result = res.data.result;
-                    setWorks(result);
+                    const success = res.data.success;
+                    if (success)
+                        setWorks(result);
                 });
         } catch (e) {
             console.log("ERROR", e);
@@ -64,7 +69,8 @@ export default function List_Procedure() {
                                     <td>{procedure.id}</td>
                                     <td>{procedure.f_n_patient} {procedure.m_n_patient} {procedure.l_n_patient}</td>
                                     <td>{procedure.f_n_doctor} {procedure.m_n_doctor} {procedure.l_n_doctor} </td>
-                                    <td>{procedure.date.substring(0, 19).replace("T", " ")}</td>
+                                    <td>{moment(procedure.date).format("YYYY-MM-DD")}  &nbsp;&nbsp;&nbsp;</td>
+                                    <td>{moment(procedure.date).format("h:mm A")}  &nbsp;&nbsp;&nbsp;</td>
                                     <td>{procedure.payment}</td>
                                     <td>
                                         {works.filter(work => work.id_procedure == procedure.id).map(work => (

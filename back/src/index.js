@@ -7,10 +7,56 @@ const jwt = require("jsonwebtoken");
 const data = require('./createDataBase');
 data.createDataBase();
 
+
+
+async function isLoggedInSuperAdmin(req, res, next) {
+    const { username, token, isAdmin } = req.body;
+    let sql = ``;
+
+    if (token) {
+        try {
+            if (isAdmin == true) {
+                sql = `SELECT * FROM admins WHERE token = "${token}" AND username = "${username}"`
+
+                connection.query(sql, function (err, result) {
+                    if (err) throw err;
+                    let id = result[0].id;
+                    let role_id = result[0].role_id;
+                    if (id && id != "" && role_id == 0)
+                        next();
+                });
+            }
+        } catch (e) {
+            next(new Error("Invalid Token"));
+        }
+    } else { res.json({ success: false }); }
+}
+
+
+
 const start = async () => {
 
+    // GET BY USERNAME
+    app.post("/getUserData", async (req, res, next) => {
+        try {
+            const { username, isAdmin } = req.body;
+            let sql = ``;
+            try {
+                (isAdmin == true) ?
+                    sql = `SELECT * FROM admins WHERE username = '${username}'` :
+                    sql = `SELECT * FROM patients WHERE username = '${username}'`;
 
-
+                connection.query(sql, function (err, result) {
+                    if (err) throw err;
+                    res.json({ success: true, result: result[0] });
+                });
+            } catch (e) {
+                next(e);
+            }
+        } catch (e) {
+            next(e);
+        }
+    });
 
 
     // GET LIST ADMIN
@@ -381,6 +427,7 @@ const start = async () => {
         if (names.length == 1) {
             att += ` WHERE first_name LIKE '${names}%'`;
             att += ` OR last_name LIKE '${names}%'`;
+            att += ` OR id LIKE '${names}%'`;
         }
         else if (names.length > 1) {
             if (names[0] && names[0] !== "") {
@@ -1098,7 +1145,7 @@ const start = async () => {
                 FROM appointments 
                 JOIN clinics ON clinics.id = appointments.id_clinic
                 JOIN patients ON patients.id = appointments.id_patient
-                ORDER BY appointments.date,appointments.start_at DESC`;
+                `;
 
             connection.query(sql, function (err, result) {
                 if (err) throw err;
@@ -1340,25 +1387,6 @@ const start = async () => {
     });
 
 
-
-    // GET BY USERNAME
-    app.post('/getusername', async (req, res, next) => {
-        const { username, isAdmin } = req.body;
-        let sql = '';
-        try {
-            (isAdmin == true || !isAdmin) ?
-                sql = `SELECT * FROM admins WHERE username = '${username}'` :
-                sql = `SELECT * FROM patients WHERE username = '${username}'`;
-
-            connection.query(sql, function (err, result) {
-                if (err) throw err;
-                res.json({ success: true, result: result[0] });
-            });
-        } catch (e) {
-            next(e);
-        }
-    });
-
     //LOGIN
     app.post('/login', async (req, res, next) => {
         const { username, password } = req.body;
@@ -1498,7 +1526,30 @@ const start = async () => {
         }
     });
 
+    // CREATE Patient
+    app.post('/intialpatient', async (req, res, next) => {
+        const { number } = req.body;
 
+        try {
+            let sql = `INSERT INTO patients ( username, password, first_name, middle_name, last_name, phone, gender, birth, marital, health, address ) VALUES `;
+
+            for (let i = 1; i <= parseInt(number); i++) {
+
+                let values = `('${i + "***"}', '${"***"}', '${"***"}', '${"***"}', '${"***"}', ${i}, '${"Male"}', '${"2020-01-01"}', '${"Single"}', '${"***"}', '${"***"}'),`;
+
+                sql += values;
+            }
+
+            sql = sql.slice(0, -1);
+            connection.query(sql, function (err, result) {
+                if (err) throw err;
+                res.json({ success: true, result });
+            });
+
+        } catch (e) {
+            next(e);
+        }
+    });
 
 }
 

@@ -35,7 +35,7 @@ export default function Change_Username_Admin() {
         e.preventDefault();
         try {
             let reqBody = { username: state.username }
-            let isMatch = await bcrypt.compare(state.password, state.oldPass);
+            let isMatch = await bcrypt.compare(state.conPass, state.password);
 
             await API.get(`username`)
                 .then(async res => {
@@ -50,9 +50,10 @@ export default function Change_Username_Admin() {
                             await API.put(`admin/${id}`, reqBody);
 
                             setState({
-                                oldPass: "",
-                                newPass: "",
-                                newPassC: "",
+                                username: "",
+                                lastUsername: "",
+                                conPass: "",
+                                password: "",
                                 msg: "Password changed successfully"
                             });
 
@@ -77,12 +78,14 @@ export default function Change_Username_Admin() {
                 await API.get(`admin/${id}`)
                     .then(res => {
                         const result = res.data.result;
-                        setState({
-                            id: result.id,
-                            username: result.username,
-                            lastUsername: result.username,
-                            password: result.password
-                        });
+                        const success = res.data.success;
+                        if (success)
+                            setState({
+                                id: result.id,
+                                username: result.username,
+                                lastUsername: result.username,
+                                password: result.password
+                            });
                     });
             } catch (e) {
                 console.log("ERROR", e);

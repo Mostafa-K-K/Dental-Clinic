@@ -4,7 +4,7 @@ import moment from "moment"
 import { useHistory, useParams } from 'react-router'
 import Clinics from "../../../components/Clinics"
 
-export default function Create_Appointment_Patient() {
+export default function Add_Appointment() {
 
     const { id, id_patient } = useParams();
     const history = useHistory();
@@ -54,36 +54,61 @@ export default function Create_Appointment_Patient() {
             await API.get('appointment')
                 .then(res => {
                     const data = res.data.result;
+                    const success = res.data.success;
+                    if (success) {
 
-                    const isApp = data.find(d => (
-                        (
+                        let isApp = data.find(d => (
                             (
-                                d.data == state.date
-                                &&
-                                new Date(state.start_at).getTime() > new Date(d.start_at).getTime()
-                                &&
-                                new Date(state.start_at).getTime() < new Date(d.end_at).getTime()
+                                (
+                                    (
+                                        moment(state.start_at, "HH:mm").format('h:mm A')
+                                        >
+                                        moment(d.start_at, "HH:mm").format('h:mm A')
+                                    )
+                                    &&
+                                    (
+                                        moment(state.start_at, "HH:mm").format('h:mm A')
+                                        <
+                                        moment(d.end_at, "HH:mm").format('h:mm A')
+                                    )
+                                )
+                                ||
+                                (
+                                    (
+                                        moment(state.end_at, "HH:mm").format('h:mm A')
+                                        >
+                                        moment(d.start_at, "HH:mm").format('h:mm A')
+                                    )
+                                    &&
+                                    (
+                                        moment(state.end_at, "HH:mm").format('h:mm A')
+                                        <
+                                        moment(d.end_at, "HH:mm").format('h:mm A')
+                                    )
+                                )
                             )
-                            ||
+                            &&
                             (
-                                d.data == state.date
+                                (
+                                    moment(d.date).format("YYYY-MM-DD")
+                                    ===
+                                    moment(state.date).format("YYYY-MM-DD")
+                                )
                                 &&
-                                new Date(state.end_at).getTime() > new Date(d.start_at).getTime()
-                                &&
-                                new Date(state.end_at).getTime() < new Date(d.end_at).getTime()
+                                (
+                                    String(d.id_clinic) === String(state.id_clinic)
+                                )
                             )
-                        )
-                        &&
-                        (String(d.id_clinic) === String(state.id_clinic))
-                    ));
+                        ));
 
-                    if (isApp) setState({ errExist: "Time not available" });
-                    if (state.id_patient === "" || !state.id_patient) setState({ err: "select a patient" });
+                        if (isApp) setState({ errExist: "Time not available" });
+                        if (state.id_patient === "" || !state.id_patient) setState({ err: "select a patient" });
 
-                    if (!isApp && state.id_patient !== "") {
-                        API.post('appointment', reqBody)
-                            .then(API.put(`request/${id}`, { status: "Accepted" }))
-                            .then(history.push({ pathname: '/appointment/upcoming' }))
+                        if (!isApp && state.id_patient !== "") {
+                            API.post('appointment', reqBody)
+                                .then(API.put(`request/${id}`, { status: "Accepted" }))
+                                .then(history.push({ pathname: '/appointment/upcoming' }))
+                        }
                     }
                 });
         } catch (e) {
@@ -93,10 +118,12 @@ export default function Create_Appointment_Patient() {
 
     useEffect(() => {
         async function fetchData() {
-            await API.get(`patient/${state.id_patient}`)
+            await API.get(`patient/${id_patient}`)
                 .then(res => {
                     const data = res.data.result;
-                    setState({ patient: data.first_name + " " + data.middle_name + " " + data.last_name })
+                    const success = res.data.success;
+                    if (success)
+                        setState({ patient: data.first_name + " " + data.middle_name + " " + data.last_name });
                 })
         }
         fetchData();

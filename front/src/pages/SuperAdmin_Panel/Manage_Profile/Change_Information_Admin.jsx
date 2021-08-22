@@ -58,13 +58,15 @@ export default function Change_Information_Admin() {
                 await API.get(`admin/${id}`)
                     .then(res => {
                         const data = res.data.result;
-                        setState({
-                            first_name: data.first_name,
-                            middle_name: data.middle_name,
-                            last_name: data.last_name,
-                            phone: data.phone,
-                            lastPhone: data.phone
-                        });
+                        const success = res.data.success;
+                        if (success)
+                            setState({
+                                first_name: data.first_name,
+                                middle_name: data.middle_name,
+                                last_name: data.last_name,
+                                phone: data.phone,
+                                lastPhone: data.phone
+                            });
                     });
             } catch (e) {
                 console.log("ERROR", e);

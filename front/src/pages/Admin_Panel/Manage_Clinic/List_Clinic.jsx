@@ -14,7 +14,9 @@ export default function List_Clinic() {
             await API.get('clinic')
                 .then(res => {
                     const result = res.data.result;
-                    setClinics(result);
+                    const success = res.data.success;
+                    if (success)
+                        setClinics(result);
                 });
         } catch (e) {
             console.log("ERROR", e);
@@ -24,7 +26,7 @@ export default function List_Clinic() {
     useEffect(() => {
         fetchData();
     }, [])
-    
+
     return (
         <div className="container-xl">
             <div className="table-responsive">

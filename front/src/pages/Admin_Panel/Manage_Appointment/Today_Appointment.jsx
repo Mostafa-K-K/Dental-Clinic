@@ -15,23 +15,35 @@ export default function Today_Appointment() {
             await API.get('ACP')
                 .then(res => {
                     const data = res.data.result;
-                    const result = data.filter(d =>
-                        d.date.substring(0, 10) == date.substring(0, 10)
-                        &&
-                        d.status === "Waiting"
-                    );
-                    setAppointments(result);
+                    const success = res.data.success;
+                    if (success) {
+                        const result = data.filter(d =>
+                            moment(d.date).format("YYYY-MM-DD") === moment(date).format("YYYY-MM-DD")
+                            &&
+                            d.status === "Waiting"
+                        );
+                        setAppointments(result);
+                    }
                 });
         } catch (e) {
             console.log("ERROR", e);
         }
     }
 
-    async function handleUpdate(id, status) {
+    async function handleUpdate(id) {
         try {
             const del = window.confirm("are you sure");
-            if (del) await API.put(`appointment/${id}`, { status: status });
+            if (del) await API.put(`appointment/${id}`, { status: "Absent" });
             await fetchData();
+        } catch (e) {
+            console.log("ERROR", e);
+        }
+    }
+
+    async function handleAccept(id_appointment, id_patient) {
+        try {
+            const del = window.confirm("are you sure");
+            if (del) await history.push({ pathname: `/create/procedure/patient/${id_appointment}/${id_patient}` });
         } catch (e) {
             console.log("ERROR", e);
         }
@@ -70,19 +82,18 @@ export default function Today_Appointment() {
                             </tr>
                         </thead>
                         <tbody>
-
                             {appointments.map(appointment => (
                                 <tr key={appointment.id}>
                                     <td>{appointment.id}</td>
                                     <td>{appointment.first_name} {appointment.middle_name} {appointment.last_name}</td>
                                     <td>{appointment.name}</td>
-                                    <td>{appointment.start_at.substring(0, 19).replace("T", " ")}</td>
-                                    <td>{appointment.end_at.substring(0, 19).replace("T", " ")}</td>
+                                    <td>{moment(appointment.start_at, "HH:mm").format("h:mm A")}</td>
+                                    <td>{moment(appointment.end_at, "HH:mm").format("h:mm A")}</td>
                                     <td>{appointment.description}</td>
                                     <td>{appointment.status}</td>
                                     <td>
                                         <a href=""
-                                            onClick={() => handleUpdate(appointment.id, "Present")}
+                                            onClick={() => handleAccept(appointment.id, appointment.id_patient)}
                                             className="settings"
                                             title="Settings"
                                             data-toggle="tooltip"
@@ -92,7 +103,7 @@ export default function Today_Appointment() {
                                             </i>
                                         </a>
                                         <a href="#"
-                                            onClick={() => handleUpdate(appointment.id, "Absent")}
+                                            onClick={() => handleUpdate(appointment.id)}
                                             className="delete"
                                             title="Delete"
                                             data-toggle="tooltip"

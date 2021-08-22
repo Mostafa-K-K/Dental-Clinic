@@ -35,7 +35,7 @@ export default function Create_Payment() {
             let p_str = p_arr.length - 1;
             let p_id = p_arr[p_str];
 
-            let dd = state.date.replace("T", " ");
+            let dd = moment(state.date).format("YYYY-MM-DD HH:mm");
 
             let reqBody = {
                 payment: state.payment,

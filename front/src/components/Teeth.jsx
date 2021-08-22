@@ -20,22 +20,22 @@ export default function Teeth(props) {
         }
 
         fetchData();
-    }, [JSON.stringify(props)])
+    }, [props.category])
 
     return (
         <select
             name={props.name}
             onChange={props.onChange}
         >
-            <option value="" selected={props.value == ""}>Tooth</option>
+            <option value="" selected={props.value === ""}>Tooth</option>
 
             {teeth.map(tooth =>
                 <option
                     key={tooth.id}
                     value={tooth.id}
-                    selected={tooth.id == props.value}
+                    selected={parseInt(tooth.id) === parseInt(props.value)}
                 >
-                    {(tooth.id == 1 || tooth.id == 2) ? "All Teeth" : tooth.id}
+                    {(parseInt(tooth.id) === 1 || parseInt(tooth.id) === 2) ? "All Teeth" : tooth.id}
                 </option>
             )}
 

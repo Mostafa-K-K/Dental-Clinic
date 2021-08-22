@@ -30,11 +30,14 @@ export default function Create_Clinic() {
             await API.get(`clinic`)
                 .then(async res => {
                     const result = res.data.result;
-                    const isClinic = result.find(r => r.name === state.name);
-                    if (isClinic) setState({ err: "This clinic alredy exist" });
-                    if (!isClinic) {
-                        await API.post(`clinic`, reqBody);
-                        await history.push({ pathname: '/clinic/list' })
+                    const success = res.data.success;
+                    if (success) {
+                        const isClinic = result.find(r => r.name === state.name);
+                        if (isClinic) setState({ err: "This clinic alredy exist" });
+                        if (!isClinic) {
+                            await API.post(`clinic`, reqBody);
+                            await history.push({ pathname: '/clinic/list' })
+                        }
                     }
                 });
         } catch (e) {

@@ -1,3 +1,4 @@
+import moment from 'moment';
 import React, { useState, useEffect } from 'react'
 import { useParams, useHistory } from 'react-router'
 import API from '../../../API'
@@ -58,22 +59,28 @@ export default function Edit_Patient() {
             await API.get(`username`)
                 .then(async res => {
                     const usernames = res.data.result;
-                    const isUser = usernames.filter(r => r.username !== state.lastUsername)
-                        .find(r => r.username === state.username);
+                    const success = res.data.success;
+                    if (success) {
+                        const isUser = usernames.filter(r => r.username !== state.lastUsername)
+                            .find(r => r.username === state.username);
 
-                    await API.get(`phonenumber`)
-                        .then(async res => {
-                            const phones = res.data.result;
-                            const isPhon = phones.filter(r => r.phone !== state.lastPhone)
-                                .find(r => r.phone === state.phone);
+                        await API.get(`phonenumber`)
+                            .then(async res => {
+                                const phones = res.data.result;
+                                const suc = res.data.success;
+                                if (suc) {
+                                    const isPhon = phones.filter(r => r.phone !== state.lastPhone)
+                                        .find(r => r.phone === state.phone);
 
-                            if (isUser) setState({ errUser: "Username alredy token" });
-                            if (isPhon) setState({ errPhon: "Phone Number alredy token" });
-                            if (!isUser && !isPhon) {
-                                await API.put(`patient/${id}`, reqBody);
-                                history.push({ pathname: '/patient/list' })
-                            }
-                        });
+                                    if (isUser) setState({ errUser: "Username alredy token" });
+                                    if (isPhon) setState({ errPhon: "Phone Number alredy token" });
+                                    if (!isUser && !isPhon) {
+                                        await API.put(`patient/${id}`, reqBody);
+                                        history.push({ pathname: '/patient/list' })
+                                    }
+                                }
+                            });
+                    }
                 });
         } catch (e) {
             console.log("ERROR", e);
@@ -89,13 +96,12 @@ export default function Edit_Patient() {
                         setState({
                             username: data.username,
                             lastUsername: data.username,
-                            // password: data.password,
                             first_name: data.first_name,
                             middle_name: data.middle_name,
                             last_name: data.last_name,
                             phone: data.phone,
                             lastPhone: data.phone,
-                            birth: data.birth.substring(0, 10),
+                            birth: moment(data.birth).format("YYYY-MM-DD"),
                             gender: data.gender,
                             marital: data.marital,
                             health: data.health,
