@@ -1,11 +1,15 @@
-import React, { useState } from "react"
+import React, { useState, useContext } from "react"
 import API from "../../../API"
 import moment from "moment"
 import { useHistory } from 'react-router'
+import SessionContext from "../../../components/session/SessionContext"
+
 import Patients from '../../../components/Patients'
 import Clinics from "../../../components/Clinics"
 
 export default function Create_Appointment() {
+
+    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
 
     const history = useHistory();
     const date = moment().format("YYYY-MM-DD");
@@ -51,7 +55,13 @@ export default function Create_Appointment() {
                 id_patient: id,
                 id_clinic: state.id_clinic,
             };
-            await API.get('appointment')
+            await API.get('appointment', {
+                headers: {
+                    id: id,
+                    token: token,
+                    isAdmin: isAdmin
+                }
+            })
                 .then(res => {
                     const data = res.data.result;
                     const success = res.data.success;
@@ -105,7 +115,13 @@ export default function Create_Appointment() {
                         if (state.id_patient === "" || !state.id_patient) setState({ err: "select a patient" });
 
                         if (!isApp && state.id_patient !== "") {
-                            API.post('appointment', reqBody);
+                            API.post('appointment', reqBody, {
+                                headers: {
+                                    id: id,
+                                    token: token,
+                                    isAdmin: isAdmin
+                                }
+                            });
                             history.push({ pathname: '/appointment/upcoming' })
                         }
                     }

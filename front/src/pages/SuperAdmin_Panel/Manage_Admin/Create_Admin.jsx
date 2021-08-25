@@ -1,10 +1,13 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { useHistory } from 'react-router'
 import API from '../../../API'
+import SessionContext from "../../../components/session/SessionContext"
 
 export default function Create_Admin() {
 
     const history = useHistory();
+
+    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
 
     const [state, updateState] = useState({
         username: "",
@@ -65,7 +68,13 @@ export default function Create_Admin() {
                             }
 
                             if (!isUser && !isPhon && state.conPassword === state.password) {
-                                await API.post(`admin`, reqBody);
+                                await API.post(`admin`, reqBody, {
+                                    headers: {
+                                        id: id,
+                                        token: token,
+                                        isAdmin: isAdmin
+                                    }
+                                });
                                 history.push({ pathname: '/admin/list' })
                             }
                         });

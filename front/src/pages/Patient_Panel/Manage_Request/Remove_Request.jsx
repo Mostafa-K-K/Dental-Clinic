@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useContext } from "react"
-import { useHistory } from 'react-router'
 import API from "../../../API"
 import moment from "moment"
 import SessionContext from '../../../components/session/SessionContext'
 
 export default function Remove_Request() {
 
-    const { session: { user: { id } } } = useContext(SessionContext);
+    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
 
     const [requests, setRequests] = useState([]);
 
@@ -21,7 +20,13 @@ export default function Remove_Request() {
 
     async function fetchData() {
         try {
-            await API.get('request')
+            await API.get('request', {
+                headers: {
+                    id: id,
+                    token: token,
+                    isAdmin: isAdmin
+                }
+            })
                 .then(res => {
                     let data = res.data.result;
                     console.log(data);

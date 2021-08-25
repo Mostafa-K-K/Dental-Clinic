@@ -1,8 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { useHistory } from 'react-router'
 import API from '../../../API'
+import SessionContext from "../../../components/session/SessionContext"
 
 export default function Create_Doctor() {
+
+    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
 
     const history = useHistory();
 
@@ -38,7 +41,13 @@ export default function Create_Doctor() {
                     if (isPhon) {
                         setState({ errPhon: "Phone number alredy token" });
                     } else {
-                        await API.post(`doctor`, reqBody);
+                        await API.post(`doctor`, reqBody, {
+                            headers: {
+                                id: id,
+                                token: token,
+                                isAdmin: isAdmin
+                            }
+                        });
                         await history.push({ pathname: '/doctor/list' })
                     }
                 });

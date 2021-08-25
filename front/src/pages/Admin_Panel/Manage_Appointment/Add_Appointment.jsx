@@ -1,12 +1,16 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useContext } from "react"
 import API from "../../../API"
 import moment from "moment"
 import { useHistory, useParams } from 'react-router'
+import SessionContext from "../../../components/session/SessionContext"
+
 import Clinics from "../../../components/Clinics"
 
 export default function Add_Appointment() {
 
-    const { id, id_patient } = useParams();
+    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+
+    const { id: id_req, id_patient } = useParams();
     const history = useHistory();
     const date = moment().format("YYYY-MM-DD");
     const date_start = moment().format("hh:mm");
@@ -51,7 +55,13 @@ export default function Add_Appointment() {
         };
 
         try {
-            await API.get('appointment')
+            await API.get('appointment', {
+                headers: {
+                    id: id,
+                    token: token,
+                    isAdmin: isAdmin
+                }
+            })
                 .then(res => {
                     const data = res.data.result;
                     const success = res.data.success;
@@ -105,8 +115,20 @@ export default function Add_Appointment() {
                         if (state.id_patient === "" || !state.id_patient) setState({ err: "select a patient" });
 
                         if (!isApp && state.id_patient !== "") {
-                            API.post('appointment', reqBody)
-                                .then(API.put(`request/${id}`, { status: "Accepted" }))
+                            API.post('appointment', reqBody, {
+                                headers: {
+                                    id: id,
+                                    token: token,
+                                    isAdmin: isAdmin
+                                }
+                            })
+                                .then(API.put(`request/${id_req}`, { status: "Accepted" }, {
+                                    headers: {
+                                        id: id,
+                                        token: token,
+                                        isAdmin: isAdmin
+                                    }
+                                }))
                                 .then(history.push({ pathname: '/appointment/upcoming' }))
                         }
                     }

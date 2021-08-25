@@ -1,11 +1,14 @@
-import React, { useState } from "react"
+import React, { useState, useContext } from "react"
 import moment from "moment"
 import { useHistory } from 'react-router'
 import API from "../../../API"
+import SessionContext from "../../../components/session/SessionContext"
 
 import Patients from "../../../components/Patients"
 
 export default function Create_Payment() {
+
+    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
 
     let history = useHistory();
     const date = moment().format("YYYY-MM-DDThh:mm:ss");
@@ -43,7 +46,13 @@ export default function Create_Payment() {
                 id_patient: p_id
             };
 
-            await API.post(`procedure`, reqBody);
+            await API.post(`procedure`, reqBody, {
+                headers: {
+                    id: id,
+                    token: token,
+                    isAdmin: isAdmin
+                }
+            });
             await history.push({ pathname: `/balance/list` });
         } catch (e) {
             console.log("ERROR", e);

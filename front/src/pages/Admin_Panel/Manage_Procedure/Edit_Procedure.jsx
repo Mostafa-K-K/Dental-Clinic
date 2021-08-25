@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useContext } from "react"
 import { useHistory, useParams } from 'react-router'
 import API from "../../../API"
+import SessionContext from "../../../components/session/SessionContext"
 
 import Patients from "../../../components/Patients"
 import Doctors from "../../../components/Doctors"
@@ -10,8 +11,10 @@ import moment from "moment"
 
 export default function Edit_Procedure() {
 
+    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+
     const history = useHistory();
-    const { id } = useParams();
+    const { id: id_pro } = useParams();
 
     const [state, updateState] = useState({
         payment: "",
@@ -60,7 +63,13 @@ export default function Edit_Procedure() {
         try {
             if (state.id_teeth != "" && state.id_type != "") {
 
-                API.get(`type/${state.id_type}`)
+                API.get(`type/${state.id_type}`, {
+                    headers: {
+                        id: id,
+                        token: token,
+                        isAdmin: isAdmin
+                    }
+                })
                     .then(res => {
                         const result = res.data.result;
 
@@ -129,19 +138,37 @@ export default function Edit_Procedure() {
                 balance: state.total
             };
 
-            await API.put(`procedure/${id}`, reqBody)
+            await API.put(`procedure/${id_pro}`, reqBody, {
+                headers: {
+                    id: id,
+                    token: token,
+                    isAdmin: isAdmin
+                }
+            })
                 .then(
-                    API.delete(`PTCALL/${id}`)
+                    API.delete(`PTCALL/${id_pro}`, {
+                        headers: {
+                            id: id,
+                            token: token,
+                            isAdmin: isAdmin
+                        }
+                    })
                 )
                 .then(
                     state.works.map(work => {
                         let PTCReqBody = {
-                            id_procedure: id,
+                            id_procedure: id_pro,
                             id_type: work.id_type,
                             id_teeth: work.id_teeth,
                             price: (work.price == "" || !work.price) ? 0 : work.price
                         };
-                        API.post(`PTC`, PTCReqBody);
+                        API.post(`PTC`, PTCReqBody, {
+                            headers: {
+                                id: id,
+                                token: token,
+                                isAdmin: isAdmin
+                            }
+                        });
                     })
                 )
                 .then(history.push({ pathname: "/procedure/list" }));
@@ -154,13 +181,25 @@ export default function Edit_Procedure() {
     useEffect(() => {
         async function fetchData() {
             try {
-                await API.get(`procedure/${id}`)
+                await API.get(`procedure/${id_pro}`, {
+                    headers: {
+                        id: id,
+                        token: token,
+                        isAdmin: isAdmin
+                    }
+                })
                     .then(res => {
                         const result = res.data.result;
                         const success = res.data.success;
                         if (success) {
                             if (result.id_patient && result.id_patient !== "") {
-                                API.get(`patient/${result.id_patient}`)
+                                API.get(`patient/${result.id_patient}`, {
+                                    headers: {
+                                        id: id,
+                                        token: token,
+                                        isAdmin: isAdmin
+                                    }
+                                })
                                     .then(res => {
                                         const patient = res.data.result;
                                         const str = patient.first_name + " " + patient.middle_name + " " + patient.last_name + " - " + patient.id;
@@ -170,7 +209,13 @@ export default function Edit_Procedure() {
                             }
 
                             if (result.id_doctor && result.id_doctor !== "") {
-                                API.get(`doctor/${result.id_doctor}`)
+                                API.get(`doctor/${result.id_doctor}`, {
+                                    headers: {
+                                        id: id,
+                                        token: token,
+                                        isAdmin: isAdmin
+                                    }
+                                })
                                     .then(res => {
                                         const doctor = res.data.result;
                                         const str = doctor.first_name + " " + doctor.middle_name + " " + doctor.last_name + " - " + doctor.id;
@@ -186,12 +231,18 @@ export default function Edit_Procedure() {
                         }
                     });
 
-                await API.get('PTCDP')
+                await API.get('PTCDP', {
+                    headers: {
+                        id: id,
+                        token: token,
+                        isAdmin: isAdmin
+                    }
+                })
                     .then(res => {
                         let data = res.data.result;
                         const success = res.data.success;
                         if (success) {
-                            data = data.filter(r => r.id_procedure == id);
+                            data = data.filter(r => r.id_procedure == id_pro);
                             setState({ works: data });
                         }
                     });

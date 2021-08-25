@@ -1,11 +1,14 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useContext } from "react"
 import { useHistory, useParams } from 'react-router'
 import moment from "moment"
-import API from "../../../API";
+import API from "../../../API"
+import SessionContext from "../../../components/session/SessionContext"
 
 export default function Add_Payment() {
 
-    let { id } = useParams();
+    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+
+    let { id: id_pat } = useParams();
     let history = useHistory();
     const date = moment().format("YYYY-MM-DDThh:mm:ss");
 
@@ -13,7 +16,7 @@ export default function Add_Payment() {
         patient: {},
         payment: "",
         date: date,
-        id_patient: id,
+        id_patient: id_pat,
     });
 
     function setState(nextState) {
@@ -39,8 +42,14 @@ export default function Add_Payment() {
                 id_patient: state.id_patient
             };
 
-            await API.post(`procedure`, reqBody);
-            await history.push({ pathname: `/balance/details/${id}` });
+            await API.post(`procedure`, reqBody, {
+                headers: {
+                    id: id,
+                    token: token,
+                    isAdmin: isAdmin
+                }
+            });
+            await history.push({ pathname: `/balance/details/${id_pat}` });
         } catch (e) {
             console.log("ERROR", e);
         }
@@ -49,7 +58,13 @@ export default function Add_Payment() {
     useEffect(() => {
         async function fetchData() {
             try {
-                await API.get(`patient/${id}`)
+                await API.get(`patient/${id_pat}`, {
+                    headers: {
+                        id: id,
+                        token: token,
+                        isAdmin: isAdmin
+                    }
+                })
                     .then(res => {
                         const result = res.data.result;
                         const success = res.data.success;

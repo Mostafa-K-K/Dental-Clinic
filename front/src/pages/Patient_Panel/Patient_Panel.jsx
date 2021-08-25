@@ -4,14 +4,20 @@ import SessionContext from '../../components/session/SessionContext'
 
 export default function Patient_Panel() {
 
-    const { session: { user: { id } } } = useContext(SessionContext);
+    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
 
     const [remaining, setRemaining] = useState(0);
 
     useEffect(() => {
         async function fetchData() {
             try {
-                await API.post(`balance`)
+                await API.post(`balance`, {
+                    headers: {
+                        id: id,
+                        token: token,
+                        isAdmin: isAdmin
+                    }
+                })
                     .then(res => {
                         let data = res.data.result;
                         const success = res.data.success;

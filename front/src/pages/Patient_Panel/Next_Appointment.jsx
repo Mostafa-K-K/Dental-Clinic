@@ -5,13 +5,19 @@ import SessionContext from '../../components/session/SessionContext'
 
 export default function Next_Appointment() {
 
-    const { session: { user: { id } } } = useContext(SessionContext);
+    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
 
     const [appointments, setAppointments] = useState([]);
 
     async function fetchData() {
         try {
-            await API.get('ACP')
+            await API.get('ACP', {
+                headers: {
+                    id: id,
+                    token: token,
+                    isAdmin: isAdmin
+                }
+            })
                 .then(res => {
                     const data = res.data.result;
                     const success = res.data.success;

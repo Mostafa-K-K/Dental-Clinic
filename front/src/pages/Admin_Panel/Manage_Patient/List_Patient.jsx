@@ -1,12 +1,16 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { useHistory } from 'react-router'
 import API from '../../../API'
+import SessionContext from "../../../components/session/SessionContext"
+
 import ConfirmDelete from '../../../components/ConfirmDelete'
 
 import moment from 'moment'
 
 export default function List_Patient() {
 
+    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+console.log("hello i'm here",{ id, token, isAdmin});
     const history = useHistory();
 
     const [state, updateState] = useState({
@@ -45,7 +49,13 @@ export default function List_Patient() {
                 name: state.name
             }
 
-            await API.post(`paginpatient`, reqBody)
+            await API.post(`paginpatient`, reqBody, {
+                headers: {
+                    id: id,
+                    token: token,
+                    isAdmin: isAdmin
+                }
+            })
                 .then(res => {
                     const data = res.data.result;
                     const success = res.data.success;
@@ -53,7 +63,13 @@ export default function List_Patient() {
                         setState({ patients: data });
                 });
 
-            await API.post(`patientcount`, reqBody)
+            await API.post(`patientcount`, reqBody, {
+                headers: {
+                    id: id,
+                    token: token,
+                    isAdmin: isAdmin
+                }
+            })
                 .then(res => {
                     const result = res.data.result;
                     const success = res.data.success;

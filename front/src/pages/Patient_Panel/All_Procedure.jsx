@@ -5,7 +5,7 @@ import SessionContext from '../../components/session/SessionContext'
 
 export default function All_Procedure() {
 
-    const { session: { user: { id } } } = useContext(SessionContext);
+    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
 
     const [procedures, setProcedures] = useState([]);
     const [works, setWorks] = useState([]);
@@ -13,7 +13,13 @@ export default function All_Procedure() {
     useEffect(() => {
         async function fetchData() {
             try {
-                await API.get('PTCDP')
+                await API.get('PTCDP', {
+                    headers: {
+                        id: id,
+                        token: token,
+                        isAdmin: isAdmin
+                    }
+                })
                     .then(res => {
                         const result = res.data.result;
                         const success = res.data.success;
@@ -21,7 +27,13 @@ export default function All_Procedure() {
                             setWorks(result);
                     });
 
-                await API.get('PDP')
+                await API.get('PDP', {
+                    headers: {
+                        id: id,
+                        token: token,
+                        isAdmin: isAdmin
+                    }
+                })
                     .then(res => {
                         const result = res.data.result;
                         const data = result.filter(r => r.id_patient == id);

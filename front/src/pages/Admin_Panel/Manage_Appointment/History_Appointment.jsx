@@ -1,9 +1,12 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useContext } from "react"
 import { useHistory } from 'react-router'
 import API from "../../../API"
 import moment from "moment"
+import SessionContext from "../../../components/session/SessionContext"
 
 export default function Today_Appointment() {
+
+    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
 
     const history = useHistory()
 
@@ -28,7 +31,13 @@ export default function Today_Appointment() {
 
     async function fetchData() {
         try {
-            await API.get('ACP')
+            await API.get('ACP', {
+                headers: {
+                    id: id,
+                    token: token,
+                    isAdmin: isAdmin
+                }
+            })
                 .then(res => {
                     const data = res.data.result;
                     const success = res.data.success;

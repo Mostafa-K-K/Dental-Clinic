@@ -1,13 +1,16 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useContext } from "react"
 import moment from "moment"
 import API from "../../../API"
 import { useHistory, useParams } from "react-router"
+import SessionContext from "../../../components/session/SessionContext"
 
 import Doctors from "../../../components/Doctors"
 import Teeth from "../../../components/Teeth"
 import Types from "../../../components/Types"
 
 export default function Add_Procedure() {
+
+    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
 
     const { id_appointment, id_patient } = useParams();
     const history = useHistory();
@@ -60,7 +63,13 @@ export default function Add_Procedure() {
         try {
             if (state.id_teeth != "" && state.id_type != "") {
 
-                API.get(`type/${state.id_type}`)
+                API.get(`type/${state.id_type}`, {
+                    headers: {
+                        id: id,
+                        token: token,
+                        isAdmin: isAdmin
+                    }
+                })
                     .then(res => {
                         const result = res.data.result;
 
@@ -123,7 +132,13 @@ export default function Add_Procedure() {
                 balance: state.total
             };
 
-            await API.post(`procedure`, reqBody)
+            await API.post(`procedure`, reqBody, {
+                headers: {
+                    id: id,
+                    token: token,
+                    isAdmin: isAdmin
+                }
+            })
                 .then(res => {
                     const result = res.data.result;
                     const id_procedure = result.insertId;
@@ -136,10 +151,22 @@ export default function Add_Procedure() {
                             price: (work.price == "" || !work.price) ? 0 : work.price
                         };
 
-                        API.post(`PTC`, PTCReqBody);
+                        API.post(`PTC`, PTCReqBody, {
+                            headers: {
+                                id: id,
+                                token: token,
+                                isAdmin: isAdmin
+                            }
+                        });
                     });
                 })
-                .then(API.put(`appointment/${id_appointment}`, { status: "Present" }))
+                .then(API.put(`appointment/${id_appointment}`, { status: "Present" }, {
+                    headers: {
+                        id: id,
+                        token: token,
+                        isAdmin: isAdmin
+                    }
+                }))
                 .then(history.push({ pathname: "/procedure/list" }));
         } catch (e) {
             console.log("ERROR", e);
@@ -148,7 +175,13 @@ export default function Add_Procedure() {
 
     useEffect(() => {
         async function fetchData() {
-            await API.get(`patient/${state.id_patient}`)
+            await API.get(`patient/${state.id_patient}`, {
+                headers: {
+                    id: id,
+                    token: token,
+                    isAdmin: isAdmin
+                }
+            })
                 .then(res => {
                     const data = res.data.result;
                     const success = res.data.success;

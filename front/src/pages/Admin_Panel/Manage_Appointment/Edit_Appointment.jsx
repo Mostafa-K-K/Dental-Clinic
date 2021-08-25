@@ -1,15 +1,18 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useContext } from "react"
 import API from "../../../API"
 import moment from "moment"
 import { useHistory, useParams } from 'react-router'
+import SessionContext from "../../../components/session/SessionContext"
 
 import Patients from '../../../components/Patients'
 import Clinics from "../../../components/Clinics"
 
 export default function Edit_Appointment() {
 
+    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+
     const history = useHistory();
-    const { id } = useParams();
+    const { id: id_app } = useParams();
 
     const [state, updateState] = useState({
         description: "",
@@ -51,7 +54,13 @@ export default function Edit_Appointment() {
                 id_clinic: state.id_clinic,
             };
 
-            await API.get('appointment')
+            await API.get('appointment', {
+                headers: {
+                    id: id,
+                    token: token,
+                    isAdmin: isAdmin
+                }
+            })
                 .then(res => {
                     const data = res.data.result;
                     const success = res.data.success;
@@ -105,7 +114,13 @@ export default function Edit_Appointment() {
                         if (state.id_patient === "" || !state.id_patient) setState({ err: "select a patient" });
 
                         if (!isApp && state.id_patient !== "") {
-                            API.put(`appointment/${id}`, reqBody);
+                            API.put(`appointment/${id_app}`, reqBody, {
+                                headers: {
+                                    id: id,
+                                    token: token,
+                                    isAdmin: isAdmin
+                                }
+                            });
                             history.push({ pathname: '/appointment/list' })
                         }
                     }
@@ -118,19 +133,25 @@ export default function Edit_Appointment() {
     useEffect(() => {
         async function fetchData() {
             try {
-                await API.get('ACP')
+                await API.get('ACP', {
+                    headers: {
+                        id: id,
+                        token: token,
+                        isAdmin: isAdmin
+                    }
+                })
                     .then(res => {
                         const data = res.data.result;
                         const success = res.data.success;
                         if (success) {
-                            const result = data.find(d => String(d.id) === String(id))
+                            const result = data.find(d => String(d.id) === String(id_app))
                             setState({
                                 description: result.description,
                                 date: moment(result.date).format("YYYY-MM-DD"),
                                 start_at: moment(result.start_at, "HH:mm").format('h:mm A'),
                                 end_at: moment(result.end_at, "HH:mm").format('h:mm A'),
                                 status: result.status,
-                                id_patient: result.first_name + " " + result.middle_name + " " + result.last_name + "-" + result.id_patient,
+                                id_patient: result.first_name + " " + result.middle_name + " " + result.last_name + " - " + result.id_patient,
                                 id_clinic: result.id_clinic,
                             });
                         }

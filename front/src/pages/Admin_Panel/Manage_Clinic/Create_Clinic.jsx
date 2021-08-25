@@ -1,8 +1,11 @@
-import React, { useState } from "react";
-import { useHistory } from "react-router";
-import API from "../../../API";
+import React, { useState, useContext } from "react"
+import { useHistory } from "react-router"
+import API from "../../../API"
+import SessionContext from "../../../components/session/SessionContext"
 
 export default function Create_Clinic() {
+
+    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
 
     const history = useHistory();
 
@@ -27,7 +30,13 @@ export default function Create_Clinic() {
         e.preventDefault();
         try {
             let reqBody = state;
-            await API.get(`clinic`)
+            await API.get(`clinic`, {
+                headers: {
+                    id: id,
+                    token: token,
+                    isAdmin: isAdmin
+                }
+            })
                 .then(async res => {
                     const result = res.data.result;
                     const success = res.data.success;
@@ -35,7 +44,13 @@ export default function Create_Clinic() {
                         const isClinic = result.find(r => r.name === state.name);
                         if (isClinic) setState({ err: "This clinic alredy exist" });
                         if (!isClinic) {
-                            await API.post(`clinic`, reqBody);
+                            await API.post(`clinic`, reqBody, {
+                                headers: {
+                                    id: id,
+                                    token: token,
+                                    isAdmin: isAdmin
+                                }
+                            });
                             await history.push({ pathname: '/clinic/list' })
                         }
                     }

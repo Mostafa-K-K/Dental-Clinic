@@ -1,12 +1,21 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import API from '../API'
+import SessionContext from "./session/SessionContext"
 
 export default function Clinics(props) {
+
+    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
 
     const [clinics, setClinics] = useState([]);
 
     const fetchdata = async () => {
-        await API.get(`clinic`)
+        await API.get(`clinic`, {
+            headers: {
+                id: id,
+                token: token,
+                isAdmin: isAdmin
+            }
+        })
             .then(res => {
                 const result = res.data.result;
                 setClinics(result);

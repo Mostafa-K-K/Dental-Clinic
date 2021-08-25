@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useContext } from "react"
 import { useHistory, useParams } from 'react-router'
 import API from '../../../API'
+import SessionContext from "../../../components/session/SessionContext"
 
 export default function Edit_Clinic() {
 
-    const { id } = useParams();
+    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+
+    const { id: id_cli } = useParams();
     const history = useHistory();
 
     const [state, updateState] = useState({
@@ -28,13 +31,25 @@ export default function Edit_Clinic() {
         e.preventDefault();
         try {
             let reqBody = state;
-            await API.get(`clinic`)
+            await API.get(`clinic`, {
+                headers: {
+                    id: id,
+                    token: token,
+                    isAdmin: isAdmin
+                }
+            })
                 .then(async res => {
                     const result = res.data.result;
-                    const isClinic = result.find(r => r.name === state.name && String(r.id) !== String(id));
+                    const isClinic = result.find(r => r.name === state.name && String(r.id) !== String(id_cli));
                     if (isClinic) setState({ err: "This clinic alredy exist" });
                     if (!isClinic) {
-                        await API.put(`clinic/${id}`, reqBody);
+                        await API.put(`clinic/${id_cli}`, reqBody, {
+                            headers: {
+                                id: id,
+                                token: token,
+                                isAdmin: isAdmin
+                            }
+                        });
                         await history.push({ pathname: '/clinic/list' })
                     }
                 });
@@ -46,7 +61,13 @@ export default function Edit_Clinic() {
     useEffect(() => {
         async function fetchData() {
             try {
-                await API.get(`clinic/${id}`)
+                await API.get(`clinic/${id_cli}`, {
+                    headers: {
+                        id: id,
+                        token: token,
+                        isAdmin: isAdmin
+                    }
+                })
                     .then(res => {
                         const data = res.data.result;
                         const success = res.data.success;

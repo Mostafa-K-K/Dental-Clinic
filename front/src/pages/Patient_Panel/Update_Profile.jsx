@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react"
-import { useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom"
 import API from "../../API"
 import SessionContext from '../../components/session/SessionContext'
 
@@ -9,7 +9,7 @@ export default function Update_Profile() {
 
     const history = useHistory();
 
-    const { session: { user: { id } } } = useContext(SessionContext);
+    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
 
     const [state, updateState] = useState({
         phone: "",
@@ -50,7 +50,13 @@ export default function Update_Profile() {
                     if (isPhon) {
                         setState({ errPhon: "Phone Number alredy token" });
                     } else {
-                        await API.put(`patient/${id}`, reqBody);
+                        await API.put(`patient/${id}`, reqBody, {
+                            headers: {
+                                id: id,
+                                token: token,
+                                isAdmin: isAdmin
+                            }
+                        });
                         history.push({ pathname: '/patient/panel' })
                     }
                 });

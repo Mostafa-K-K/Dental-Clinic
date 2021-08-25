@@ -5,7 +5,7 @@ import SessionContext from '../../../components/session/SessionContext'
 
 export default function Change_Information_Admin() {
 
-    const { session: { user: { id } } } = useContext(SessionContext);
+    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
     const history = useHistory();
 
     const [state, updateState] = useState({
@@ -43,7 +43,13 @@ export default function Change_Information_Admin() {
                     if (isPhon) {
                         setState({ errPhon: "Phone Number alredy token" });
                     } else {
-                        await API.put(`admin/${id}`, reqBody);
+                        await API.put(`admin/${id}`, reqBody, {
+                            headers: {
+                                id: id,
+                                token: token,
+                                isAdmin: isAdmin
+                            }
+                        });
                         await history.push({ pathname: '/admin/profile' });
                     }
                 });
@@ -55,7 +61,13 @@ export default function Change_Information_Admin() {
     useEffect(() => {
         async function fetData() {
             try {
-                await API.get(`admin/${id}`)
+                await API.get(`admin/${id}`, {
+                    headers: {
+                        id: id,
+                        token: token,
+                        isAdmin: isAdmin
+                    }
+                })
                     .then(res => {
                         const data = res.data.result;
                         const success = res.data.success;

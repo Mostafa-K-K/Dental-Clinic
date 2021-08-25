@@ -1,9 +1,13 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useContext } from "react"
 import { useHistory } from 'react-router'
 import API from "../../../API"
+import SessionContext from "../../../components/session/SessionContext"
+
 import ConfirmDelete from "../../../components/ConfirmDelete"
 
 export default function List_Clinic() {
+
+    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
 
     const history = useHistory()
 
@@ -11,7 +15,13 @@ export default function List_Clinic() {
 
     async function fetchData() {
         try {
-            await API.get('clinic')
+            await API.get('clinic', {
+                headers: {
+                    id: id,
+                    token: token,
+                    isAdmin: isAdmin
+                }
+            })
                 .then(res => {
                     const result = res.data.result;
                     const success = res.data.success;

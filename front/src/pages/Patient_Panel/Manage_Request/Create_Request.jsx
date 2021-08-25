@@ -6,7 +6,7 @@ import SessionContext from '../../../components/session/SessionContext'
 
 export default function Create_Request() {
 
-    const { session: { user: { id } } } = useContext(SessionContext);
+    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
 
     const history = useHistory();
     const date = moment().format("YYYY-MM-DD hh:mm:ss");
@@ -34,7 +34,13 @@ export default function Create_Request() {
         e.preventDefault();
         try {
             let reqBody = state;
-            await API.post(`request`, reqBody);
+            await API.post(`request`, reqBody, {
+                headers: {
+                    id: id,
+                    token: token,
+                    isAdmin: isAdmin
+                }
+            });
             await history.push({ pathname: "/patient/panel" });
         } catch (e) {
             console.log("ERROR", e);

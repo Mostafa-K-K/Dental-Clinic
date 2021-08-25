@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useContext } from "react"
 import { useHistory } from 'react-router'
 import API from "../../../API"
+import SessionContext from "../../../components/session/SessionContext"
+
 import ConfirmDelete from '../../../components/ConfirmDelete'
 
 export default function List_Admin() {
@@ -8,9 +10,18 @@ export default function List_Admin() {
     const history = useHistory();
     const [admins, setAdmins] = useState([]);
 
+    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    
+    console.log({ id, token });
     async function fetchData() {
         try {
-            await API.get('admin')
+            await API.get('admin', {
+                headers: {
+                    id: id,
+                    token: token,
+                    isAdmin: isAdmin
+                }
+            })
                 .then(res => {
                     const data = res.data.result;
                     const success = res.data.success;

@@ -63,9 +63,7 @@ import Home from '../pages/Home/Home'
 import Login from '../pages/Home/Login'
 import Register from '../pages/Home/Register'
 
-import SidebarAdmin from './SidebarAdmin'
-import SidebarPatient from './SidebarPatient'
-
+import Sidebar from './Sidebar'
 
 import SessionContext from './session/SessionContext'
 import { PublicRoute, PrivateRouteSuperAdmin, PrivateRouteAdmin, PrivateRoutePatient } from '../utils'
@@ -75,88 +73,86 @@ export default function Routes() {
     let { session: { user } } = useContext(SessionContext);
 
     return (
-        <div>
-            {(user.isAdmin) ?
-                <SidebarAdmin view={user.token ? true : false} /> :
-                <SidebarPatient view={user.token ? true : false} />
-            }
+        <div className="superContainer">
+            <Sidebar view={user.token ? true : false} />
 
-            <Switch>
+            <div className="miniContainer">
+                <Switch>
 
-                <PublicRoute user={user} path="/" component={Home} exact />
-                <PublicRoute user={user} path="/login" component={Login} />
-                <PublicRoute user={user} path="/register" component={Register} />
+                    <PublicRoute user={user} path="/" component={Home} exact />
+                    <PublicRoute user={user} path="/login" component={Login} />
+                    <PublicRoute user={user} path="/register" component={Register} />
 
 
 
+                    {/* <PrivateRouteSuperAdmin user={user} path="/number/patient" component={Number_Patient} /> */}
 
-                <PrivateRouteSuperAdmin user={user} path="/admin/profile" component={Update_Profile_Admin} exact />
+                    <PrivateRouteSuperAdmin user={user} path="/admin/profile" component={Update_Profile_Admin} exact />
 
-                <PrivateRouteSuperAdmin user={user} path="/admin/profile/information" component={Change_Information_Admin} />
-                <PrivateRouteSuperAdmin user={user} path="/admin/profile/username" component={Change_Username_Admin} />
-                <PrivateRouteSuperAdmin user={user} path="/admin/profile/password" component={Change_Password_Admin} />
+                    <PrivateRouteSuperAdmin user={user} path="/admin/profile/information" component={Change_Information_Admin} />
+                    <PrivateRouteSuperAdmin user={user} path="/admin/profile/username" component={Change_Username_Admin} />
+                    <PrivateRouteSuperAdmin user={user} path="/admin/profile/password" component={Change_Password_Admin} />
 
-                <PrivateRouteSuperAdmin user={user} path="/admin/list" component={List_Admin} />
-                <PrivateRouteSuperAdmin user={user} path="/admin/edit/:id" component={Edit_Admin} />
-                <PrivateRouteSuperAdmin user={user} path="/admin/create" component={Create_Admin} />
-
-                <PrivateRouteSuperAdmin user={user} path="/number/patient" component={Number_Patient} />
-
+                    <PrivateRouteSuperAdmin user={user} path="/admin/list" component={List_Admin} />
+                    <PrivateRouteSuperAdmin user={user} path="/admin/edit/:id" component={Edit_Admin} />
+                    <PrivateRouteSuperAdmin user={user} path="/admin/create" component={Create_Admin} />
 
 
-                <PrivateRouteAdmin user={user} path="/admin/panel" component={Admin_Panel} />
 
-                <PrivateRouteAdmin user={user} path="/doctor/list" component={List_Doctor} />
-                <PrivateRouteAdmin user={user} path="/doctor/edit/:id" component={Edit_Doctor} />
-                <PrivateRouteAdmin user={user} path="/doctor/create" component={Create_Doctor} />
+                    <PrivateRouteAdmin user={user} path="/admin/panel" component={Admin_Panel} />
 
-                <PrivateRouteAdmin user={user} path="/patient/list" component={List_Patient} />
-                <PrivateRouteAdmin user={user} path="/patient/edit/:id" component={Edit_Patient} />
-                <PrivateRouteAdmin user={user} path="/patient/create" component={Create_Patient} />
+                    <PrivateRouteAdmin user={user} path="/doctor/list" component={List_Doctor} />
+                    <PrivateRouteAdmin user={user} path="/doctor/edit/:id" component={Edit_Doctor} />
+                    <PrivateRouteAdmin user={user} path="/doctor/create" component={Create_Doctor} />
 
-                <PrivateRouteAdmin user={user} path="/clinic/list" component={List_Clinic} />
-                <PrivateRouteAdmin user={user} path="/clinic/edit/:id" component={Edit_Clinic} />
-                <PrivateRouteAdmin user={user} path="/clinic/create" component={Create_Clinic} />
+                    <PrivateRouteAdmin user={user} path="/patient/list" component={List_Patient} />
+                    <PrivateRouteAdmin user={user} path="/patient/edit/:id" component={Edit_Patient} />
+                    <PrivateRouteAdmin user={user} path="/patient/create" component={Create_Patient} />
 
-                <PrivateRouteAdmin user={user} path="/type/list" component={List_Type} />
-                <PrivateRouteAdmin user={user} path="/type/edit':id" component={Edit_Type} />
-                <PrivateRouteAdmin user={user} path="/type/create" component={Create_Type} />
+                    <PrivateRouteAdmin user={user} path="/clinic/list" component={List_Clinic} />
+                    <PrivateRouteAdmin user={user} path="/clinic/edit/:id" component={Edit_Clinic} />
+                    <PrivateRouteAdmin user={user} path="/clinic/create" component={Create_Clinic} />
 
-                <PrivateRouteAdmin user={user} path="/appointment/today" component={Today_Appointment} />
-                <PrivateRouteAdmin user={user} path="/appointment/history" component={History_Appointment} />
-                <PrivateRouteAdmin user={user} path="/appointment/upcoming" component={Upcoming_Appointment} />
-                <PrivateRouteAdmin user={user} path="/appointment/edit/:id" component={Edit_Appointment} />
-                <PrivateRouteAdmin user={user} path="/appointment/create" component={Create_Appointment} />
-                <PrivateRouteAdmin user={user} path="/create/appointment/patient/:id/:id_patient" component={Add_Appointment} />
+                    <PrivateRouteAdmin user={user} path="/type/list" component={List_Type} />
+                    <PrivateRouteAdmin user={user} path="/type/edit':id" component={Edit_Type} />
+                    <PrivateRouteAdmin user={user} path="/type/create" component={Create_Type} />
 
-                <PrivateRouteAdmin user={user} path="/request/old" component={Old_Request} />
-                <PrivateRouteAdmin user={user} path="/request/list" component={List_Request} />
+                    <PrivateRouteAdmin user={user} path="/appointment/today" component={Today_Appointment} />
+                    <PrivateRouteAdmin user={user} path="/appointment/history" component={History_Appointment} />
+                    <PrivateRouteAdmin user={user} path="/appointment/upcoming" component={Upcoming_Appointment} />
+                    <PrivateRouteAdmin user={user} path="/appointment/edit/:id" component={Edit_Appointment} />
+                    <PrivateRouteAdmin user={user} path="/appointment/create" component={Create_Appointment} />
+                    <PrivateRouteAdmin user={user} path="/create/appointment/patient/:id/:id_patient" component={Add_Appointment} />
 
-                <PrivateRouteAdmin user={user} path="/procedure/list" component={List_Procedure} />
-                <PrivateRouteAdmin user={user} path="/procedure/edit/:id" component={Edit_Procedure} />
-                <PrivateRouteAdmin user={user} path="/procedure/create" component={Create_Procedure} />
-                <PrivateRouteAdmin user={user} path="/create/procedure/patient/:id_appointment/:id_patient" component={Add_Procedure} />
+                    <PrivateRouteAdmin user={user} path="/request/old" component={Old_Request} />
+                    <PrivateRouteAdmin user={user} path="/request/list" component={List_Request} />
 
-                <PrivateRouteAdmin user={user} path="/payment/create" component={Create_Payment} />
-                <PrivateRouteAdmin user={user} path="/balance/list" component={List_Balance} />
-                <PrivateRouteAdmin user={user} path="/balance/details/:id" component={Details_Balance} />
-                <PrivateRouteAdmin user={user} path="/balance/add/payment/:id" component={Add_Payment} />
+                    <PrivateRouteAdmin user={user} path="/procedure/list" component={List_Procedure} />
+                    <PrivateRouteAdmin user={user} path="/procedure/edit/:id" component={Edit_Procedure} />
+                    <PrivateRouteAdmin user={user} path="/procedure/create" component={Create_Procedure} />
+                    <PrivateRouteAdmin user={user} path="/create/procedure/patient/:id_appointment/:id_patient" component={Add_Procedure} />
+
+                    <PrivateRouteAdmin user={user} path="/payment/create" component={Create_Payment} />
+                    <PrivateRouteAdmin user={user} path="/balance/list" component={List_Balance} />
+                    <PrivateRouteAdmin user={user} path="/balance/details/:id" component={Details_Balance} />
+                    <PrivateRouteAdmin user={user} path="/balance/add/payment/:id" component={Add_Payment} />
 
 
 
 
-                <PrivateRoutePatient user={user} path="/patient/panel" component={Patient_Panel} />
+                    <PrivateRoutePatient user={user} path="/patient/panel" component={Patient_Panel} />
 
-                <PrivateRoutePatient user={user} path="/patient/panel" component={Patient_Panel} />
-                <PrivateRoutePatient user={user} path="/patient/profile" component={Update_Profile} />
+                    <PrivateRoutePatient user={user} path="/patient/panel" component={Patient_Panel} />
+                    <PrivateRoutePatient user={user} path="/patient/profile" component={Update_Profile} />
 
-                <PrivateRoutePatient user={user} path="/patient/procedure" component={All_Procedure} />
-                <PrivateRoutePatient user={user} path="/patient/appointment" component={Next_Appointment} />
+                    <PrivateRoutePatient user={user} path="/patient/procedure" component={All_Procedure} />
+                    <PrivateRoutePatient user={user} path="/patient/appointment" component={Next_Appointment} />
 
-                <PrivateRoutePatient user={user} path="/request/create" component={Create_Request} />
-                <PrivateRoutePatient user={user} path="/request/remove" component={Remove_Request} />
+                    <PrivateRoutePatient user={user} path="/request/create" component={Create_Request} />
+                    <PrivateRoutePatient user={user} path="/request/remove" component={Remove_Request} />
 
-            </Switch>
+                </Switch>
+            </div>
         </div>
     )
 }

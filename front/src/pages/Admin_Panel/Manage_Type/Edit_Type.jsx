@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useContext } from "react"
 import { useHistory, useParams } from 'react-router'
 import API from '../../../API'
+import SessionContext from "../../../components/session/SessionContext"
 
 export default function Edit_Type() {
 
-    const { id } = useParams();
+    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+
+    const { id: id_type } = useParams();
     const history = useHistory();
 
     const [state, updateState] = useState({
@@ -29,15 +32,27 @@ export default function Edit_Type() {
         e.preventDefault();
         let reqBody = state;
         try {
-            await API.get(`type`)
+            await API.get(`type`, {
+                headers: {
+                    id: id,
+                    token: token,
+                    isAdmin: isAdmin
+                }
+            })
                 .then(async res => {
                     const result = res.data.result;
                     const success = res.data.success;
                     if (success) {
-                        const isDesc = result.find(r => r.description === state.description && String(r.id) !== String(id));
+                        const isDesc = result.find(r => r.description === state.description && String(r.id) !== String(id_type));
                         if (isDesc) setState({ err: "This type alredy exist" });
                         if (!isDesc) {
-                            await API.put(`type/${id}`, reqBody);
+                            await API.put(`type/${id_type}`, reqBody, {
+                                headers: {
+                                    id: id,
+                                    token: token,
+                                    isAdmin: isAdmin
+                                }
+                            });
                             history.push({ pathname: '/type/list' })
                         }
                     }
@@ -49,7 +64,7 @@ export default function Edit_Type() {
 
     useEffect(() => {
         async function fetchData() {
-            await API.get(`type/${id}`)
+            await API.get(`type/${id_type}`)
                 .then(res => {
                     const data = res.data.result;
                     setState(data)

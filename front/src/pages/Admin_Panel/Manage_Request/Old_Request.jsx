@@ -1,15 +1,24 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useContext } from "react"
 import API from "../../../API"
 import moment from "moment"
+import SessionContext from "../../../components/session/SessionContext"
 
 export default function List_Request() {
 
+    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+
     const [requests, setRequests] = useState([]);
 
-    async function handleDelete(id) {
+    async function handleDelete(id_req) {
         try {
             const del = window.confirm("are you sure");
-            if (del) await API.delete(`request/${id}`);
+            if (del) await API.delete(`request/${id_req}`, {
+                headers: {
+                    id: id,
+                    token: token,
+                    isAdmin: isAdmin
+                }
+            });
             fetchData();
         } catch (e) {
             console.log("ERROR", e);
@@ -18,7 +27,13 @@ export default function List_Request() {
 
     async function fetchData() {
         try {
-            await API.get('RP')
+            await API.get('RP', {
+                headers: {
+                    id: id,
+                    token: token,
+                    isAdmin: isAdmin
+                }
+            })
                 .then(res => {
                     let data = res.data.result;
                     const success = res.data.success;

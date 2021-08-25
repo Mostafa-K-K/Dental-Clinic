@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from "react"
-import API from "../API";
+import React, { useState, useEffect, useContext } from "react"
+import API from "../API"
+import SessionContext from "./session/SessionContext"
 
 export default function Teeth(props) {
+
+    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
 
     const [teeth, setTeeth] = useState([]);
 
@@ -11,7 +14,13 @@ export default function Teeth(props) {
                 category: props.category
             }
 
-            await API.post(`tooth`, reqBody)
+            await API.post(`tooth`, reqBody, {
+                headers: {
+                    id: id,
+                    token: token,
+                    isAdmin: isAdmin
+                }
+            })
                 .then(res => {
                     const result = res.data.result;
                     setTeeth(result)

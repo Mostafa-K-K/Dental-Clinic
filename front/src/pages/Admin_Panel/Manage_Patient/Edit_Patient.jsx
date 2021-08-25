@@ -1,12 +1,16 @@
-import moment from 'moment';
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { useParams, useHistory } from 'react-router'
 import API from '../../../API'
+import moment from 'moment'
+import SessionContext from "../../../components/session/SessionContext"
+
 import Radio from '../../../components/Radio'
 
 export default function Edit_Patient() {
 
-    const { id } = useParams();
+    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+
+    const { id: id_pat } = useParams();
     const history = useHistory();
 
     const [state, updateState] = useState({
@@ -56,7 +60,13 @@ export default function Edit_Patient() {
             };
             if (state.password && state.password !== "") reqBody['password'] = state.password;
 
-            await API.get(`username`)
+            await API.get(`username`, {
+                headers: {
+                    id: id,
+                    token: token,
+                    isAdmin: isAdmin
+                }
+            })
                 .then(async res => {
                     const usernames = res.data.result;
                     const success = res.data.success;
@@ -64,7 +74,13 @@ export default function Edit_Patient() {
                         const isUser = usernames.filter(r => r.username !== state.lastUsername)
                             .find(r => r.username === state.username);
 
-                        await API.get(`phonenumber`)
+                        await API.get(`phonenumber`, {
+                            headers: {
+                                id: id,
+                                token: token,
+                                isAdmin: isAdmin
+                            }
+                        })
                             .then(async res => {
                                 const phones = res.data.result;
                                 const suc = res.data.success;
@@ -75,7 +91,13 @@ export default function Edit_Patient() {
                                     if (isUser) setState({ errUser: "Username alredy token" });
                                     if (isPhon) setState({ errPhon: "Phone Number alredy token" });
                                     if (!isUser && !isPhon) {
-                                        await API.put(`patient/${id}`, reqBody);
+                                        await API.put(`patient/${id_pat}`, reqBody, {
+                                            headers: {
+                                                id: id,
+                                                token: token,
+                                                isAdmin: isAdmin
+                                            }
+                                        });
                                         history.push({ pathname: '/patient/list' })
                                     }
                                 }
@@ -90,7 +112,13 @@ export default function Edit_Patient() {
     useEffect(() => {
         async function fetData() {
             try {
-                await API.get(`patient/${id}`)
+                await API.get(`patient/${id_pat}`, {
+                    headers: {
+                        id: id,
+                        token: token,
+                        isAdmin: isAdmin
+                    }
+                })
                     .then(res => {
                         const data = res.data.result;
                         setState({
@@ -118,7 +146,7 @@ export default function Edit_Patient() {
     return (
         <div>
             <h1>ADD PATIENT</h1>
-            <span>ID : {id}</span>
+            <span>ID : {id_pat}</span>
             <form onSubmit={handleSubmit}>
 
                 <input

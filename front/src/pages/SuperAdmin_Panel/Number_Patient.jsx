@@ -1,16 +1,25 @@
-import React, { useState, useEffect } from "react"
-import { useHistory } from "react-router-dom";
-import API from "../../API";
+import React, { useState, useEffect, useContext } from "react"
+import { useHistory } from "react-router-dom"
+import API from "../../API"
+import SessionContext from "../../components/session/SessionContext"
 
 export default function Number_Patient() {
 
     const history = useHistory();
     const [number, setNumber] = useState("");
 
+    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+
     async function handleSubmit(e) {
         e.preventDefault();
         try {
-            await API.post(`intialpatient`, { number: number });
+            await API.post(`intialpatient`, { number: number }, {
+                headers: {
+                    id: id,
+                    token: token,
+                    isAdmin: isAdmin
+                }
+            });
             await history.push({ pathname: "/admin/panel" });
         } catch (e) {
             console.log("ERROR", e);
@@ -28,6 +37,7 @@ export default function Number_Patient() {
         }
         fetchData();
     }, [])
+
     return (
         <div>
             <form onSubmit={handleSubmit}>

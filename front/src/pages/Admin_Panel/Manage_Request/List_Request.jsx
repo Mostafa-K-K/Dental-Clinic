@@ -1,22 +1,31 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useContext } from "react"
 import { useHistory } from 'react-router'
 import API from "../../../API"
 import moment from "moment"
+import SessionContext from "../../../components/session/SessionContext"
 
 export default function List_Request() {
+
+    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
 
     let history = useHistory();
     const [requests, setRequests] = useState([]);
 
-    async function handleAccept(id, id_patient) {
+    async function handleAccept(id_req, id_patient) {
         const del = window.confirm("are you sure");
-        if (del) await history.push({ pathname: `/create/appointment/patient/${id}/${id_patient}` });
+        if (del) await history.push({ pathname: `/create/appointment/patient/${id_req}/${id_patient}` });
     }
 
-    async function handleReject(id) {
+    async function handleReject(id_req) {
         try {
             const del = window.confirm("are you sure");
-            if (del) await API.put(`request/${id}`, { status: "Rejected" });
+            if (del) await API.put(`request/${id_req}`, { status: "Rejected" }, {
+                headers: {
+                    id: id,
+                    token: token,
+                    isAdmin: isAdmin
+                }
+            });
             fetchData();
         } catch (e) {
             console.log("ERROR", e);

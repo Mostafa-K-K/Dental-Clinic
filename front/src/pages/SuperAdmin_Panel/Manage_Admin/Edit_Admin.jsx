@@ -1,11 +1,14 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { useParams, useHistory } from 'react-router'
 import API from '../../../API'
+import SessionContext from "../../../components/session/SessionContext"
 
 export default function Change_Information() {
 
-    const { id } = useParams();
+    const { id: id_adm } = useParams();
     const history = useHistory();
+
+    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
 
     const [state, updateState] = useState({
         username: "",
@@ -65,7 +68,13 @@ export default function Change_Information() {
                             }
 
                             if (!isUser && !isPhon) {
-                                await API.put(`admin/${id}`, reqBody);
+                                await API.put(`admin/${id_adm}`, reqBody, {
+                                    headers: {
+                                        id: id,
+                                        token: token,
+                                        isAdmin: isAdmin
+                                    }
+                                });
                                 history.push({ pathname: '/admin/list' })
                             }
                         });
@@ -78,7 +87,13 @@ export default function Change_Information() {
     useEffect(() => {
         async function fetData() {
             try {
-                await API.get(`admin/${id}`)
+                await API.get(`admin/${id_adm}`, {
+                    headers: {
+                        id: id,
+                        token: token,
+                        isAdmin: isAdmin
+                    }
+                })
                     .then(res => {
                         const data = res.data.result;
                         const success = res.data.success;
@@ -103,7 +118,7 @@ export default function Change_Information() {
     return (
         <div>
             <h1>EDIT ADMIN</h1>
-            <span>ID : {id}</span>
+            <span>ID : {id_adm}</span>
 
             <form onSubmit={handleSubmit}>
 

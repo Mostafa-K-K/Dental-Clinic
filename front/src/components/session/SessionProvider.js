@@ -40,7 +40,12 @@ export default function SessionProvider({ children }) {
             // const response = await API.get('getUserData', { headers, body });
 
             if (token && username) {
-                await API.post('getUserData', reqBody)
+                await API.post('getUserData', reqBody, {
+                    headers: {
+                        username: username,
+                        token: token
+                    }
+                })
                     .then(res => {
                         const data = res.data.result;
                         if (data)

@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react"
+import React, { useState, useContext } from "react"
 import moment from "moment"
 import API from "../../../API"
 import { useHistory } from "react-router"
+import SessionContext from "../../../components/session/SessionContext"
 
 import Patients from "../../../components/Patients"
 import Doctors from "../../../components/Doctors"
@@ -9,6 +10,8 @@ import Teeth from "../../../components/Teeth"
 import Types from "../../../components/Types"
 
 export default function Create_Procedure() {
+
+    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
 
     const history = useHistory();
     const date = moment().format("YYYY-MM-DDTHH:mm");
@@ -59,7 +62,13 @@ export default function Create_Procedure() {
         try {
             if (state.id_teeth != "" && state.id_type != "") {
 
-                API.get(`type/${state.id_type}`)
+                API.get(`type/${state.id_type}`, {
+                    headers: {
+                        id: id,
+                        token: token,
+                        isAdmin: isAdmin
+                    }
+                })
                     .then(res => {
                         const result = res.data.result;
 
@@ -127,7 +136,13 @@ export default function Create_Procedure() {
                 balance: state.total
             };
 
-            await API.post(`procedure`, reqBody)
+            await API.post(`procedure`, reqBody, {
+                headers: {
+                    id: id,
+                    token: token,
+                    isAdmin: isAdmin
+                }
+            })
                 .then(res => {
                     const result = res.data.result;
                     const id_procedure = result.insertId;
@@ -140,7 +155,13 @@ export default function Create_Procedure() {
                             price: (work.price == "" || !work.price) ? 0 : work.price
                         };
 
-                        API.post(`PTC`, PTCReqBody);
+                        API.post(`PTC`, PTCReqBody, {
+                            headers: {
+                                id: id,
+                                token: token,
+                                isAdmin: isAdmin
+                            }
+                        });
                     });
                 })
                 .then(history.push({ pathname: "/procedure/list" }));

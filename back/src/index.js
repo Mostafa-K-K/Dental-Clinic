@@ -10,24 +10,72 @@ data.createDataBase();
 
 
 async function isLoggedInSuperAdmin(req, res, next) {
-    const { username, token, isAdmin } = req.body;
-    let sql = ``;
+    const id = req.header("id");
+    const token = req.header("token");
+    const isAdmin = req.header("isAdmin");
 
-    if (token) {
+    let sql = `SELECT * FROM admins WHERE token LIKE '${token}'`;
+    if (isAdmin && token) {
         try {
-            if (isAdmin == true) {
-                sql = `SELECT * FROM admins WHERE token = "${token}" AND username = "${username}"`
-
+            const decoded = jwt.verify(token, "randomString", { ignoreExpiration: true });
+            if (id == decoded.id) {
                 connection.query(sql, function (err, result) {
                     if (err) throw err;
-                    let id = result[0].id;
-                    let role_id = result[0].role_id;
-                    if (id && id != "" && role_id == 0)
+                    if (result && result[0].id && result[0].id == id && result[0].role_id == 0)
                         next();
                 });
             }
         } catch (e) {
-            next(new Error("Invalid Token"));
+            next(e);
+        }
+    } else { res.json({ success: false }); }
+}
+
+async function isLoggedInAdmin(req, res, next) {
+    const id = req.header("id");
+    const token = req.header("token");
+    const isAdmin = req.header("isAdmin");
+
+    let sql = `SELECT * FROM admins WHERE token LIKE '${token}'`;
+    if (isAdmin && token) {
+        try {
+            const decoded = jwt.verify(token, "randomString", { ignoreExpiration: true });
+            if (id == decoded.id) {
+                connection.query(sql, function (err, result) {
+                    if (err) throw err;
+                    if (result && result[0].id && result[0].id == id)
+                        next();
+                });
+            }
+        } catch (e) {
+            next(e);
+        }
+    } else { res.json({ success: false }); }
+}
+
+async function isLoggedIn(req, res, next) {
+    const id = req.header("id");
+    const token = req.header("token");
+    const isAdmin = req.header("isAdmin");
+    
+    let sql = ``;
+
+    (isAdmin == true || isAdmin == "true") ?
+        sql = `SELECT * FROM admins WHERE token LIKE '${token}'` :
+        sql = `SELECT * FROM patients WHERE token LIKE '${token}'`;
+
+    if (token) {
+        try {
+            const decoded = jwt.verify(token, "randomString", { ignoreExpiration: true });
+            if (id == decoded.id) {
+                connection.query(sql, function (err, result) {
+                    if (err) throw err;
+                    if (result && result[0].id && result[0].id == id)
+                        next();
+                });
+            }
+        } catch (e) {
+            next(e);
         }
     } else { res.json({ success: false }); }
 }
@@ -37,7 +85,7 @@ async function isLoggedInSuperAdmin(req, res, next) {
 const start = async () => {
 
     // GET BY USERNAME
-    app.post("/getUserData", async (req, res, next) => {
+    app.post("/getUserData", isLoggedIn, async (req, res, next) => {
         try {
             const { username, isAdmin } = req.body;
             let sql = ``;
@@ -58,9 +106,8 @@ const start = async () => {
         }
     });
 
-
     // GET LIST ADMIN
-    app.get('/admin', async (req, res, next) => {
+    app.get('/admin', isLoggedInSuperAdmin, async (req, res, next) => {
         try {
             let sql = `SELECT * FROM admins WHERE role_id = '1' ORDER BY first_name`;
             connection.query(sql, function (err, result) {
@@ -73,7 +120,7 @@ const start = async () => {
     });
 
     // READ SINGLE ADMIN
-    app.get('/admin/:id', async (req, res, next) => {
+    app.get('/admin/:id', isLoggedInSuperAdmin, async (req, res, next) => {
         const { id } = req.params;
         try {
             let sql = `SELECT * FROM admins WHERE id = ${id} LIMIT 1`;
@@ -87,10 +134,10 @@ const start = async () => {
     });
 
     // DELETE ADMIN
-    app.delete('/admin/:id', async (req, res, next) => {
+    app.delete('/admin/:id', isLoggedInSuperAdmin, async (req, res, next) => {
         const { id } = req.params;
         try {
-            let sql = `DELETE FROM admins WHERE id = ${id}`;
+            let sql = `DELETE FROM admins WHERE id = ${id} `;
             connection.query(sql, function (err, result) {
                 if (err) throw err;
                 res.json({ success: true, result });
@@ -101,46 +148,46 @@ const start = async () => {
     });
 
     // UPDATE ADMIN
-    app.put('/admin/:id', async (req, res, next) => {
+    app.put('/admin/:id', isLoggedInSuperAdmin, async (req, res, next) => {
         const { id } = req.params;
         const { username, password, first_name, middle_name, last_name, phone } = req.body;
         let att = ``;
         let attValues = [];
 
         if (username) {
-            att += ` username = ? ,`;
+            att += ` username = ? , `;
             attValues.push(username);
         }
         if (password) {
             let salt = await bcrypt.genSalt(10);
             let hashedPassword = await bcrypt.hash(password, salt);
 
-            att += ` password = ? ,`;
+            att += ` password = ? , `;
             attValues.push(hashedPassword);
         }
         if (first_name) {
-            att += ` first_name = ? ,`;
+            att += ` first_name = ? , `;
             attValues.push(first_name);
         }
         if (middle_name) {
-            att += ` middle_name = ? ,`;
+            att += ` middle_name = ? , `;
             attValues.push(middle_name);
         }
         if (last_name) {
-            att += ` last_name = ? ,`;
+            att += ` last_name = ? , `;
             attValues.push(last_name);
         }
         if (phone) {
-            att += ` phone = ? ,`;
+            att += ` phone = ? , `;
             attValues.push(phone);
         }
 
         att = att.slice(0, -1);
-        att += ` WHERE id = ?`
+        att += ` WHERE id = ? `
         attValues.push(id);
 
         try {
-            let sql = `UPDATE admins SET ${att}`;
+            let sql = `UPDATE admins SET ${att} `;
             connection.query(sql, attValues, function (err, result) {
                 if (err) throw err;
                 res.json({ success: true, result });
@@ -150,9 +197,8 @@ const start = async () => {
         }
     });
 
-
     // CREATE ADMIN
-    app.post('/admin', async (req, res, next) => {
+    app.post('/admin', isLoggedInSuperAdmin, async (req, res, next) => {
         const { username, password, first_name, middle_name, last_name, phone } = req.body;
 
         let salt = await bcrypt.genSalt(10);
@@ -163,7 +209,7 @@ const start = async () => {
         let inValues = "?, ?, ?, ?, ?, ?";
 
         try {
-            let sql = `INSERT INTO admins (${att}) VALUES (${inValues})`;
+            let sql = `INSERT INTO admins(${att}) VALUES(${inValues})`;
             connection.query(sql, values, function (err, result) {
                 if (err) throw err;
                 res.json({ success: true, result });
@@ -173,16 +219,8 @@ const start = async () => {
         }
     });
 
-
-
-
-
-
-
-
-
     // GET LIST TYPE
-    app.get('/type', async (req, res, next) => {
+    app.get('/type', isLoggedInAdmin, async (req, res, next) => {
         try {
             let sql = `SELECT * FROM types ORDER BY description`;
             connection.query(sql, function (err, result) {
@@ -195,7 +233,7 @@ const start = async () => {
     });
 
     // READ SINGLE TYPE
-    app.get('/type/:id', async (req, res, next) => {
+    app.get('/type/:id', isLoggedInAdmin, async (req, res, next) => {
         const { id } = req.params;
         try {
             let sql = `SELECT * FROM types WHERE id = ${id} LIMIT 1`;
@@ -209,13 +247,13 @@ const start = async () => {
     });
 
     // CREATE TYPE
-    app.post('/type', async (req, res, next) => {
+    app.post('/type', isLoggedInAdmin, async (req, res, next) => {
         const { description, bill } = req.body;
         let att = "description, bill";
         let values = [description, bill];
         let inValues = "?, ?";
         try {
-            let sql = `INSERT INTO types (${att}) VALUES (${inValues})`;
+            let sql = `INSERT INTO types(${att}) VALUES(${inValues})`;
             connection.query(sql, values, function (err, result) {
                 if (err) throw err;
                 res.json({ success: true, result });
@@ -226,10 +264,10 @@ const start = async () => {
     });
 
     // DELETE TYPE
-    app.delete('/type/:id', async (req, res, next) => {
+    app.delete('/type/:id', isLoggedInAdmin, async (req, res, next) => {
         const { id } = req.params;
         try {
-            let sql = `DELETE FROM types WHERE id = ${id}`;
+            let sql = `DELETE FROM types WHERE id = ${id} `;
             connection.query(sql, function (err, result) {
                 if (err) throw err;
                 res.json({ success: true, result });
@@ -240,27 +278,27 @@ const start = async () => {
     });
 
     // UPDATE TYPE
-    app.put('/type/:id', async (req, res, next) => {
+    app.put('/type/:id', isLoggedInAdmin, async (req, res, next) => {
         const { id } = req.params;
         const { description, bill } = req.body;
         let att = ``;
         let attValues = [];
 
         if (description) {
-            att += ` description = ? ,`;
+            att += ` description = ? , `;
             attValues.push(description);
         }
         if (bill) {
-            att += ` bill = ? ,`;
+            att += ` bill = ? , `;
             attValues.push(bill);
         }
 
         att = att.slice(0, -1);
-        att += ` WHERE id = ?`
+        att += ` WHERE id = ? `
         attValues.push(id);
 
         try {
-            let sql = `UPDATE types SET ${att}`;
+            let sql = `UPDATE types SET ${att} `;
             connection.query(sql, attValues, function (err, result) {
                 if (err) throw err;
                 res.json({ success: true, result });
@@ -270,12 +308,8 @@ const start = async () => {
         }
     });
 
-
-
-
-
     // GET LIST TEETH
-    app.post('/tooth', async (req, res, next) => {
+    app.post('/tooth', isLoggedInAdmin, async (req, res, next) => {
         const { category } = req.body;
         let att = ``;
 
@@ -284,7 +318,7 @@ const start = async () => {
         }
 
         try {
-            let sql = `SELECT * FROM teeth ${att}`;
+            let sql = `SELECT * FROM teeth ${att} `;
             connection.query(sql, function (err, result) {
                 if (err) throw err;
                 res.json({ success: true, result });
@@ -294,12 +328,8 @@ const start = async () => {
         }
     });
 
-
-
-
-
     // GET LIST CLINIC
-    app.get('/clinic', async (req, res, next) => {
+    app.get('/clinic', isLoggedInAdmin, async (req, res, next) => {
         try {
             let sql = `SELECT * FROM clinics ORDER BY name`;
             connection.query(sql, function (err, result) {
@@ -312,7 +342,7 @@ const start = async () => {
     });
 
     // READ SINGLE CLINIC
-    app.get('/clinic/:id', async (req, res, next) => {
+    app.get('/clinic/:id', isLoggedInAdmin, async (req, res, next) => {
         const { id } = req.params;
         try {
             let sql = `SELECT * FROM clinics WHERE id = ${id} LIMIT 1`;
@@ -326,13 +356,13 @@ const start = async () => {
     });
 
     // CREATE CLINIC
-    app.post('/clinic', async (req, res, next) => {
+    app.post('/clinic', isLoggedInAdmin, async (req, res, next) => {
         const { name } = req.body;
         let att = "name";
         let values = [name];
         let inValues = " ? ";
         try {
-            let sql = `INSERT INTO clinics (${att}) VALUES (${inValues})`;
+            let sql = `INSERT INTO clinics(${att}) VALUES(${inValues})`;
             connection.query(sql, values, function (err, result) {
                 if (err) throw err;
                 res.json({ success: true, result });
@@ -343,10 +373,10 @@ const start = async () => {
     });
 
     // DELETE CLINIC
-    app.delete('/clinic/:id', async (req, res, next) => {
+    app.delete('/clinic/:id', isLoggedInAdmin, async (req, res, next) => {
         const { id } = req.params;
         try {
-            let sql = `DELETE FROM clinics WHERE id = ${id}`;
+            let sql = `DELETE FROM clinics WHERE id = ${id} `;
             connection.query(sql, function (err, result) {
                 if (err) throw err;
                 res.json({ success: true, result });
@@ -357,7 +387,7 @@ const start = async () => {
     });
 
     // UPDATE CLINIC
-    app.put('/clinic/:id', async (req, res, next) => {
+    app.put('/clinic/:id', isLoggedInAdmin, async (req, res, next) => {
         const { id } = req.params;
         const { name } = req.body;
         let att = ``;
@@ -368,11 +398,11 @@ const start = async () => {
             attValues.push(name);
         }
 
-        att += ` WHERE id = ?`
+        att += ` WHERE id = ? `
         attValues.push(id);
 
         try {
-            let sql = `UPDATE clinics SET ${att}`;
+            let sql = `UPDATE clinics SET ${att} `;
             connection.query(sql, attValues, function (err, result) {
                 if (err) throw err;
                 res.json({ success: true, result });
@@ -382,12 +412,8 @@ const start = async () => {
         }
     });
 
-
-
-
-
     // GET LIST PATIENT COUNT
-    app.post('/patientcount', async (req, res, next) => {
+    app.post('/patientcount', isLoggedInAdmin, async (req, res, next) => {
         let { name } = req.body;
         let att = ``;
         let names = name.split(' ');
@@ -408,7 +434,7 @@ const start = async () => {
             }
         }
         try {
-            let sql = `SELECT COUNT(id) AS row FROM patients ${att}`;
+            let sql = `SELECT COUNT(id) AS row FROM patients ${att} `;
             connection.query(sql, function (err, result) {
                 if (err) throw err;
                 res.json({ success: true, result: result[0].row });
@@ -419,9 +445,10 @@ const start = async () => {
     });
 
     // GET LIST PATIENT WITH PAGINATION
-    app.post('/paginpatient', async (req, res, next) => {
+    app.post('/paginpatient', isLoggedInAdmin, async (req, res, next) => {
         let { rows, orderBy, desc, name } = req.body;
         let att = ``;
+
         let names = name.split(' ');
 
         if (names.length == 1) {
@@ -441,7 +468,7 @@ const start = async () => {
             }
         }
         if (orderBy && orderBy != "") {
-            att += `ORDER BY ${orderBy}`;
+            att += `ORDER BY ${orderBy} `;
         }
         if (desc) {
             att += ` DESC`
@@ -459,7 +486,7 @@ const start = async () => {
     });
 
     // GET LIST PATIENT
-    app.get('/patient', async (req, res, next) => {
+    app.get('/patient', isLoggedInAdmin, async (req, res, next) => {
         try {
             let sql = `SELECT * FROM patients ORDER BY first_name`;
             connection.query(sql, function (err, result) {
@@ -472,7 +499,7 @@ const start = async () => {
     });
 
     // READ SINGLE PATIENT
-    app.get('/patient/:id', async (req, res, next) => {
+    app.get('/patient/:id', isLoggedIn, async (req, res, next) => {
         const { id } = req.params;
         try {
             let sql = `SELECT * FROM patients WHERE id = ${id} LIMIT 1`;
@@ -486,10 +513,10 @@ const start = async () => {
     });
 
     // DELETE PATIENT
-    app.delete('/patient/:id', async (req, res, next) => {
+    app.delete('/patient/:id', isLoggedInAdmin, async (req, res, next) => {
         const { id } = req.params;
         try {
-            let sql = `DELETE FROM patients WHERE id = ${id}`;
+            let sql = `DELETE FROM patients WHERE id = ${id} `;
             connection.query(sql, function (err, result) {
                 if (err) throw err;
                 res.json({ success: true, result });
@@ -500,66 +527,66 @@ const start = async () => {
     });
 
     // UPDATE PATIENT
-    app.put('/patient/:id', async (req, res, next) => {
+    app.put('/patient/:id', isLoggedIn, async (req, res, next) => {
         const { id } = req.params;
         const { username, password, first_name, middle_name, last_name, phone, gender, birth, marital, health, address } = req.body;
         let att = ``;
         let attValues = [];
 
         if (username) {
-            att += ` username = ? ,`;
+            att += ` username = ? , `;
             attValues.push(username);
         }
         if (password) {
             let salt = await bcrypt.genSalt(10);
             let hashedPassword = await bcrypt.hash(password, salt);
 
-            att += ` password = ? ,`;
+            att += ` password = ? , `;
             attValues.push(hashedPassword);
         }
         if (first_name) {
-            att += ` first_name = ? ,`;
+            att += ` first_name = ? , `;
             attValues.push(first_name);
         }
         if (middle_name) {
-            att += ` middle_name = ? ,`;
+            att += ` middle_name = ? , `;
             attValues.push(middle_name);
         }
         if (last_name) {
-            att += ` last_name = ? ,`;
+            att += ` last_name = ? , `;
             attValues.push(last_name);
         }
         if (phone) {
-            att += ` phone = ? ,`;
+            att += ` phone = ? , `;
             attValues.push(phone);
         }
         if (gender) {
-            att += ` gender = ? ,`;
+            att += ` gender = ? , `;
             attValues.push(gender);
         }
         if (birth) {
-            att += ` birth = ? ,`;
+            att += ` birth = ? , `;
             attValues.push(birth);
         }
         if (marital) {
-            att += ` marital = ? ,`;
+            att += ` marital = ? , `;
             attValues.push(marital);
         }
         if (health) {
-            att += ` health = ? ,`;
+            att += ` health = ? , `;
             attValues.push(health);
         }
         if (address) {
-            att += ` address = ? ,`;
+            att += ` address = ? , `;
             attValues.push(address);
         }
 
         att = att.slice(0, -1);
-        att += ` WHERE id = ?`
+        att += ` WHERE id = ? `
         attValues.push(id);
 
         try {
-            let sql = `UPDATE patients SET ${att}`;
+            let sql = `UPDATE patients SET ${att} `;
             connection.query(sql, attValues, function (err, result) {
                 if (err) throw err;
                 res.json({ success: true, result });
@@ -570,7 +597,7 @@ const start = async () => {
     });
 
     // CREATE Patient
-    app.post('/patient', async (req, res, next) => {
+    app.post('/patient', isLoggedInAdmin, async (req, res, next) => {
         const { username, password, first_name, middle_name, last_name, phone, gender, birth, marital, health, address } = req.body;
 
         let salt = await bcrypt.genSalt(10);
@@ -581,7 +608,7 @@ const start = async () => {
         let inValues = "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?";
 
         try {
-            let sql = `INSERT INTO patients (${att}) VALUES (${inValues})`;
+            let sql = `INSERT INTO patients(${att}) VALUES(${inValues})`;
             connection.query(sql, values, function (err, result) {
                 if (err) throw err;
                 res.json({ success: true, result });
@@ -591,16 +618,8 @@ const start = async () => {
         }
     });
 
-
-
-
-
-
-
-
-
     // GET LIST DOCTOR
-    app.get('/doctor', async (req, res, next) => {
+    app.get('/doctor', isLoggedInAdmin, async (req, res, next) => {
         try {
             let sql = `SELECT * FROM doctors ORDER BY first_name`;
             connection.query(sql, function (err, result) {
@@ -613,7 +632,7 @@ const start = async () => {
     });
 
     // READ SINGLE DOCTOR
-    app.get('/doctor/:id', async (req, res, next) => {
+    app.get('/doctor/:id', isLoggedInAdmin, async (req, res, next) => {
         const { id } = req.params;
         try {
             let sql = `SELECT * FROM doctors WHERE id = ${id} LIMIT 1`;
@@ -627,13 +646,13 @@ const start = async () => {
     });
 
     // CREATE DOCTOR
-    app.post('/doctor', async (req, res, next) => {
+    app.post('/doctor', isLoggedInAdmin, async (req, res, next) => {
         const { first_name, middle_name, last_name, phone } = req.body;
         let att = "first_name, middle_name, last_name, phone";
         let values = [first_name, middle_name, last_name, phone];
         let inValues = "?, ?, ?, ?";
         try {
-            let sql = `INSERT INTO doctors (${att}) VALUES (${inValues})`;
+            let sql = `INSERT INTO doctors(${att}) VALUES(${inValues})`;
             connection.query(sql, values, function (err, result) {
                 if (err) throw err;
                 res.json({ success: true, result });
@@ -644,10 +663,10 @@ const start = async () => {
     });
 
     // DELETE DOCTOR
-    app.delete('/doctor/:id', async (req, res, next) => {
+    app.delete('/doctor/:id', isLoggedInAdmin, async (req, res, next) => {
         const { id } = req.params;
         try {
-            let sql = `DELETE FROM doctors WHERE id = ${id}`;
+            let sql = `DELETE FROM doctors WHERE id = ${id} `;
             connection.query(sql, function (err, result) {
                 if (err) throw err;
                 res.json({ success: true, result });
@@ -658,35 +677,35 @@ const start = async () => {
     });
 
     // UPDATE DOCTOR
-    app.put('/doctor/:id', async (req, res, next) => {
+    app.put('/doctor/:id', isLoggedInAdmin, async (req, res, next) => {
         const { id } = req.params;
         const { first_name, middle_name, last_name, phone } = req.body;
         let att = ``;
         let attValues = [];
 
         if (first_name) {
-            att += ` first_name = ? ,`;
+            att += ` first_name = ? , `;
             attValues.push(first_name);
         }
         if (middle_name) {
-            att += ` middle_name = ? ,`;
+            att += ` middle_name = ? , `;
             attValues.push(middle_name);
         }
         if (last_name) {
-            att += ` last_name = ? ,`;
+            att += ` last_name = ? , `;
             attValues.push(last_name);
         }
         if (phone) {
-            att += ` phone = ? ,`;
+            att += ` phone = ? , `;
             attValues.push(phone);
         }
 
         att = att.slice(0, -1);
-        att += ` WHERE id = ?`
+        att += ` WHERE id = ? `
         attValues.push(id);
 
         try {
-            let sql = `UPDATE doctors SET ${att}`;
+            let sql = `UPDATE doctors SET ${att} `;
             connection.query(sql, attValues, function (err, result) {
                 if (err) throw err;
                 res.json({ success: true, result });
@@ -696,12 +715,8 @@ const start = async () => {
         }
     });
 
-
-
-
-
     // GET LIST REQUEST
-    app.get('/request', async (req, res, next) => {
+    app.get('/request', isLoggedIn, async (req, res, next) => {
         try {
             let sql = `SELECT * FROM requests ORDER BY date DESC`;
             connection.query(sql, function (err, result) {
@@ -714,7 +729,7 @@ const start = async () => {
     });
 
     // READ SINGLE REQUEST
-    app.get('/request/:id', async (req, res, next) => {
+    app.get('/request/:id', isLoggedIn, async (req, res, next) => {
         const { id } = req.params;
         try {
             let sql = `SELECT * FROM requests WHERE id = ${id} LIMIT 1`;
@@ -728,7 +743,7 @@ const start = async () => {
     });
 
     // CREATE REQUEST
-    app.post('/request', async (req, res, next) => {
+    app.post('/request', isLoggedIn, async (req, res, next) => {
         const { description, date, status, id_patient } = req.body;
         let att = "description, date, status, id_patient";
         let values = [description, date, status, id_patient];
@@ -737,7 +752,7 @@ const start = async () => {
         if (description == "") values[0] = "Null";
 
         try {
-            let sql = `INSERT INTO requests (${att}) VALUES (${inValues})`;
+            let sql = `INSERT INTO requests(${att}) VALUES(${inValues})`;
             connection.query(sql, values, function (err, result) {
                 if (err) throw err;
                 res.json({ success: true, result });
@@ -748,10 +763,10 @@ const start = async () => {
     });
 
     // DELETE REQUEST
-    app.delete('/request/:id', async (req, res, next) => {
+    app.delete('/request/:id', isLoggedIn, async (req, res, next) => {
         const { id } = req.params;
         try {
-            let sql = `DELETE FROM requests WHERE id = ${id}`;
+            let sql = `DELETE FROM requests WHERE id = ${id} `;
             connection.query(sql, function (err, result) {
                 if (err) throw err;
                 res.json({ success: true, result });
@@ -761,30 +776,8 @@ const start = async () => {
         }
     });
 
-    // UPDATE REQUEST
-    app.put('/request/:id', async (req, res, next) => {
-        const { id } = req.params;
-        const { status } = req.body;
-
-        let att = `status = ? WHERE id = ? `;
-        let attValues = [status, id];
-
-        try {
-            let sql = `UPDATE requests SET ${att}`;
-            connection.query(sql, attValues, function (err, result) {
-                if (err) throw err;
-                res.json({ success: true, result });
-            });
-        } catch (e) {
-            next(e);
-        }
-    });
-
-
-
-
     // GET LIST APPOINTMENT
-    app.get('/appointment', async (req, res, next) => {
+    app.get('/appointment', isLoggedInAdmin, async (req, res, next) => {
         try {
             let sql = `SELECT * FROM appointments`;
             connection.query(sql, function (err, result) {
@@ -797,7 +790,7 @@ const start = async () => {
     });
 
     // GET SINGLE APPOINTMENT
-    app.get('/appointment/:id', async (req, res, next) => {
+    app.get('/appointment/:id', isLoggedInAdmin, async (req, res, next) => {
         const { id } = req.params;
         try {
             let sql = `SELECT * FROM appointments WHERE id = ${id} LIMIT 1`;
@@ -811,7 +804,7 @@ const start = async () => {
     });
 
     // CREATE APPOINTMENT
-    app.post('/appointment', async (req, res, next) => {
+    app.post('/appointment', isLoggedInAdmin, async (req, res, next) => {
         const { description, date, start_at, end_at, status, id_patient, id_clinic } = req.body;
         let att = "description, date, start_at, end_at, status, id_patient, id_clinic";
         let values = [description, date, start_at, end_at, status, id_patient, id_clinic];
@@ -820,7 +813,7 @@ const start = async () => {
         if (description == "") values[0] = "Null";
 
         try {
-            let sql = `INSERT INTO appointments (${att}) VALUES (${inValues})`;
+            let sql = `INSERT INTO appointments(${att}) VALUES(${inValues})`;
             connection.query(sql, values, function (err, result) {
                 if (err) throw err;
                 res.json({ success: true, result });
@@ -831,10 +824,10 @@ const start = async () => {
     });
 
     // DELETE APPOINTMENT
-    app.delete('/appointment/:id', async (req, res, next) => {
+    app.delete('/appointment/:id', isLoggedInAdmin, async (req, res, next) => {
         const { id } = req.params;
         try {
-            let sql = `DELETE FROM appointments WHERE id = ${id}`;
+            let sql = `DELETE FROM appointments WHERE id = ${id} `;
             connection.query(sql, function (err, result) {
                 if (err) throw err;
                 res.json({ success: true, result });
@@ -845,47 +838,47 @@ const start = async () => {
     });
 
     // UPDATE APPOINTMENT
-    app.put('/appointment/:id', async (req, res, next) => {
+    app.put('/appointment/:id', isLoggedInAdmin, async (req, res, next) => {
         const { id } = req.params;
         const { description, data, start_at, end_at, status, id_patient, id_clinic } = req.body;
         let att = ``;
         let attValues = [];
 
         if (description) {
-            att += ` description = ? ,`;
+            att += ` description = ? , `;
             attValues.push(description);
         }
         if (data) {
-            att += ` data = ? ,`;
+            att += ` data = ? , `;
             attValues.push(data);
         }
         if (start_at) {
-            att += ` start_at = ? ,`;
+            att += ` start_at = ? , `;
             attValues.push(start_at);
         }
         if (end_at) {
-            att += ` end_at = ? ,`;
+            att += ` end_at = ? , `;
             attValues.push(end_at);
         }
         if (status) {
-            att += ` status = ? ,`;
+            att += ` status = ? , `;
             attValues.push(status);
         }
         if (id_patient) {
-            att += ` id_patient = ? ,`;
+            att += ` id_patient = ? , `;
             attValues.push(id_patient);
         }
         if (id_clinic) {
-            att += ` id_clinic = ? ,`;
+            att += ` id_clinic = ? , `;
             attValues.push(id_clinic);
         }
 
         att = att.slice(0, -1);
-        att += ` WHERE id = ?`
+        att += ` WHERE id = ? `
         attValues.push(id);
 
         try {
-            let sql = `UPDATE appointments SET ${att}`;
+            let sql = `UPDATE appointments SET ${att} `;
             connection.query(sql, attValues, function (err, result) {
                 if (err) throw err;
                 res.json({ success: true, result });
@@ -895,12 +888,8 @@ const start = async () => {
         }
     });
 
-
-
-
-
     // GET LIST PROCEDURE
-    app.get('/procedure', async (req, res, next) => {
+    app.get('/procedure', isLoggedInAdmin, async (req, res, next) => {
         try {
             let sql = `SELECT * FROM procedures`;
             connection.query(sql, function (err, result) {
@@ -913,7 +902,7 @@ const start = async () => {
     });
 
     // READ SINGLE PROCEDURE
-    app.get('/procedure/:id', async (req, res, next) => {
+    app.get('/procedure/:id', isLoggedInAdmin, async (req, res, next) => {
         const { id } = req.params;
         try {
             let sql = `SELECT * FROM procedures WHERE id = ${id} LIMIT 1`;
@@ -927,7 +916,7 @@ const start = async () => {
     });
 
     // CREATE PROCEDURE
-    app.post('/procedure', async (req, res, next) => {
+    app.post('/procedure', isLoggedInAdmin, async (req, res, next) => {
         const { date, payment, id_patient, id_doctor, balance } = req.body;
         let att = "date, id_patient";
         let values = [date, id_patient];
@@ -935,22 +924,22 @@ const start = async () => {
 
         if (id_doctor) {
             att += `, id_doctor`;
-            inValues += `, ?`
+            inValues += `, ? `
             values.push(id_doctor);
         }
         if (payment) {
             att += `, payment`;
-            inValues += `, ?`
+            inValues += `, ? `
             values.push(payment);
         }
         if (balance) {
             att += `, balance`;
-            inValues += `, ?`
+            inValues += `, ? `
             values.push(balance);
         }
 
         try {
-            let sql = `INSERT INTO procedures (${att}) VALUES (${inValues})`;
+            let sql = `INSERT INTO procedures(${att}) VALUES(${inValues})`;
             connection.query(sql, values, function (err, result) {
                 if (err) throw err;
                 res.json({ success: true, result });
@@ -961,10 +950,10 @@ const start = async () => {
     });
 
     // DELETE PROCEDURE
-    app.delete('/procedure/:id', async (req, res, next) => {
+    app.delete('/procedure/:id', isLoggedInAdmin, async (req, res, next) => {
         const { id } = req.params;
         try {
-            let sql = `DELETE FROM procedures WHERE id = ${id}`;
+            let sql = `DELETE FROM procedures WHERE id = ${id} `;
             connection.query(sql, function (err, result) {
                 if (err) throw err;
                 res.json({ success: true, result });
@@ -975,43 +964,43 @@ const start = async () => {
     });
 
     // UPDATE PROCEDURE
-    app.put('/procedure/:id', async (req, res, next) => {
+    app.put('/procedure/:id', isLoggedInAdmin, async (req, res, next) => {
         const { id } = req.params;
         const { date, payment, id_patient, id_doctor, id_clinic, balance } = req.body;
         let att = ``;
         let attValues = [];
 
         if (date) {
-            att += ` date = ? ,`;
+            att += ` date = ? , `;
             attValues.push(date);
         }
         if (payment) {
-            att += ` payment = ? ,`;
+            att += ` payment = ? , `;
             attValues.push(payment);
         }
         if (id_patient) {
-            att += ` id_patient = ? ,`;
+            att += ` id_patient = ? , `;
             attValues.push(id_patient);
         }
         if (id_doctor) {
-            att += ` id_doctor = ? ,`;
+            att += ` id_doctor = ? , `;
             attValues.push(id_doctor);
         }
         if (id_clinic) {
-            att += ` id_clinic = ? ,`;
+            att += ` id_clinic = ? , `;
             attValues.push(id_clinic);
         }
         if (balance) {
-            att += ` balance = ? ,`;
+            att += ` balance = ? , `;
             attValues.push(balance);
         }
 
         att = att.slice(0, -1);
-        att += ` WHERE id = ?`
+        att += ` WHERE id = ? `
         attValues.push(id);
 
         try {
-            let sql = `UPDATE procedures SET ${att}`;
+            let sql = `UPDATE procedures SET ${att} `;
             connection.query(sql, attValues, function (err, result) {
                 if (err) throw err;
                 res.json({ success: true, result });
@@ -1021,12 +1010,8 @@ const start = async () => {
         }
     });
 
-
-
-
-
     // GET LIST P_T_C
-    app.get('/PTC', async (req, res, next) => {
+    app.get('/PTC', isLoggedInAdmin, async (req, res, next) => {
         try {
             let sql = `SELECT * FROM P_T_C`;
             connection.query(sql, function (err, result) {
@@ -1039,7 +1024,7 @@ const start = async () => {
     });
 
     // READ SINGLE P_T_C
-    app.get('/PTC/:id', async (req, res, next) => {
+    app.get('/PTC/:id', isLoggedInAdmin, async (req, res, next) => {
         const { id } = req.params;
         try {
             let sql = `SELECT * FROM P_T_C WHERE id = ${id} LIMIT 1`;
@@ -1053,7 +1038,7 @@ const start = async () => {
     });
 
     // CREATE P_T_C
-    app.post('/PTC', async (req, res, next) => {
+    app.post('/PTC', isLoggedInAdmin, async (req, res, next) => {
         const { id_procedure, id_type, id_teeth, price } = req.body;
         let att = "id_procedure, id_type, id_teeth, price";
         let values = [id_procedure, id_type, id_teeth, price];
@@ -1062,7 +1047,7 @@ const start = async () => {
         if (price == "") values[3] = 0;
 
         try {
-            let sql = `INSERT INTO P_T_C (${att}) VALUES (${inValues})`;
+            let sql = `INSERT INTO P_T_C(${att}) VALUES(${inValues})`;
             connection.query(sql, values, function (err, result) {
                 if (err) throw err;
                 res.json({ success: true, result });
@@ -1073,10 +1058,10 @@ const start = async () => {
     });
 
     // DELETE P_T_C ALL
-    app.delete('/PTCALL/:id', async (req, res, next) => {
+    app.delete('/PTCALL/:id', isLoggedInAdmin, async (req, res, next) => {
         const { id } = req.params;
         try {
-            let sql = `DELETE FROM P_T_C WHERE id_procedure = ${id}`;
+            let sql = `DELETE FROM P_T_C WHERE id_procedure = ${id} `;
             connection.query(sql, function (err, result) {
                 if (err) throw err;
                 res.json({ success: true, result });
@@ -1086,37 +1071,33 @@ const start = async () => {
         }
     });
 
-
-
-
-
     // GET JOIN P_T_C_D_P
-    app.get('/PTCDP', async (req, res, next) => {
+    app.get('/PTCDP', isLoggedIn, async (req, res, next) => {
 
         try {
-            let sql = `SELECT 
-
-            P_T_C.id,
-            P_T_C.price,
-
-            P_T_C.id_procedure,
-            procedures.payment,
-            procedures.date,
-
-            P_T_C.id_type,
-            types.description,
-            types.bill,
-
-            P_T_C.id_teeth,
-            teeth.category,
-
-            procedures.id_patient,
-            procedures.id_doctor
-
-            FROM P_T_C     
-            JOIN procedures ON procedures.id = P_T_C.id_procedure
-            JOIN types ON types.id = P_T_C.id_type
-            JOIN teeth ON teeth.id = P_T_C.id_teeth`;
+            let sql = `SELECT
+        
+                    P_T_C.id,
+                    P_T_C.price,
+        
+                    P_T_C.id_procedure,
+                    procedures.payment,
+                    procedures.date,
+        
+                    P_T_C.id_type,
+                    types.description,
+                    types.bill,
+        
+                    P_T_C.id_teeth,
+                    teeth.category,
+        
+                    procedures.id_patient,
+                    procedures.id_doctor
+        
+                    FROM P_T_C     
+                    JOIN procedures ON procedures.id = P_T_C.id_procedure
+                    JOIN types ON types.id = P_T_C.id_type
+                    JOIN teeth ON teeth.id = P_T_C.id_teeth`;
 
             connection.query(sql, function (err, result) {
                 if (err) throw err;
@@ -1128,24 +1109,24 @@ const start = async () => {
     });
 
     // GET JOIN A_C_P
-    app.get('/ACP', async (req, res, next) => {
+    app.get('/ACP', isLoggedIn, async (req, res, next) => {
         try {
 
-            let sql = `SELECT 
+            let sql = `SELECT
 
-                appointments.*,
-
-                patients.first_name,
-                patients.middle_name,
-                patients.last_name,
-                patients.phone,
-
-                clinics.name
-                
-                FROM appointments 
-                JOIN clinics ON clinics.id = appointments.id_clinic
-                JOIN patients ON patients.id = appointments.id_patient
-                `;
+                    appointments.*,
+        
+                    patients.first_name,
+                    patients.middle_name,
+                    patients.last_name,
+                    patients.phone,
+        
+                    clinics.name
+            
+                    FROM appointments 
+                    JOIN clinics ON clinics.id = appointments.id_clinic
+                    JOIN patients ON patients.id = appointments.id_patient
+            `;
 
             connection.query(sql, function (err, result) {
                 if (err) throw err;
@@ -1157,17 +1138,17 @@ const start = async () => {
     });
 
     // GET JOIN P_D_P
-    app.get('/PDP', async (req, res, next) => {
+    app.get('/PDP', isLoggedIn, async (req, res, next) => {
         try {
 
-            let sql = `SELECT 
+            let sql = `SELECT
 
                     procedures.*,
-
+        
                     patients.first_name as f_n_patient,
                     patients.middle_name as m_n_patient,
                     patients.last_name as l_n_patient,
-                    
+        
                     doctors.first_name as f_n_doctor,
                     doctors.middle_name as m_n_doctor,
                     doctors.last_name as l_n_doctor
@@ -1186,17 +1167,17 @@ const start = async () => {
     });
 
     // GET JOIN A_C_P
-    app.get('/RP', async (req, res, next) => {
+    app.get('/RP', isLoggedInAdmin, async (req, res, next) => {
         try {
 
             let sql = `SELECT
-             
+
                     requests.id,
                     requests.description,
                     requests.status,
                     requests.date,
                     requests.id_patient,
-
+        
                     patients.first_name,
                     patients.middle_name,
                     patients.last_name
@@ -1213,9 +1194,8 @@ const start = async () => {
         }
     });
 
-
     // GET JOIN A_C_P
-    app.post('/balance', async (req, res, next) => {
+    app.post('/balance', isLoggedIn, async (req, res, next) => {
         let { id, dateFrom, dateTo } = req.body;
 
         try {
@@ -1224,17 +1204,17 @@ const start = async () => {
 
             let sql = `SELECT
 
-                    patients.id,
-                    patients.first_name,
-                    patients.middle_name,
-                    patients.last_name,
+                       patients.id,
+                       patients.first_name,
+                       patients.middle_name,
+                       patients.last_name,
+           
+                       procedures.payment,
+                       procedures.balance,
+                       procedures.date
 
-                    procedures.payment,
-                    procedures.balance,
-                    procedures.date
-
-                    FROM patients 
-                    LEFT JOIN procedures ON patients.id = procedures.id_patient`;
+                       FROM patients 
+                       LEFT JOIN procedures ON patients.id = procedures.id_patient`;
 
             connection.query(sql, function (err, result) {
                 if (err) throw err;
@@ -1284,21 +1264,20 @@ const start = async () => {
         }
     });
 
-
     // GET JOIN A_C_P
-    app.get('/balance/:id', async (req, res, next) => {
+    app.get('/balance/:id', isLoggedIn, async (req, res, next) => {
         let { id } = req.params;
         try {
             let sql = `SELECT
 
-                    procedures.id,
-                    procedures.payment,
-                    procedures.balance,
-                    procedures.date
+                       procedures.id,
+                       procedures.payment,
+                       procedures.balance,
+                       procedures.date
                     
-                    FROM patients 
-                    LEFT JOIN procedures ON patients.id = procedures.id_patient
-                    WHERE patients.id = ${id}`;
+                       FROM patients 
+                       LEFT JOIN procedures ON patients.id = procedures.id_patient
+                       WHERE patients.id = ${id} `;
 
             connection.query(sql, function (err, result) {
                 if (err) throw err;
@@ -1310,11 +1289,10 @@ const start = async () => {
         }
     });
 
-
     // GET JOIN A_C_P
-    app.get('/maxmindate', async (req, res, next) => {
+    app.get('/maxmindate', isLoggedInAdmin, async (req, res, next) => {
         try {
-            let sql = `SELECT 
+            let sql = `SELECT
                        MAX(date) as max,
                        Min(date) as min
                        from procedures`;
@@ -1327,7 +1305,6 @@ const start = async () => {
             next(e);
         }
     });
-
 
     // GET All PHONE NUMBER
     app.get('/phonenumber', async (req, res, next) => {
@@ -1386,7 +1363,6 @@ const start = async () => {
         }
     });
 
-
     //LOGIN
     app.post('/login', async (req, res, next) => {
         const { username, password } = req.body;
@@ -1400,7 +1376,7 @@ const start = async () => {
                 let admin = data.find(r => r.username == username);
 
                 if (admin) {
-                    log = `UPDATE admins SET token = ? WHERE id = ?`;
+                    log = `UPDATE admins SET token = ? WHERE id = ? `;
                     let isMatch = await bcrypt.compare(password, admin.password);
                     if (isMatch) {
                         let payload = { id: admin.id };
@@ -1421,7 +1397,7 @@ const start = async () => {
                         let patient = await datas.find(r => r.username == username);
 
                         if (patient) {
-                            log = `UPDATE patients SET token = ? WHERE id = ?`;
+                            log = `UPDATE patients SET token = ? WHERE id = ? `;
                             let isMatch = bcrypt.compare(password, patient.password);
                             if (isMatch) {
                                 let payload = { id: patient.id };
@@ -1444,9 +1420,6 @@ const start = async () => {
         }
     });
 
-
-
-
     //LOGOUT
     app.post('/logout', async (req, res, next) => {
         const { username } = req.body;
@@ -1460,7 +1433,7 @@ const start = async () => {
                 let admin = data.find(r => r.username == username);
 
                 if (admin) {
-                    log = `UPDATE admins SET token = ? WHERE id = ?`;
+                    log = `UPDATE admins SET token = ? WHERE id = ? `;
                     connection.query(log, [null, admin.id], function (err, result) {
                         if (err) throw err;
                         res.json({ success: true, result });
@@ -1472,7 +1445,7 @@ const start = async () => {
                         let patient = datas.find(r => r.username == username);
 
                         if (patient) {
-                            log = `UPDATE patients SET token = ? WHERE id = ?`;
+                            log = `UPDATE patients SET token = ? WHERE id = ? `;
                             connection.query(log, [null, patient.id], function (err, result) {
                                 if (err) throw err;
                                 res.json({ success: true, result });
@@ -1485,9 +1458,6 @@ const start = async () => {
             next(e);
         }
     });
-
-
-
 
     //SIGNUP
     app.post('/signup', async (req, res, next) => {
@@ -1503,7 +1473,7 @@ const start = async () => {
 
             if (health == "") values[9] = "Null";
 
-            let sql = `INSERT INTO patients (${att}) VALUES (${inValues})`;
+            let sql = `INSERT INTO patients(${att}) VALUES(${inValues})`;
             connection.query(sql, values, function (err, result) {
                 if (err) throw err;
 
@@ -1527,15 +1497,15 @@ const start = async () => {
     });
 
     // CREATE Patient
-    app.post('/intialpatient', async (req, res, next) => {
+    app.post('/intialpatient', isLoggedInSuperAdmin, async (req, res, next) => {
         const { number } = req.body;
 
         try {
-            let sql = `INSERT INTO patients ( username, password, first_name, middle_name, last_name, phone, gender, birth, marital, health, address ) VALUES `;
+            let sql = `INSERT INTO patients(username, password, first_name, middle_name, last_name, phone, gender, birth, marital, health, address) VALUES`;
 
             for (let i = 1; i <= parseInt(number); i++) {
 
-                let values = `('${i + "***"}', '${"***"}', '${"***"}', '${"***"}', '${"***"}', ${i}, '${"Male"}', '${"2020-01-01"}', '${"Single"}', '${"***"}', '${"***"}'),`;
+                let values = `('${i + "***"}', '${"***"}', '${"***"}', '${"***"}', '${"***"}', ${i}, '${"Male"}', '${"2020-01-01"}', '${"Single"}', '${"***"}', '${"***"}'), `;
 
                 sql += values;
             }

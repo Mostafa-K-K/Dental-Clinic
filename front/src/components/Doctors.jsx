@@ -1,12 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import API from '../API';
+import React, { useState, useEffect, useContext } from 'react'
+import API from '../API'
+import SessionContext from "./session/SessionContext"
 
 export default function Doctors(props) {
+
+  let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
 
   const [doctors, setdoctors] = useState([]);
 
   const fetchdata = async () => {
-    await API.get(`doctor`)
+    await API.get(`doctor`, {
+      headers: {
+          id: id,
+          token: token,
+          isAdmin: isAdmin
+      }
+  })
       .then(res => {
         const result = res.data.result;
         let data = [];

@@ -7,7 +7,7 @@ const bcrypt = require("bcryptjs")
 
 export default function Change_Password_Admin() {
 
-    const { session: { user: { id } } } = useContext(SessionContext);
+    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
     const history = useHistory();
 
     const [state, updateState] = useState({
@@ -38,7 +38,13 @@ export default function Change_Password_Admin() {
             let isMatch = await bcrypt.compare(state.password, state.oldPass);
 
             if (isMatch && state.newPass === state.newPassC) {
-                await API.put(`admin/${id}`, reqBody);
+                await API.put(`admin/${id}`, reqBody, {
+                    headers: {
+                        id: id,
+                        token: token,
+                        isAdmin: isAdmin
+                    }
+                });
 
                 setState({
                     oldPass: "",
@@ -66,7 +72,13 @@ export default function Change_Password_Admin() {
     useEffect(() => {
         async function fetchData() {
             try {
-                await API.get(`admin/${id}`)
+                await API.get(`admin/${id}`, {
+                    headers: {
+                        id: id,
+                        token: token,
+                        isAdmin: isAdmin
+                    }
+                })
                     .then(res => {
                         const result = res.data.result;
                         const success = res.data.success;

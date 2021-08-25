@@ -1,10 +1,13 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { useHistory } from 'react-router'
 import API from '../../../API'
+import SessionContext from "../../../components/session/SessionContext"
 
 import Radio from '../../../components/Radio'
 
 export default function Create_Patient() {
+
+    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
 
     const history = useHistory();
 
@@ -67,7 +70,13 @@ export default function Create_Patient() {
                                     }
 
                                     if (!isUser && !isPhon && state.conPassword === state.password) {
-                                        await API.post(`patient`, reqBody);
+                                        await API.post(`patient`, reqBody, {
+                                            headers: {
+                                                id: id,
+                                                token: token,
+                                                isAdmin: isAdmin
+                                            }
+                                        });
                                         history.push({ pathname: '/patient/list' })
                                     }
                                 }

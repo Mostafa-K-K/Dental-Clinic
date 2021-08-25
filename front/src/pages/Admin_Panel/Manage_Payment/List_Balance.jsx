@@ -1,9 +1,12 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useContext } from "react"
 import { useHistory } from 'react-router'
 import moment from "moment"
 import API from "../../../API"
+import SessionContext from "../../../components/session/SessionContext"
 
 export default function List_Balance() {
+
+    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
 
     const history = useHistory();
 
@@ -35,7 +38,13 @@ export default function List_Balance() {
             try {
 
                 if (state.isFetch) {
-                    await API.get(`maxmindate`)
+                    await API.get(`maxmindate`, {
+                        headers: {
+                            id: id,
+                            token: token,
+                            isAdmin: isAdmin
+                        }
+                    })
                         .then(res => {
                             const result = res.data.result;
                             const success = res.data.success;
@@ -56,7 +65,13 @@ export default function List_Balance() {
                     dateTo: moment(state.dateTo).add(1, 'days').format("YYYY-MM-DD")
                 }
 
-                await API.post(`balance`, reqBody)
+                await API.post(`balance`, reqBody, {
+                    headers: {
+                        id: id,
+                        token: token,
+                        isAdmin: isAdmin
+                    }
+                })
                     .then(res => {
                         const data = res.data.result;
                         const success = res.data.success;

@@ -1,13 +1,22 @@
-import React, { useState, useEffect } from "react"
-import API from "../API";
+import React, { useState, useEffect, useContext } from "react"
+import API from "../API"
+import SessionContext from "./session/SessionContext"
 
 export default function Types(props) {
+
+    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
 
     const [types, setTypes] = useState([]);
 
     useEffect(() => {
         async function fetchData() {
-            await API.get(`type`)
+            await API.get(`type`, {
+                headers: {
+                    id: id,
+                    token: token,
+                    isAdmin: isAdmin
+                }
+            })
                 .then(res => {
                     const result = res.data.result;
                     setTypes(result);
