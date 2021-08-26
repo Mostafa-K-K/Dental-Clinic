@@ -114,7 +114,7 @@ export default function Create_Clinic() {
                     if (success) {
                         const isClinic = result.find(r => r.name === state.name);
                         if (isClinic) {
-                            toast.error("Clinic alredy token");
+                            toast.error("Clinic alredy Exist");
                         } else {
                             await API.post(`clinic`, reqBody, {
                                 headers: {

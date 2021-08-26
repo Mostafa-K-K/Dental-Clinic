@@ -57,7 +57,7 @@ async function isLoggedIn(req, res, next) {
     const id = req.header("id");
     const token = req.header("token");
     const isAdmin = req.header("isAdmin");
-    
+
     let sql = ``;
 
     (isAdmin == true || isAdmin == "true") ?
@@ -285,11 +285,11 @@ const start = async () => {
         let attValues = [];
 
         if (description) {
-            att += ` description = ? , `;
+            att += ` description = ? ,`;
             attValues.push(description);
         }
         if (bill) {
-            att += ` bill = ? , `;
+            att += ` bill = ? ,`;
             attValues.push(bill);
         }
 
@@ -603,9 +603,16 @@ const start = async () => {
         let salt = await bcrypt.genSalt(10);
         let hashedPassword = await bcrypt.hash(password, salt);
 
-        let att = "username, password, first_name, middle_name, last_name, phone, gender, birth, marital, health, address";
-        let values = [username, hashedPassword, first_name, middle_name, last_name, phone, gender, birth, marital, health, address];
+        let att = "username, password, first_name, middle_name, last_name, phone, gender, birth, marital, address ";
+        let values = [username, hashedPassword, first_name, middle_name, last_name, phone, gender, birth, marital, address];
         let inValues = "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?";
+
+        if (health) {
+            att += `, health `;
+            inValues += `, ?`;
+            values.push(health);
+        }
+        att = att.slice(0, -1);
 
         try {
             let sql = `INSERT INTO patients(${att}) VALUES(${inValues})`;

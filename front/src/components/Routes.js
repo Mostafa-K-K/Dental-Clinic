@@ -115,7 +115,7 @@ export default function Routes() {
                     <PrivateRouteAdmin user={user} path="/clinic/create" component={Create_Clinic} />
 
                     <PrivateRouteAdmin user={user} path="/type/list" component={List_Type} />
-                    <PrivateRouteAdmin user={user} path="/type/edit':id" component={Edit_Type} />
+                    <PrivateRouteAdmin user={user} path="/type/edit/:id" component={Edit_Type} />
                     <PrivateRouteAdmin user={user} path="/type/create" component={Create_Type} />
 
                     <PrivateRouteAdmin user={user} path="/appointment/today" component={Today_Appointment} />

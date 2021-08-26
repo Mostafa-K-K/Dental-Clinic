@@ -113,9 +113,9 @@ export default function Create_Type() {
                 .then(async res => {
                     const result = res.data.result;
                     const isDesc = result.find(r => r.description === state.description);
+
                     if (isDesc) {
                         toast.error("Act alredy Exist");
-
                     } else {
                         await API.post(`type`, reqBody, {
                             headers: {
@@ -123,8 +123,9 @@ export default function Create_Type() {
                                 token: token,
                                 isAdmin: isAdmin
                             }
-                        });
-                        history.push({ pathname: '/type/list' })
+                        })
+                            .then(toast.success("Added Acl Successfuly"))
+                            .then(history.push({ pathname: '/type/list' }));
                     }
                 });
         } catch (e) {
@@ -196,7 +197,7 @@ export default function Create_Type() {
                             type="button"
                             variant="contained"
                             className={classes.submit}
-                            onClick={() => history.push({ pathname: `/clinic/list` })}
+                            onClick={() => history.push({ pathname: `/type/list` })}
                         >
                             Cancel
                         </Button>

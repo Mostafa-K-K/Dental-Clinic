@@ -66,7 +66,7 @@ export default function List_Clinic() {
                                     <td>{clinic.name}</td>
                                     <td>
                                         <a href=""
-                                            onClick={() => history.push({ pathname: `/clinic/edit${clinic.id}` })}
+                                            onClick={() => history.push({ pathname: `/clinic/edit/${clinic.id}` })}
                                             className="settings"
                                             title="Settings"
                                             data-toggle="tooltip"

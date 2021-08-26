@@ -4,9 +4,126 @@ import API from '../../../API'
 import moment from 'moment'
 import SessionContext from "../../../components/session/SessionContext"
 
-import Radio from '../../../components/Radio'
+import { toast } from "react-toastify"
+
+import {
+    FormControl,
+    InputLabel,
+    OutlinedInput,
+    IconButton,
+    Avatar,
+    Button,
+    CssBaseline,
+    TextField,
+    FormControlLabel,
+    Grid,
+    Typography,
+    makeStyles,
+    Container,
+    InputAdornment,
+    RadioGroup,
+    FormLabel,
+    Radio
+} from '@material-ui/core'
+
+import {
+    Visibility,
+    LockOutlined,
+    VisibilityOff
+} from '@material-ui/icons'
+
+import { DatePicker, KeyboardDatePicker } from "@material-ui/pickers"
+
+import DateFnsUtils from '@date-io/date-fns';
+import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+
+
+const useStyles = makeStyles((theme) => ({
+    root: {
+        '& label.Mui-focused': {
+            color: theme.palette.primary.main,
+        },
+        '& .MuiInput-underline:after': {
+            borderBottomColor: theme.palette.primary.main,
+        },
+        '& .MuiOutlinedInput-root': {
+            '& fieldset': {
+                borderColor: theme.palette.primary.main,
+            },
+            '&:hover fieldset': {
+                borderColor: theme.palette.primary.main,
+            },
+            '&.Mui-focused fieldset': {
+                borderColor: theme.palette.primary.main,
+            },
+        },
+    },
+    paper: {
+        marginTop: theme.spacing(3),
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+    },
+    avatar: {
+        margin: theme.spacing(1),
+        backgroundColor: theme.palette.primary.main,
+        color: "white !important"
+    },
+    form: {
+        width: '100%',
+        marginTop: theme.spacing(4),
+    },
+    submit: {
+        width: 120,
+        marginBottom: 20,
+        marginTop: 20
+    },
+    container: {
+        width: "80%",
+        backgroundColor: "white",
+        paddingBottom: "10px",
+        marginBottom: "70px",
+        marginTop: "50px",
+        borderRadius: "5px"
+    },
+    FormLabel: {
+        textAlign: "center",
+        marginTop: 12
+    },
+    FormControl: {
+        display: "flex",
+        flexFlow: "row",
+        justifyContent: "space-around",
+        // marginLeft: "5%",
+        '& .radioR1': {
+            display: "flex",
+            flexFlow: "row",
+            justifyContent: "space-between",
+            // marginLeft: "7%",
+            '& .MuiFormControlLabel-root:nth-child(2)': {
+                // marginLeft: "9%"
+            }
+        },
+        '& .radioR2': {
+            display: "flex",
+            flexFlow: "row",
+            // marginLeft: "8%",
+            '& .MuiFormControlLabel-root:nth-child(2)': {
+                // marginLeft: "8%"
+            }
+        }
+    },
+    flexDiv: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: "space-around"
+    },
+}));
 
 export default function Edit_Patient() {
+
+    const classes = useStyles();
 
     let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
 
@@ -27,8 +144,7 @@ export default function Edit_Patient() {
         marital: "Single",
         health: "",
         address: "",
-        errPhon: "",
-        errUser: ""
+        show: true
     });
 
     function setState(nextState) {
@@ -41,6 +157,12 @@ export default function Edit_Patient() {
     function handleChange(e) {
         let { name, value } = e.target;
         setState({ [name]: value });
+    }
+
+    function handleShow() {
+        state.show ?
+            setState({ show: false }) :
+            setState({ show: true });
     }
 
     async function handleSubmit(e) {
@@ -88,8 +210,9 @@ export default function Edit_Patient() {
                                     const isPhon = phones.filter(r => r.phone !== state.lastPhone)
                                         .find(r => r.phone === state.phone);
 
-                                    if (isUser) setState({ errUser: "Username alredy token" });
-                                    if (isPhon) setState({ errPhon: "Phone Number alredy token" });
+                                    if (isUser) toast.error("Username alredy token");
+                                    if (isPhon) toast.error("Phone Number alredy token");
+
                                     if (!isUser && !isPhon) {
                                         await API.put(`patient/${id_pat}`, reqBody, {
                                             headers: {
@@ -97,8 +220,9 @@ export default function Edit_Patient() {
                                                 token: token,
                                                 isAdmin: isAdmin
                                             }
-                                        });
-                                        history.push({ pathname: '/patient/list' })
+                                        })
+                                            .then(toast.success("Update Patient Successfuly"))
+                                            .then(history.push({ pathname: '/patient/list' }))
                                     }
                                 }
                             });
@@ -144,109 +268,217 @@ export default function Edit_Patient() {
     }, []);
 
     return (
-        <div>
-            <h1>ADD PATIENT</h1>
-            <span>ID : {id_pat}</span>
-            <form onSubmit={handleSubmit}>
+        <Container component="main" className={classes.container}>
+            <CssBaseline />
+            <div className={classes.paper}>
 
-                <input
-                    type="text"
-                    name="username"
-                    value={state.username}
-                    placeholder="Username"
-                    onChange={handleChange}
-                />
-                <span>{state.errUser}</span>
+                <Avatar className={classes.avatar}>
+                    <LockOutlined />
+                </Avatar>
 
-                <input
-                    type="password"
-                    name="password"
-                    value={state.password}
-                    placeholder="New Password"
-                    onChange={handleChange}
-                />
+                <Typography component="h1" variant="h5">
+                    Update Patient
+                </Typography>
 
-                <input
-                    type="text"
-                    name="first_name"
-                    value={state.first_name}
-                    placeholder="First Name"
-                    onChange={handleChange}
-                />
+                <form
+                    className={classes.form}
+                    onSubmit={handleSubmit}
+                >
+                    <Grid container spacing={1}>
 
-                <input
-                    type="text"
-                    name="middle_name"
-                    value={state.middle_name}
-                    placeholder="Middle Name"
-                    onChange={handleChange}
-                />
+                        <Grid item xs={6}>
+                            <TextField
+                                readOnly
+                                fullWidth
+                                variant="outlined"
+                                label="ID"
+                                value={id_pat}
+                                className={classes.root}
+                            />
+                        </Grid>
 
-                <input
-                    type="text"
-                    name="last_name"
-                    value={state.last_name}
-                    placeholder="Last Name"
-                    onChange={handleChange}
-                />
+                        <Grid item xs={6}>
+                            <TextField
+                                required
+                                fullWidth
+                                variant="outlined"
+                                label="First Name"
+                                name="first_name"
+                                value={state.first_name}
+                                onChange={handleChange}
+                                className={classes.root}
+                            />
+                        </Grid>
 
-                <input
-                    type="text"
-                    name="phone"
-                    value={state.phone}
-                    placeholder="Phone Number"
-                    onChange={handleChange}
-                />
-                <span>{state.errPhon}</span>
+                        <Grid item xs={6}>
+                            <TextField
+                                required
+                                fullWidth
+                                variant="outlined"
+                                label="Middle Name"
+                                name="middle_name"
+                                value={state.middle_name}
+                                onChange={handleChange}
+                                className={classes.root}
+                            />
+                        </Grid>
 
-                <input
-                    type="date"
-                    name="birth"
-                    value={state.birth}
-                    onChange={handleChange}
-                />
+                        <Grid item xs={6} >
+                            <TextField
+                                required
+                                fullWidth
+                                variant="outlined"
+                                label="Last Name"
+                                name="last_name"
+                                value={state.last_name}
+                                onChange={handleChange}
+                                className={classes.root}
+                            />
+                        </Grid>
 
-                <Radio
-                    type="radio"
-                    name="gender"
-                    check={state.gender}
-                    value1="Male"
-                    value2="Female"
-                    id1="male"
-                    id2="female"
-                    onChange={handleChange}
-                />
+                        <Grid item xs={6} >
+                            <TextField
+                                required
+                                fullWidth
+                                variant="outlined"
+                                label="Username"
+                                name="username"
+                                value={state.username}
+                                onChange={handleChange}
+                                className={classes.root}
+                            />
+                        </Grid>
 
-                <Radio
-                    type="radio"
-                    name="marital"
-                    check={state.marital}
-                    value1="Single"
-                    value2="Married"
-                    id1="single"
-                    id2="married"
-                    onChange={handleChange}
-                />
+                        <Grid item xs={6} >
+                            <TextField
+                                required
+                                fullWidth
+                                type="number"
+                                variant="outlined"
+                                label="Phone Number"
+                                name="phone"
+                                value={state.phone}
+                                onChange={handleChange}
+                                className={classes.root}
+                            />
+                        </Grid>
 
-                <input
-                    type="text"
-                    name="health"
-                    value={state.health}
-                    placeholder="Health Problem"
-                    onChange={handleChange}
-                />
+                        <Grid item xs={6} >
+                            <TextField
+                                required
+                                fullWidth
+                                variant="outlined"
+                                label="health Problem"
+                                name="health"
+                                value={state.health}
+                                onChange={handleChange}
+                                className={classes.root}
+                            />
+                        </Grid>
 
-                <input
-                    type="text"
-                    name="address"
-                    value={state.address}
-                    placeholder="Address"
-                    onChange={handleChange}
-                />
+                        <Grid item xs={6} >
+                            <TextField
+                                required
+                                fullWidth
+                                variant="outlined"
+                                label="Address"
+                                name="address"
+                                value={state.address}
+                                onChange={handleChange}
+                                className={classes.root}
+                            />
+                        </Grid>
 
-                <button type="submit">SAVE</button>
-            </form>
+                        <Grid item xs={6} >
+                            Date
+                            {/* <KeyboardDatePicker
+                                    autoOk
+                                    variant="inline"
+                                    inputVariant="outlined"
+                                    label="Birth Date"
+                                    format="yyyy/dd/MM"
+                                    value={state.birth}
+                                    InputAdornmentProps={{ position: "start" }}
+                                    onChange={date => handleDateChange(date)}
+                                /> */}
+                        </Grid>
 
-        </div>
+                        <Grid item xs={6} >
+                            <FormControl fullWidth variant="outlined" className={classes.root}>
+                                <InputLabel>Password</InputLabel>
+                                <OutlinedInput
+                                    type={state.show ? 'text' : 'password'}
+                                    name="password"
+                                    value={state.password}
+                                    onChange={handleChange}
+                                    endAdornment={
+                                        <InputAdornment position="end">
+                                            <IconButton onClick={handleShow}>
+                                                {state.show ? <Visibility /> : <VisibilityOff />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    }
+                                    labelWidth={70}
+                                />
+                            </FormControl>
+                        </Grid>
+
+                        <Grid item xs={6} >
+                            <FormControl fullWidth className={classes.FormControl}>
+                                <FormLabel className={classes.FormLabel}>Gender</FormLabel>
+                                <RadioGroup
+                                    name="gender"
+                                    value={state.gender}
+                                    onChange={handleChange}
+                                    className="radioR1"
+                                >
+                                    <FormControlLabel value="Male" control={<Radio />} label="Male" />
+                                    <FormControlLabel value="Female" control={<Radio />} label="Female" />
+                                </RadioGroup>
+                            </FormControl>
+                        </Grid>
+
+                        <Grid item xs={6}   >
+                            <FormControl className={classes.FormControl}>
+                                <FormLabel xs={4} className={classes.FormLabel}>Status</FormLabel>
+                                <RadioGroup
+                                    name="marital"
+                                    value={state.marital}
+                                    onChange={handleChange}
+                                    className="radioR2"
+                                >
+                                    <FormControlLabel xs={4} value="Single" control={<Radio />} label="Single" />
+                                    <FormControlLabel xs={4} value="Married" control={<Radio />} label="Married" />
+                                </RadioGroup>
+                            </FormControl>
+                        </Grid>
+
+                    </Grid>
+
+                    <div className={classes.flexDiv}>
+
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            color="primary"
+                            className={classes.submit}
+                        >
+                            Save
+                        </Button>
+
+                        <Button
+                            type="button"
+                            variant="contained"
+                            className={classes.submit}
+                            onClick={() => history.push({ pathname: `/patient/list` })}
+                        >
+                            Cancel
+                        </Button>
+
+                    </div>
+
+                </form>
+            </div>
+        </Container>
     )
 }

@@ -199,7 +199,7 @@ export default function Create_Patient() {
                                             }
                                         })
                                             .then(toast.success("Added Patient Successfuly"))
-                                            .then(history.push({ pathname: '/patient/list' }))
+                                            .then(history.push({ pathname: '/patient/list' }));
                                     }
                                 }
                             });
@@ -229,7 +229,7 @@ export default function Create_Patient() {
                 >
                     <Grid container spacing={1}>
 
-                        <Grid item xs={12}>
+                        <Grid item xs={6}>
                             <TextField
                                 required
                                 fullWidth
@@ -242,7 +242,7 @@ export default function Create_Patient() {
                             />
                         </Grid>
 
-                        <Grid item xs={12}>
+                        <Grid item xs={6}>
                             <TextField
                                 required
                                 fullWidth
@@ -255,7 +255,7 @@ export default function Create_Patient() {
                             />
                         </Grid>
 
-                        <Grid item xs={12} >
+                        <Grid item xs={6} >
                             <TextField
                                 required
                                 fullWidth
@@ -268,7 +268,7 @@ export default function Create_Patient() {
                             />
                         </Grid>
 
-                        <Grid item xs={12} >
+                        <Grid item xs={6} >
                             <TextField
                                 required
                                 fullWidth
@@ -281,7 +281,7 @@ export default function Create_Patient() {
                             />
                         </Grid>
 
-                        <Grid item xs={12} >
+                        <Grid item xs={6} >
                             <TextField
                                 required
                                 fullWidth
@@ -295,9 +295,8 @@ export default function Create_Patient() {
                             />
                         </Grid>
 
-                        <Grid item xs={12} >
+                        <Grid item xs={6} >
                             <TextField
-                                required
                                 fullWidth
                                 variant="outlined"
                                 label="health Problem"
@@ -308,7 +307,7 @@ export default function Create_Patient() {
                             />
                         </Grid>
 
-                        <Grid item xs={12} >
+                        <Grid item xs={6} >
                             <TextField
                                 required
                                 fullWidth
@@ -321,7 +320,7 @@ export default function Create_Patient() {
                             />
                         </Grid>
 
-                        <Grid item xs={12} >
+                        <Grid item xs={6} >
                             Date
                             {/* <KeyboardDatePicker
                                     autoOk
@@ -335,7 +334,7 @@ export default function Create_Patient() {
                                 /> */}
                         </Grid>
 
-                        <Grid item xs={12} >
+                        <Grid item xs={6} >
                             <FormControl fullWidth variant="outlined" className={classes.root}>
                                 <InputLabel>Password</InputLabel>
                                 <OutlinedInput
@@ -355,7 +354,7 @@ export default function Create_Patient() {
                             </FormControl>
                         </Grid>
 
-                        <Grid item xs={12} >
+                        <Grid item xs={6} >
                             <FormControl fullWidth variant="outlined" className={classes.root}>
                                 <InputLabel>Confirm Password</InputLabel>
                                 <OutlinedInput
@@ -375,7 +374,7 @@ export default function Create_Patient() {
                             </FormControl>
                         </Grid>
 
-                        <Grid item xs={12} >
+                        <Grid item xs={6} >
                             <FormControl fullWidth className={classes.FormControl}>
                                 <FormLabel className={classes.FormLabel}>Gender</FormLabel>
                                 <RadioGroup
@@ -390,7 +389,7 @@ export default function Create_Patient() {
                             </FormControl>
                         </Grid>
 
-                        <Grid item xs={12}   >
+                        <Grid item xs={6}   >
                             <FormControl className={classes.FormControl}>
                                 <FormLabel xs={4} className={classes.FormLabel}>Status</FormLabel>
                                 <RadioGroup
