@@ -2,11 +2,101 @@ import React, { useState, useContext } from "react"
 import moment from "moment"
 import { useHistory } from 'react-router'
 import API from "../../../API"
+import { toast } from "react-toastify"
 import SessionContext from "../../../components/session/SessionContext"
+
+import {
+    Avatar,
+    Button,
+    CssBaseline,
+    TextField,
+    Grid,
+    Typography,
+    makeStyles,
+    Container,
+} from '@material-ui/core'
+
+import { Person } from "@material-ui/icons"
 
 import Patients from "../../../components/Patients"
 
+const useStyles = makeStyles((theme) => ({
+    root: {
+        '& label.Mui-focused': {
+            color: theme.palette.primary.main,
+        },
+        '& .MuiInput-underline:after': {
+            borderBottomColor: theme.palette.primary.main,
+        },
+        '& .MuiOutlinedInput-root': {
+            '& fieldset': {
+                borderColor: theme.palette.primary.main,
+            },
+            '&:hover fieldset': {
+                borderColor: theme.palette.primary.main,
+            },
+            '&.Mui-focused fieldset': {
+                borderColor: theme.palette.primary.main,
+            },
+        },
+        marginBottom: 15
+    },
+    paper: {
+        marginTop: theme.spacing(3),
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+    },
+    avatar: {
+        margin: theme.spacing(1),
+        backgroundColor: theme.palette.primary.main,
+        color: "white !important"
+    },
+    form: {
+        width: '100%',
+        marginTop: theme.spacing(4),
+    },
+    submit: {
+        width: 120,
+        marginBottom: 20,
+        marginTop: 20
+    },
+    container: {
+        backgroundColor: "white",
+        paddingBottom: "10px",
+        marginBottom: "70px",
+        marginTop: "50px",
+        borderRadius: "5px"
+    },
+    FormLabel: {
+        textAlign: "center",
+        marginTop: 12
+    },
+    flexDiv: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: "space-around"
+    },
+    FormControl: {
+        display: "flex",
+        flexFlow: "row",
+        marginLeft: 20,
+        '& .radioR2': {
+            display: "flex",
+            flexFlow: "row",
+            marginLeft: 75,
+            '& .MuiFormControlLabel-root:nth-child(2)': {
+                marginLeft: 25
+            }
+        },
+        marginBottom: 15
+    },
+}));
+
 export default function Create_Payment() {
+
+    const classes = useStyles();
 
     let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
 
@@ -16,7 +106,7 @@ export default function Create_Payment() {
     const [state, updateState] = useState({
         payment: "",
         date: date,
-        id_patient: ""
+        patient: ""
     });
 
     function setState(nextState) {
@@ -34,9 +124,7 @@ export default function Create_Payment() {
     async function handleSubmit(e) {
         e.preventDefault();
         try {
-            let p_arr = state.id_patient.split(' ');
-            let p_str = p_arr.length - 1;
-            let p_id = p_arr[p_str];
+            let p_id = state.patient.id;
 
             let dd = moment(state.date).format("YYYY-MM-DD HH:mm");
 
@@ -46,43 +134,81 @@ export default function Create_Payment() {
                 id_patient: p_id
             };
 
+            console.log(reqBody);
+
             await API.post(`procedure`, reqBody, {
                 headers: {
                     id: id,
                     token: token,
                     isAdmin: isAdmin
                 }
-            });
-            await history.push({ pathname: `/balance/list` });
+            })
+                .then(toast.success("Pay Successfuly"))
+                .then(history.push({ pathname: `/balance/list` }));
         } catch (e) {
             console.log("ERROR", e);
         }
     }
 
     return (
-        <div>
-            <h1>add payment</h1>
-            <form onSubmit={handleSubmit}>
+        <Container component="main" maxWidth="xs" className={classes.container}>
+            <CssBaseline />
+            <div className={classes.paper}>
+                <Avatar className={classes.avatar}>
+                    <Person />
+                </Avatar>
+                <Typography component="h1" variant="h5">
+                    Add Payment
+                </Typography>
+                <form className={classes.form} onSubmit={handleSubmit}>
 
-                <Patients
-                    value={state.id_patient}
-                    name="id_patient"
-                    onChange={handleChange}
-                    resetValue={() => setState({ id_patient: "" })}
-                />
+                    <Grid item xs={12} >
+                        <Patients
+                            value={state.patient}
+                            onChange={(event, newValue) => {
+                                setState({ patient: newValue });
+                            }}
+                            className={classes.root}
+                        />
+                    </Grid>
 
-                <input
-                    required
-                    type="number"
-                    name="payment"
-                    placeholder="Payment"
-                    value={state.payment}
-                    onChange={handleChange}
-                />
+                    <Grid item xs={12} >
+                        <TextField
+                            required
+                            fullWidth
+                            type="number"
+                            variant="outlined"
+                            label="Payment"
+                            name="payment"
+                            value={state.payment}
+                            onChange={handleChange}
+                            className={classes.root}
+                        />
+                    </Grid>
 
-                <button type="submit">ADD</button>
-            </form>
-        </div>
+                    <div className={classes.flexDiv}>
+
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            color="primary"
+                            className={classes.submit}
+                        >
+                            Add
+                        </Button>
+
+                        <Button
+                            type="button"
+                            variant="contained"
+                            className={classes.submit}
+                            onClick={() => history.push({ pathname: "/balance/list" })}
+                        >
+                            Cancel
+                        </Button>
+
+                    </div>
+                </form>
+            </div>
+        </Container>
     )
-
 }

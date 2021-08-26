@@ -3,11 +3,44 @@
     margin: 0;
 }
 
+*:focus {
+    outline: none !important;
+}
+
+*::selection {
+    color: #FFFFFF;
+    background: #8BE3D9;
+}
+
 .superContainer {
     display: flex;
 }
 
 .miniContainer {
     flex: 10;
-    background-color: #FFFFFF;
+}
+
+/*
+a {
+    color: #6c757d;
+    text-decoration: none;
+    background-color: transparent;
+}
+
+a:hover {
+    text-decoration: none;
+    color: black;
+}
+*/
+
+.MuiIconButton-label {
+    color: #8BE3D9 !important;
+}
+
+.MuiIconButton-labe>.MuiTypography-root {
+    color: white !important;
+}
+
+.MuiButtonBase-root, .MuiIconButton-root {
+    outline: none !important;
 }

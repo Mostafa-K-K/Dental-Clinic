@@ -19,8 +19,8 @@ export default function Create_Procedure() {
     const [state, updateState] = useState({
         payment: "",
         date: date,
-        id_patient: "",
-        id_doctor: "",
+        patient: "",
+        doctor: "",
 
         works: [],
         total: 0,
@@ -55,16 +55,16 @@ export default function Create_Procedure() {
 
     async function handleRow() {
         let work = state.works;
-        let id;
+        let id_w;
         (work.length) ?
-            id = work[work.length - 1].id + 1 :
-            id = 0;
+            id_w = work[work.length - 1].id_w + 1 :
+            id_w = 0;
         try {
             if (state.id_teeth != "" && state.id_type != "") {
 
                 API.get(`type/${state.id_type}`, {
                     headers: {
-                        id: id,
+                        id: id_w,
                         token: token,
                         isAdmin: isAdmin
                     }
@@ -73,7 +73,7 @@ export default function Create_Procedure() {
                         const result = res.data.result;
 
                         work.push({
-                            id: id,
+                            id: id_w,
                             teeth: (state.id_teeth == 1 || state.id_teeth == 2) ? "All Teeth" : state.id_teeth,
                             type: result.description,
                             id_teeth: state.id_teeth,
@@ -118,21 +118,19 @@ export default function Create_Procedure() {
             let p_id = "";
             let d_id = "";
 
-            if (state.id_patient && state.id_patient !== '') {
-                let p_arr = state.id_patient.split('-');
-                p_id = p_arr[1];
-            }
-            if (state.id_doctor && state.id_doctor !== '') {
-                let d_arr = state.id_doctor.split('-');
-                d_id = d_arr[1];
-            }
+            if (state.patient && state.patient !== '')
+                p_id = state.patient.id;
+
+            if (state.doctor && state.doctor !== '')
+                d_id = state.doctor.id;
+
             let dd = moment(state.date).format("YYYY-MM-DD HH:mm");
 
             let reqBody = {
                 payment: state.payment,
                 date: dd,
-                id_patient: p_id,
-                id_doctor: d_id,
+                patient: p_id,
+                doctor: d_id,
                 balance: state.total
             };
 
@@ -190,17 +188,18 @@ export default function Create_Procedure() {
                 />
 
                 <Patients
-                    value={state.id_patient}
-                    name="id_patient"
-                    onChange={handleChange}
-                    resetValue={() => setState({ id_patient: "" })}
+                    value={state.patient}
+                    onChange={(event, newValue) => {
+                        setState({ patient: newValue });
+                    }}
+                // className={classes.root}
                 />
 
                 <Doctors
-                    value={state.id_doctor}
-                    name="id_doctor"
+                    value={state.doctor}
+                    name="doctor"
                     onChange={handleChange}
-                    resetValue={() => setState({ id_doctor: "" })}
+                    resetValue={() => setState({ doctor: "" })}
                 />
 
                 <select name="category" onChange={handleChange}>

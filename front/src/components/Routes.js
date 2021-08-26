@@ -77,6 +77,7 @@ export default function Routes() {
             <Sidebar view={user.token ? true : false} />
 
             <div className="miniContainer">
+
                 <Switch>
 
                     <PublicRoute user={user} path="/" component={Home} exact />

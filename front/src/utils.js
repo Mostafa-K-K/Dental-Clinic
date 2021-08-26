@@ -20,7 +20,7 @@ export function PublicRoute({ user, component, ...props }) {
     let Comp = component;
     return (
         <Route {...props} render={props => user.token ?
-            <Redirect {...props} to={(user.isAdmin) ? "/number/patient" : "/patient/panel"} /> :
+            <Redirect {...props} to={(user.isAdmin) ? "/admin/panel" : "/patient/panel"} /> :
             <Comp {...props} />
         } />
     )
@@ -57,7 +57,6 @@ export function PrivateRouteAdmin({ user, component, ...props }) {
         } />
     )
 }
-
 
 /**
  * 

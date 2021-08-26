@@ -22,7 +22,7 @@ export default function Create_Appointment() {
         start_at: date_start,
         end_at: date_end,
         status: 'Waiting',
-        id_patient: "",
+        patient: "",
         id_clinic: "",
         err: "",
         errExist: ""
@@ -43,8 +43,7 @@ export default function Create_Appointment() {
     async function handleSubmit(e) {
         e.preventDefault();
         try {
-            let arr = state.id_patient.split('-');
-            let id = arr[1];
+            let p_id = state.patient.id;
 
             let reqBody = {
                 description: state.description,
@@ -52,7 +51,7 @@ export default function Create_Appointment() {
                 start_at: state.start_at,
                 end_at: state.end_at,
                 status: state.status,
-                id_patient: id,
+                id_patient: p_id,
                 id_clinic: state.id_clinic,
             };
             await API.get('appointment', {
@@ -136,12 +135,12 @@ export default function Create_Appointment() {
             <h1>Appointmemt</h1>
             <form onSubmit={handleSubmit}>
 
-                <span>{state.err}</span>
                 <Patients
-                    value={state.id_patient}
-                    name="id_patient"
-                    onChange={handleChange}
-                    resetValue={() => setState({ id_patient: "" })}
+                    value={state.patient}
+                    onChange={(event, newValue) => {
+                        setState({ patient: newValue });
+                    }}
+                // className={classes.root}
                 />
 
                 <Clinics

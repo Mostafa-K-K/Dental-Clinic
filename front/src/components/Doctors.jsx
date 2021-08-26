@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react'
 import API from '../API'
 import SessionContext from "./session/SessionContext"
+import { TextField } from '@material-ui/core';
+import { Autocomplete } from '@material-ui/lab';
 
 export default function Doctors(props) {
 
@@ -11,11 +13,11 @@ export default function Doctors(props) {
   const fetchdata = async () => {
     await API.get(`doctor`, {
       headers: {
-          id: id,
-          token: token,
-          isAdmin: isAdmin
+        id: id,
+        token: token,
+        isAdmin: isAdmin
       }
-  })
+    })
       .then(res => {
         const result = res.data.result;
         let data = [];
@@ -29,39 +31,27 @@ export default function Doctors(props) {
       });
   }
 
-  function handleBlur(value) {
-    let isTrue = doctors.filter(p => p.name + " - " + p.id === value)
-    if (!isTrue.length) {
-      props.resetValue();
-    }
-  }
-
   useEffect(() => {
     fetchdata();
   }, []);
 
   return (
-    <div>
-      <input
-        list="doctor"
-        name={props.name}
-        value={props.value}
-        placeholder="Doctor"
-        onChange={props.onChange}
-        onBlur={e => handleBlur(e.target.value)}
-      />
-
-      <datalist
-        id="doctor"
-      >
-
-        {doctors.map(doctor =>
-          <option key={doctor.id}>
-            {doctor.name} - {doctor.id}
-          </option>
-        )}
-
-      </datalist>
-    </div>
+    <Autocomplete
+      id="id_doctor"
+      options={doctors}
+      getOptionLabel={(option) => option.name} variant="outlined"
+      value={props.value}
+      onChange={props.onChange}
+      renderInput={(params) =>
+        <TextField
+          required
+          fullWidth
+          {...params}
+          variant="outlined"
+          label="Doctor"
+          className={props.className}
+        />
+      }
+    />
   );
 }

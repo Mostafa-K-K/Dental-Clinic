@@ -534,50 +534,50 @@ const start = async () => {
         let attValues = [];
 
         if (username) {
-            att += ` username = ? , `;
+            att += ` username = ? ,`;
             attValues.push(username);
         }
         if (password) {
             let salt = await bcrypt.genSalt(10);
             let hashedPassword = await bcrypt.hash(password, salt);
 
-            att += ` password = ? , `;
+            att += ` password = ? ,`;
             attValues.push(hashedPassword);
         }
         if (first_name) {
-            att += ` first_name = ? , `;
+            att += ` first_name = ? ,`;
             attValues.push(first_name);
         }
         if (middle_name) {
-            att += ` middle_name = ? , `;
+            att += ` middle_name = ? ,`;
             attValues.push(middle_name);
         }
         if (last_name) {
-            att += ` last_name = ? , `;
+            att += ` last_name = ? ,`;
             attValues.push(last_name);
         }
         if (phone) {
-            att += ` phone = ? , `;
+            att += ` phone = ? ,`;
             attValues.push(phone);
         }
         if (gender) {
-            att += ` gender = ? , `;
+            att += ` gender = ? ,`;
             attValues.push(gender);
         }
         if (birth) {
-            att += ` birth = ? , `;
+            att += ` birth = ? ,`;
             attValues.push(birth);
         }
         if (marital) {
-            att += ` marital = ? , `;
+            att += ` marital = ? ,`;
             attValues.push(marital);
         }
         if (health) {
-            att += ` health = ? , `;
+            att += ` health = ? ,`;
             attValues.push(health);
         }
         if (address) {
-            att += ` address = ? , `;
+            att += ` address = ? ,`;
             attValues.push(address);
         }
 

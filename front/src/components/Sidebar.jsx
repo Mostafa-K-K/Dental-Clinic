@@ -3,6 +3,7 @@ import { getCookie, removeCookie } from '../cookie'
 import { Link } from 'react-router-dom'
 import API from '../API'
 import SessionContext from './session/SessionContext'
+import { toast } from "react-toastify"
 
 import {
     Container,
@@ -185,6 +186,7 @@ export default function Sidebar(props) {
         removeCookie('isAdmin');
         removeCookie('role_id');
         setSession({ user: {} });
+        toast.dark("Bye Bye");
     }
 
     return (
@@ -418,9 +420,7 @@ export default function Sidebar(props) {
 
                             </div>
 
-                            <div style={{ borderTop: "2px solid #FFFFFF ", marginBottom: 10, marginTop: 10, marginLeft: 3, marginRight: 3 }}></div>
-
-                            <div className={classes.bottomDiv} style={{ 'display': (parseInt(user.role_id) === 0 ? 'block' : 'none') }}>
+                            <div className={classes.bottomDiv}>
 
                                 <Link
                                     to="/patient/profile"
@@ -429,15 +429,15 @@ export default function Sidebar(props) {
                                     <Settings className={classes.icon} />
                                     <Typography className={classes.text}>PROFILE</Typography>
                                 </Link>
-                            </div>
 
-                            <a
-                                onClick={handleLogout}
-                                className={classes.item2}
-                            >
-                                <ExitToApp className={classes.icon} />
-                                <Typography className={classes.text}>LOGOUT</Typography>
-                            </a>
+                                <a
+                                    onClick={handleLogout}
+                                    className={classes.item2}
+                                >
+                                    <ExitToApp className={classes.icon} />
+                                    <Typography className={classes.text}>LOGOUT</Typography>
+                                </a>
+                            </div>
 
                         </Container >
                     </div >

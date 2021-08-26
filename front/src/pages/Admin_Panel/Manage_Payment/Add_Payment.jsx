@@ -2,10 +2,81 @@ import React, { useState, useEffect, useContext } from "react"
 import { useHistory, useParams } from 'react-router'
 import moment from "moment"
 import API from "../../../API"
+import { toast } from "react-toastify"
 import SessionContext from "../../../components/session/SessionContext"
+
+import {
+    Avatar,
+    Button,
+    CssBaseline,
+    TextField,
+    Grid,
+    Typography,
+    makeStyles,
+    Container,
+} from '@material-ui/core'
+
+import { Person } from "@material-ui/icons"
+
+const useStyles = makeStyles((theme) => ({
+    root: {
+        '& label.Mui-focused': {
+            color: theme.palette.primary.main,
+        },
+        '& .MuiInput-underline:after': {
+            borderBottomColor: theme.palette.primary.main,
+        },
+        '& .MuiOutlinedInput-root': {
+            '& fieldset': {
+                borderColor: theme.palette.primary.main,
+            },
+            '&:hover fieldset': {
+                borderColor: theme.palette.primary.main,
+            },
+            '&.Mui-focused fieldset': {
+                borderColor: theme.palette.primary.main,
+            },
+        },
+        marginBottom: 15
+    },
+    paper: {
+        marginTop: theme.spacing(3),
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+    },
+    avatar: {
+        margin: theme.spacing(1),
+        backgroundColor: theme.palette.primary.main,
+        color: "white !important"
+    },
+    form: {
+        width: '100%',
+        marginTop: theme.spacing(4),
+    },
+    submit: {
+        width: 120,
+        marginBottom: 20,
+        marginTop: 20
+    },
+    container: {
+        backgroundColor: "white",
+        paddingBottom: "10px",
+        marginBottom: "70px",
+        marginTop: "50px",
+        borderRadius: "5px"
+    },
+    flexDiv: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: "space-around"
+    },
+}));
 
 export default function Add_Payment() {
 
+    const classes = useStyles();
     let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
 
     let { id: id_pat } = useParams();
@@ -48,8 +119,9 @@ export default function Add_Payment() {
                     token: token,
                     isAdmin: isAdmin
                 }
-            });
-            await history.push({ pathname: `/balance/details/${id_pat}` });
+            })
+                .then(toast.success("Pay Successfuly"))
+                .then(history.push({ pathname: `/balance/details/${id_pat}` }));
         } catch (e) {
             console.log("ERROR", e);
         }
@@ -79,24 +151,66 @@ export default function Add_Payment() {
     }, [])
 
     return (
-        <div>
-            <h1>add payment</h1>
-            <form onSubmit={handleSubmit}>
+        <Container component="main" maxWidth="xs" className={classes.container}>
+            <CssBaseline />
+            <div className={classes.paper}>
+                <Avatar className={classes.avatar}>
+                    <Person />
+                </Avatar>
+                <Typography component="h1" variant="h5">
+                    App Payment
+                </Typography>
+                <form className={classes.form} onSubmit={handleSubmit}>
 
-                <label>{state.patient.id}</label>
-                <br />
-                <label>{state.patient.first_name} {state.patient.middle_name} {state.patient.last_name}</label>
-                <br />
-                <input
-                    type="number"
-                    name="payment"
-                    placeholder="Payment"
-                    value={state.payment}
-                    onChange={handleChange}
-                />
+                    <Grid item xs={12} >
+                        <TextField
+                            reqBody
+                            fullWidth
+                            variant="outlined"
+                            label="Patient"
+                            value={state.patient.id + " " + state.patient.first_name + " " + state.patient.middle_name + " " + state.patient.last_name}
+                            className={classes.root}
+                        />
+                    </Grid>
 
-                <button type="submit">ADD</button>
-            </form>
-        </div>
+                    <Grid item xs={12} >
+                        <TextField
+                            required
+                            fullWidth
+                            autoFocus
+                            type="number"
+                            variant="outlined"
+                            label="Payment"
+                            name="payment"
+                            value={state.payment}
+                            onChange={handleChange}
+                            className={classes.root}
+                        />
+                    </Grid>
+
+                    <div className={classes.flexDiv}>
+
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            color="primary"
+                            className={classes.submit}
+                        >
+                            Add
+                        </Button>
+
+                        <Button
+                            type="button"
+                            variant="contained"
+                            className={classes.submit}
+                            onClick={() => history.push({ pathname: `/balance/details/${id_pat}` })}
+                        >
+                            Cancel
+                        </Button>
+
+                    </div>
+                </form>
+            </div>
+        </Container>
     )
 }

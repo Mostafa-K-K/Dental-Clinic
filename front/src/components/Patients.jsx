@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react'
 import API from '../API'
 import SessionContext from "./session/SessionContext"
+import { TextField } from '@material-ui/core';
+import { Autocomplete } from '@material-ui/lab';
 
 export default function Patients(props) {
 
@@ -19,21 +21,14 @@ export default function Patients(props) {
             .then(res => {
                 const result = res.data.result;
                 let data = [];
-                result.map(res =>
+                result.map(p =>
                     data.push({
-                        id: res.id,
-                        name: res.first_name + " " + res.middle_name + " " + res.last_name
+                        id: p.id,
+                        name: p.first_name + " " + p.middle_name + " " + p.last_name + " - " + p.id
                     })
                 )
                 setPatients(data);
             });
-    }
-
-    function handleBlur(value) {
-        let isTrue = patients.filter(p => p.name + " - " + p.id === value)
-        if (!isTrue.length) {
-            props.resetValue();
-        }
     }
 
     useEffect(() => {
@@ -41,28 +36,22 @@ export default function Patients(props) {
     }, []);
 
     return (
-        <div>
-            <input
-                required
-                list="patient"
-                name={props.name}
-                value={props.value}
-                placeholder="Patient"
-                onChange={props.onChange}
-                onBlur={e => handleBlur(e.target.value)}
-            />
-
-            <datalist
-                id="patient"
-            >
-
-                {patients.map(patient =>
-                    <option key={patient.id}>
-                        {patient.name} - {patient.id}
-                    </option>
-                )}
-
-            </datalist>
-        </div>
+        <Autocomplete
+            id="id_patient"
+            options={patients}
+            getOptionLabel={(option) => option.name} variant="outlined"
+            value={props.value}
+            onChange={props.onChange}
+            renderInput={(params) =>
+                <TextField
+                    required
+                    fullWidth
+                    {...params}
+                    variant="outlined"
+                    label="Patient"
+                    className={props.className}
+                />
+            }
+        />
     );
 }
