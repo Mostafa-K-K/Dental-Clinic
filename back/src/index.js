@@ -772,6 +772,24 @@ const start = async () => {
         }
     });
 
+    // Update REQUEST
+    app.put('/request/:id', isLoggedIn, async (req, res, next) => {
+        const { id } = req.params;
+        const { status } = req.body;
+
+        if (status && status !== "") {
+            try {
+                let sql = `UPDATE requests SET status = '${status}' WHERE id = ${id}`;
+                connection.query(sql, function (err, result) {
+                    if (err) throw err;
+                    res.json({ success: true, result });
+                });
+            } catch (e) {
+                next(e);
+            }
+        }
+    });
+
     // DELETE REQUEST
     app.delete('/request/:id', isLoggedIn, async (req, res, next) => {
         const { id } = req.params;

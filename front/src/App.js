@@ -2,9 +2,12 @@ import React from 'react'
 import Routes from './components/Routes'
 import { BrowserRouter as Router } from 'react-router-dom'
 import SessionProvider from './components/session/SessionProvider'
+
 import { ThemeProvider } from '@material-ui/core/styles'
 import { theme } from './theme'
+
 import { ToastContainer } from "react-toastify"
+import 'react-toastify/dist/ReactToastify.css'
 
 import './App.css'
 

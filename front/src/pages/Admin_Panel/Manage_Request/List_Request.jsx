@@ -18,8 +18,7 @@ export default function List_Request() {
 
     async function handleReject(id_req) {
         try {
-            const del = window.confirm("are you sure");
-            if (del) await API.put(`request/${id_req}`, { status: "Rejected" }, {
+            await API.put(`request/${id_req}`, { status: "Rejected" }, {
                 headers: {
                     id: id,
                     token: token,
