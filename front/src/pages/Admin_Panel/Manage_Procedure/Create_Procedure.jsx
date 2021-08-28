@@ -1,13 +1,13 @@
-import React, { useState, useContext } from "react"
+import React, { useState, useContext, useEffect } from "react"
 import moment from "moment"
 import API from "../../../API"
 import { useHistory } from "react-router"
 import SessionContext from "../../../components/session/SessionContext"
 
-import Patients from "../../../components/Patients"
-import Doctors from "../../../components/Doctors"
 import Teeth from "../../../components/Teeth"
-import Types from "../../../components/Types"
+
+import { TextField } from '@material-ui/core'
+import { Autocomplete } from '@material-ui/lab'
 
 export default function Create_Procedure() {
 
@@ -19,15 +19,19 @@ export default function Create_Procedure() {
     const [state, updateState] = useState({
         payment: "",
         date: date,
-        patient: "",
-        doctor: "",
+        id_patient: "",
+        id_doctor: "",
+
+        patients: [],
+        doctors: [],
+        acts: [],
 
         works: [],
         total: 0,
 
         category: "Adult",
         id_teeth: "",
-        id_type: "",
+        types: "",
         price: ""
     });
 
@@ -57,44 +61,32 @@ export default function Create_Procedure() {
         let work = state.works;
         let id_w;
         (work.length) ?
-            id_w = work[work.length - 1].id_w + 1 :
+            id_w = work[work.length - 1].id + 1 :
             id_w = 0;
         try {
-            if (state.id_teeth != "" && state.id_type != "") {
+            if (state.id_teeth != "" && state.types != "") {
 
-                API.get(`type/${state.id_type}`, {
-                    headers: {
-                        id: id_w,
-                        token: token,
-                        isAdmin: isAdmin
-                    }
-                })
-                    .then(res => {
-                        const result = res.data.result;
+                work.push({
+                    id: id_w,
+                    teeth: (state.id_teeth == 1 || state.id_teeth == 2) ? "All Teeth" : state.id_teeth,
+                    type: state.types.description,
+                    id_teeth: state.id_teeth,
+                    id_type: state.types.id,
+                    price: state.types.bill
+                });
 
-                        work.push({
-                            id: id_w,
-                            teeth: (state.id_teeth == 1 || state.id_teeth == 2) ? "All Teeth" : state.id_teeth,
-                            type: result.description,
-                            id_teeth: state.id_teeth,
-                            id_type: result.id,
-                            price: result.bill
-                        });
+                setState({ works: work });
 
-                        setState({ works: work });
+                setState({
+                    category: "Adult",
+                    id_teeth: "",
+                    types: ""
+                });
 
-                        setState({
-                            category: "Adult",
-                            id_teeth: "",
-                            id_type: ""
-                        });
+                let total = 0;
+                work.map(w => { if (w.price != "") total += parseInt(w.price) });
+                setState({ total: total });
 
-                    })
-                    .then(() => {
-                        let total = 0;
-                        work.map(w => { if (w.price != "") total += parseInt(w.price) });
-                        setState({ total: total });
-                    });
             }
         } catch (e) {
             console.log("ERROR", e);
@@ -114,23 +106,16 @@ export default function Create_Procedure() {
     async function handleSubmit(e) {
         e.preventDefault();
 
+        console.log(state);
+
         try {
-            let p_id = "";
-            let d_id = "";
-
-            if (state.patient && state.patient !== '')
-                p_id = state.patient.id;
-
-            if (state.doctor && state.doctor !== '')
-                d_id = state.doctor.id;
-
             let dd = moment(state.date).format("YYYY-MM-DD HH:mm");
 
             let reqBody = {
                 payment: state.payment,
                 date: dd,
-                patient: p_id,
-                doctor: d_id,
+                id_patient: state.id_patient,
+                id_doctor: state.id_doctor,
                 balance: state.total
             };
 
@@ -168,6 +153,52 @@ export default function Create_Procedure() {
         }
     }
 
+    useEffect(() => {
+
+        async function fetchdata() {
+
+            await API.get(`patient`, {
+                headers: {
+                    id: id,
+                    token: token,
+                    isAdmin: isAdmin
+                }
+            })
+                .then(res => {
+                    const result = res.data.result;
+                    setState({ patients: result });
+                });
+
+
+            await API.get(`doctor`, {
+                headers: {
+                    id: id,
+                    token: token,
+                    isAdmin: isAdmin
+                }
+            })
+                .then(res => {
+                    const result = res.data.result;
+                    setState({ doctors: result });
+                });
+
+
+            await API.get(`type`, {
+                headers: {
+                    id: id,
+                    token: token,
+                    isAdmin: isAdmin
+                }
+            })
+                .then(res => {
+                    const result = res.data.result;
+                    setState({ acts: result });
+                });
+        }
+
+        fetchdata();
+    }, [])
+
     return (
         <div>
             <h1>Create Procedure</h1>
@@ -180,6 +211,7 @@ export default function Create_Procedure() {
                     value={state.payment}
                     onChange={handleChange}
                 />
+
                 <input
                     type="datetime-local"
                     name="date"
@@ -187,25 +219,45 @@ export default function Create_Procedure() {
                     onChange={handleChange}
                 />
 
-                <Patients
-                    value={state.patient}
+                <Autocomplete
+                    options={state.patients}
+                    getOptionLabel={(option) => option.first_name + " " + option.middle_name + " " + option.last_name + " - " + option.id}
                     onChange={(event, newValue) => {
-                        setState({ patient: newValue });
+                        setState({ id_patient: newValue ? newValue.id : "" });
                     }}
-                // className={classes.root}
+                    renderInput={(params) =>
+                        <TextField
+                            required
+                            fullWidth
+                            {...params}
+                            variant="outlined"
+                            label="Patient"
+                        />
+                    }
                 />
 
-                <Doctors
-                    value={state.doctor}
-                    name="doctor"
-                    onChange={handleChange}
-                    resetValue={() => setState({ doctor: "" })}
+                <Autocomplete
+                    options={state.doctors}
+                    getOptionLabel={(option) => option.first_name + " " + option.middle_name + " " + option.last_name}
+                    variant="outlined"
+                    onChange={(event, newValue) => {
+                        setState({ id_doctor: newValue ? newValue.id : "" });
+                    }}
+                    renderInput={(params) =>
+                        <TextField
+                            fullWidth
+                            {...params}
+                            variant="outlined"
+                            label="Doctor"
+                        />
+                    }
                 />
 
                 <select name="category" onChange={handleChange}>
                     <option value="Adult" selected={state.category === "Adult"}>Adult</option>
                     <option value="Child" selected={state.category === "Child"}>Child</option>
                 </select>
+
 
                 <Teeth
                     category={state.category}
@@ -214,11 +266,23 @@ export default function Create_Procedure() {
                     onChange={handleChange}
                 />
 
-                <Types
-                    name='id_type'
-                    value={state.id_type}
-                    onChange={handleChange}
+
+                <Autocomplete
+                    variant="outlined"
+                    options={state.acts}
+                    getOptionLabel={(option) => option.description}
+                    onChange={(event, newValue) => {
+                        setState({ types: newValue ? newValue : "" });
+                    }}
+                    renderInput={(params) =>
+                        <TextField
+                            {...params}
+                            variant="outlined"
+                            label="Acts"
+                        />
+                    }
                 />
+
 
                 <button type="button" onClick={handleRow}>+++</button>
 

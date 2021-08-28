@@ -92,17 +92,17 @@ export default function List_Procedure() {
                                     <td>{procedure.payment}</td>
                                     <td>
                                         {works.filter(work => work.id_procedure == procedure.id).map(work => (
-                                            <li>{(work.id_teeth == 1 || work.id_teeth == 2) ? "All" : work.id_teeth}</li>
+                                            <li key={work.id}>{(work.id_teeth == 1 || work.id_teeth == 2) ? "All" : work.id_teeth}</li>
                                         ))}
                                     </td>
                                     <td>
                                         {works.filter(work => work.id_procedure == procedure.id).map(work => (
-                                            <li>{work.description}</li>
+                                            <li key={work.id}>{work.description}</li>
                                         ))}
                                     </td>
                                     <td>
                                         {works.filter(work => work.id_procedure == procedure.id).map(work => (
-                                            <li>{work.price}</li>
+                                            <li key={work.id}>{work.price}</li>
                                         ))}
                                     </td>
 

@@ -21,14 +21,14 @@ export default function Add_Procedure() {
         payment: "",
         date: date,
         id_patient: id_patient,
-        id_doctor: "",
+        doctor: "",
 
         works: [],
         total: 0,
 
         category: "Adult",
         id_teeth: "",
-        id_type: "",
+        types: "",
         price: ""
     });
 
@@ -56,46 +56,35 @@ export default function Add_Procedure() {
 
     async function handleRow() {
         let work = state.works;
-        let id;
+        let id_w;
         (work.length) ?
-            id = work[work.length - 1].id + 1 :
-            id = 0;
+            id_w = work[work.length - 1].id + 1 :
+            id_w = 0;
         try {
-            if (state.id_teeth != "" && state.id_type != "") {
+            if (state.id_teeth != "" && state.types != "") {
 
-                API.get(`type/${state.id_type}`, {
-                    headers: {
-                        id: id,
-                        token: token,
-                        isAdmin: isAdmin
-                    }
-                })
-                    .then(res => {
-                        const result = res.data.result;
 
-                        work.push({
-                            id: id,
-                            teeth: (state.id_teeth == 1 || state.id_teeth == 2) ? "All Teeth" : state.id_teeth,
-                            type: result.description,
-                            id_teeth: state.id_teeth,
-                            id_type: result.id,
-                            price: result.bill
-                        });
+                work.push({
+                    id: id_w,
+                    teeth: (state.id_teeth == 1 || state.id_teeth == 2) ? "All Teeth" : state.id_teeth,
+                    type: state.types.description,
+                    id_teeth: state.id_teeth,
+                    id_type: state.types.id,
+                    price: state.types.bill
+                });
 
-                        setState({ works: work });
+                setState({ works: work });
 
-                        setState({
-                            category: "Adult",
-                            id_teeth: "",
-                            id_type: ""
-                        });
+                setState({
+                    category: "Adult",
+                    id_teeth: "",
+                    types: ""
+                });
 
-                    })
-                    .then(() => {
-                        let total = 0;
-                        work.map(w => { if (w.price != "") total += parseInt(w.price) });
-                        setState({ total: total });
-                    });
+                let total = 0;
+                work.map(w => { if (w.price != "") total += parseInt(w.price) });
+                setState({ total: total });
+
             }
         } catch (e) {
             console.log("ERROR", e);
@@ -118,10 +107,9 @@ export default function Add_Procedure() {
         try {
             let d_id = "";
 
-            if (state.id_doctor && state.id_doctor !== '') {
-                let d_arr = state.id_doctor.split('-');
-                d_id = d_arr[1];
-            }
+            if (state.doctor && state.doctor !== '')
+                d_id = state.doctor.id;
+
             let dd = moment(state.date).format("YYYY-MM-DD HH:mm");
 
             let reqBody = {
@@ -214,10 +202,10 @@ export default function Add_Procedure() {
                 <h3>{state.id_patient} - {state.patient}</h3>
 
                 <Doctors
-                    value={state.id_doctor}
-                    name="id_doctor"
-                    onChange={handleChange}
-                    resetValue={() => setState({ id_doctor: "" })}
+                    value={state.doctor}
+                    onChange={(event, newValue) => {
+                        setState({ doctor: newValue });
+                    }}
                 />
 
                 <select name="category" onChange={handleChange}>
@@ -233,9 +221,10 @@ export default function Add_Procedure() {
                 />
 
                 <Types
-                    name='id_type'
-                    value={state.id_type}
-                    onChange={handleChange}
+                    value={state.types}
+                    onChange={(event, newValue) => {
+                        setState({ types: newValue });
+                    }}
                 />
 
                 <button type="button" onClick={handleRow}>+++</button>

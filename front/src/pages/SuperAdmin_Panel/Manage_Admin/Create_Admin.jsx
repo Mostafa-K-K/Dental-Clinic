@@ -182,7 +182,7 @@ export default function Create_Admin() {
 
                             if (isUser) toast.error("Username alredy token");
                             if (isPhon) toast.error("Phone Number alredy token");
-                            if (state.conPassword !== state.password) toast.error("Password incorrect")
+                            if (state.conPassword !== state.password) toast.error("Password incorrect");
 
                             if (!isUser && !isPhon && state.conPassword === state.password) {
                                 await API.post(`admin`, reqBody, {

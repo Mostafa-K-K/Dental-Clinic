@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"
 import API from '../../API'
 import moment from 'moment'
 import { setCookie } from '../../cookie'
-import SessionContext from '../../components/session/SessionContext'
+import SessionContext from "../../components/session/SessionContext"
 
 import { toast } from "react-toastify"
 
@@ -33,10 +33,12 @@ import {
     VisibilityOff
 } from '@material-ui/icons'
 
-import { DatePicker, KeyboardDatePicker } from "@material-ui/pickers"
+import MomentUtils from '@date-io/moment'
 
-import DateFnsUtils from '@date-io/date-fns';
-import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+import {
+    KeyboardDatePicker,
+    MuiPickersUtilsProvider
+} from '@material-ui/pickers'
 
 
 const useStyles = makeStyles((theme) => ({
@@ -139,7 +141,7 @@ export default function Register() {
         last_name: "",
         phone: "",
         gender: "Male",
-        birth: moment().format("YYYY-MM-DD"),
+        birth: moment().format('YYYY-MM-DD'),
         marital: "Single",
         health: "",
         address: "",
@@ -329,17 +331,22 @@ export default function Register() {
                         </Grid>
 
                         <Grid item xs={12} >
-                            Date
-                            {/* <KeyboardDatePicker
-                                    autoOk
-                                    variant="inline"
+                            <MuiPickersUtilsProvider utils={MomentUtils} >
+                                <KeyboardDatePicker
+                                    fullWidth
+                                    required
+                                    label="Date Of Birth"
+                                    variant="outlined"
                                     inputVariant="outlined"
-                                    label="Birth Date"
-                                    format="yyyy/dd/MM"
+                                    format="YYYY/MM/DD"
                                     value={state.birth}
-                                    InputAdornmentProps={{ position: "start" }}
-                                    onChange={date => handleDateChange(date)}
-                                /> */}
+                                    onChange={(date) => handleDateChange(date)}
+                                    KeyboardButtonProps={{
+                                        'aria-label': 'change date',
+                                    }}
+                                    className={classes.root}
+                                />
+                            </MuiPickersUtilsProvider>
                         </Grid>
 
                         <Grid item xs={12} >

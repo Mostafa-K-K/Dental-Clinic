@@ -6,7 +6,6 @@ import SessionContext from "../../../components/session/SessionContext"
 import { toast } from "react-toastify"
 
 import {
-    Avatar,
     Button,
     CssBaseline,
     TextField,
@@ -16,7 +15,7 @@ import {
     Container
 } from '@material-ui/core'
 
-import { LockOutlined } from '@material-ui/icons'
+import ClinicIcon from "../../../images/Clinic.svg"
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -48,6 +47,11 @@ const useStyles = makeStyles((theme) => ({
         margin: theme.spacing(1),
         backgroundColor: theme.palette.primary.main,
         color: "white !important"
+    },
+    img: {
+        width: '15%',
+        margin: 20,
+        alignSelf: 'center'
     },
     form: {
         width: '100%',
@@ -162,9 +166,7 @@ export default function Edit_Clinic() {
 
             <div className={classes.paper}>
 
-                <Avatar className={classes.avatar}>
-                    <LockOutlined />
-                </Avatar>
+                <img src={ClinicIcon} alt="" className={classes.img} />
 
                 <Typography component="h1" variant="h5">
                     Edit Clinic

@@ -3,12 +3,95 @@ import { useHistory } from 'react-router'
 import API from "../../../API"
 import SessionContext from '../../../components/session/SessionContext'
 
-const bcrypt = require("bcryptjs")
+import { toast } from "react-toastify"
+
+import {
+    Container,
+    Avatar,
+    Button,
+    CssBaseline,
+    TextField,
+    Grid,
+    Typography,
+    FormControl,
+    InputLabel,
+    OutlinedInput,
+    IconButton,
+    InputAdornment,
+    makeStyles
+} from '@material-ui/core'
+
+import {
+    Visibility,
+    VisibilityOff,
+    Person
+} from '@material-ui/icons'
+
+const useStyles = makeStyles((theme) => ({
+    root: {
+        '& label.Mui-focused': {
+            color: theme.palette.primary.main,
+        },
+        '& .MuiInput-underline:after': {
+            borderBottomColor: theme.palette.primary.main,
+        },
+        '& .MuiOutlinedInput-root': {
+            '& fieldset': {
+                borderColor: theme.palette.primary.main,
+            },
+            '&:hover fieldset': {
+                borderColor: theme.palette.primary.main,
+            },
+            '&.Mui-focused fieldset': {
+                borderColor: theme.palette.primary.main,
+            },
+        },
+        marginBottom: 8
+    },
+    paper: {
+        marginTop: theme.spacing(3),
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+    },
+    avatar: {
+        margin: theme.spacing(1),
+        backgroundColor: theme.palette.primary.main,
+        color: "white !important"
+    },
+    form: {
+        width: '100%',
+        marginTop: theme.spacing(4),
+    },
+    submit: {
+        width: 120,
+        marginBottom: 20,
+        marginTop: 20
+    },
+    container: {
+        width: "80%",
+        backgroundColor: "white",
+        paddingBottom: "10px",
+        marginBottom: "70px",
+        marginTop: "50px",
+        borderRadius: "5px"
+    },
+    flexDiv: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: "space-around"
+    }
+}));
+
+const bcrypt = require("bcryptjs");
 
 export default function Change_Username_Admin() {
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    const classes = useStyles();
     const history = useHistory();
+
+    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
 
     const [state, updateState] = useState({
         id: id,
@@ -16,7 +99,7 @@ export default function Change_Username_Admin() {
         lastUsername: "",
         conPass: "",
         password: "",
-        msg: ""
+        show: false
     });
 
     function setState(nextState) {
@@ -29,6 +112,12 @@ export default function Change_Username_Admin() {
     function handleChange(e) {
         let { name, value } = e.target;
         setState({ [name]: value });
+    }
+
+    function handleShow() {
+        state.show ?
+            setState({ show: false }) :
+            setState({ show: true });
     }
 
     async function handleSubmit(e) {
@@ -44,7 +133,7 @@ export default function Change_Username_Admin() {
                         .find(r => r.username === state.username);
 
                     if (isUser) {
-                        setState({ msg: "Username alredy token" });
+                        toast.error("Username alredy token");
                     } else {
                         if (isMatch) {
                             await API.put(`admin/${id}`, reqBody, {
@@ -53,23 +142,21 @@ export default function Change_Username_Admin() {
                                     token: token,
                                     isAdmin: isAdmin
                                 }
-                            });
-
-                            setState({
-                                username: "",
-                                lastUsername: "",
-                                conPass: "",
-                                password: "",
-                                msg: "Password changed successfully"
-                            });
-
-                            await history.push({ pathname: '/admin/profile' });
+                            })
+                                .then(
+                                    setState({
+                                        username: "",
+                                        lastUsername: "",
+                                        conPass: "",
+                                        password: ""
+                                    })
+                                )
+                                .then(toast.success("Update Username Successfuly"))
+                                .then(history.push({ pathname: '/admin/profile' }));
                         }
                         else {
-                            setState({
-                                conPass: "",
-                                msg: "Password incorrect"
-                            });
+                            setState({ conPass: "" });
+                            toast.error("Password Incorect");
                         }
                     }
                 });
@@ -107,28 +194,77 @@ export default function Change_Username_Admin() {
     }, [])
 
     return (
-        <form onSubmit={handleSubmit}>
-            <span>Change Your username</span>
+        <Container component="main" maxWidth="xs" className={classes.container}>
+            <CssBaseline />
+            <div className={classes.paper}>
+                <Avatar className={classes.avatar}>
+                    <Person />
+                </Avatar>
+                <Typography component="h1" variant="h5">
+                    Change Username
+                </Typography>
+                <form className={classes.form} onSubmit={handleSubmit}>
 
-            <input
-                type="text"
-                name="username"
-                value={state.username}
-                placeholder="Username"
-                onChange={handleChange}
-            />
+                    <Grid item xs={12} >
+                        <TextField
+                            fullWidth
+                            required
+                            variant="outlined"
+                            label="New Username"
+                            name="username"
+                            value={state.username}
+                            onChange={handleChange}
+                            className={classes.root}
+                        />
+                    </Grid>
 
-            <input
-                type="password"
-                name="conPass"
-                value={state.conPass}
-                placeholder="Your Password"
-                onChange={handleChange}
-            />
+                    <FormControl variant="outlined" fullWidth className={classes.root}>
+                        <InputLabel htmlFor="pass">Your Password</InputLabel>
+                        <OutlinedInput
+                            required
+                            id="pass"
+                            type={state.show ? 'text' : 'password'}
+                            name="conPass"
+                            value={state.conPass}
+                            onChange={handleChange}
 
-            <label>{state.msg}</label>
-            <button type="submit">Update</button>
+                            endAdornment={
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        type="button"
+                                        onClick={handleShow}
+                                    >
+                                        {state.show ? <Visibility /> : <VisibilityOff />}
+                                    </IconButton>
+                                </InputAdornment>
+                            }
+                            labelWidth={110}
+                        />
+                    </FormControl>
 
-        </form>
+                    <div className={classes.flexDiv}>
+
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            color="primary"
+                            className={classes.submit}
+                        >
+                            Update
+                        </Button>
+
+                        <Button
+                            type="button"
+                            variant="contained"
+                            className={classes.submit}
+                            onClick={() => history.push({ pathname: "/admin/profile" })}
+                        >
+                            Cancel
+                        </Button>
+
+                    </div>
+                </form>
+            </div>
+        </Container>
     )
 }

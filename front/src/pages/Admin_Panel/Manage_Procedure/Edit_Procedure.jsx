@@ -3,11 +3,12 @@ import { useHistory, useParams } from 'react-router'
 import API from "../../../API"
 import SessionContext from "../../../components/session/SessionContext"
 
-import Patients from "../../../components/Patients"
-import Doctors from "../../../components/Doctors"
 import Teeth from "../../../components/Teeth"
 import Types from "../../../components/Types"
 import moment from "moment"
+
+import { TextField } from '@material-ui/core'
+import { Autocomplete } from '@material-ui/lab'
 
 export default function Edit_Procedure() {
 
@@ -22,12 +23,16 @@ export default function Edit_Procedure() {
         id_patient: "",
         id_doctor: "",
 
+        patients: [],
+        doctors: [],
+        acts: [],
+
         works: [],
         total: 0,
 
         category: "Adult",
         id_teeth: "",
-        id_type: "",
+        types: "",
         price: ""
     });
 
@@ -61,41 +66,29 @@ export default function Edit_Procedure() {
             id = 0;
 
         try {
-            if (state.id_teeth != "" && state.id_type != "") {
+            if (state.id_teeth != "" && state.types != "") {
 
-                API.get(`type/${state.id_type}`, {
-                    headers: {
-                        id: id,
-                        token: token,
-                        isAdmin: isAdmin
-                    }
-                })
-                    .then(res => {
-                        const result = res.data.result;
+                work.push({
+                    id: id,
+                    teeth: (state.id_teeth == 1 || state.id_teeth == 2) ? "All Teeth" : state.id_teeth,
+                    description: state.types.description,
+                    id_teeth: state.id_teeth,
+                    id_type: state.types.id,
+                    price: state.types.bill
+                });
 
-                        work.push({
-                            id: id,
-                            teeth: (state.id_teeth == 1 || state.id_teeth == 2) ? "All Teeth" : state.id_teeth,
-                            description: result.description,
-                            id_teeth: state.id_teeth,
-                            id_type: result.id,
-                            price: result.bill
-                        });
+                setState({ works: work });
 
-                        setState({ works: work });
+                setState({
+                    category: "Adult",
+                    id_teeth: "",
+                    types: ""
+                });
 
-                        setState({
-                            category: "Adult",
-                            id_teeth: "",
-                            id_type: ""
-                        });
+                let total = 0;
+                work.map(w => { if (w.price != "") total += parseInt(w.price) });
+                setState({ total: total });
 
-                    })
-                    .then(() => {
-                        let total = 0;
-                        work.map(w => { if (w.price != "") total += parseInt(w.price) });
-                        setState({ total: total });
-                    });
             }
         } catch (e) {
             console.log("ERROR", e);
@@ -116,71 +109,64 @@ export default function Edit_Procedure() {
     async function handleSubmit(e) {
         e.preventDefault();
 
-        try {
-            let p_id = "";
-            let d_id = "";
+        console.log(state);
+        console.log("ddddata",state.patients.find(p => p.id == state.id_patient));
+        // try {
 
-            if (state.id_patient && state.id_patient !== '') {
-                let p_arr = state.id_patient.split('-');
-                p_id = p_arr[1];
-            }
-            if (state.id_doctor && state.id_doctor !== '') {
-                let d_arr = state.id_doctor.split('-');
-                d_id = d_arr[1];
-            }
-            let dd = moment(state.date).format("YYYY-MM-DD HH:mm");
+        //     let dd = moment(state.date).format("YYYY-MM-DD HH:mm");
 
-            let reqBody = {
-                payment: state.payment,
-                date: dd,
-                id_patient: p_id,
-                id_doctor: d_id,
-                balance: state.total
-            };
+        //     let reqBody = {
+        //         payment: state.payment,
+        //         date: dd,
+        //         id_patient: state.id_patient,
+        //         id_doctor: state.id_doctor,
+        //         balance: state.total
+        //     };
 
-            await API.put(`procedure/${id_pro}`, reqBody, {
-                headers: {
-                    id: id,
-                    token: token,
-                    isAdmin: isAdmin
-                }
-            })
-                .then(
-                    API.delete(`PTCALL/${id_pro}`, {
-                        headers: {
-                            id: id,
-                            token: token,
-                            isAdmin: isAdmin
-                        }
-                    })
-                )
-                .then(
-                    state.works.map(work => {
-                        let PTCReqBody = {
-                            id_procedure: id_pro,
-                            id_type: work.id_type,
-                            id_teeth: work.id_teeth,
-                            price: (work.price == "" || !work.price) ? 0 : work.price
-                        };
-                        API.post(`PTC`, PTCReqBody, {
-                            headers: {
-                                id: id,
-                                token: token,
-                                isAdmin: isAdmin
-                            }
-                        });
-                    })
-                )
-                .then(history.push({ pathname: "/procedure/list" }));
-        } catch (e) {
-            console.log("ERROR", e);
-        }
+        //     await API.put(`procedure/${id_pro}`, reqBody, {
+        //         headers: {
+        //             id: id,
+        //             token: token,
+        //             isAdmin: isAdmin
+        //         }
+        //     })
+        //         .then(
+        //             API.delete(`PTCALL/${id_pro}`, {
+        //                 headers: {
+        //                     id: id,
+        //                     token: token,
+        //                     isAdmin: isAdmin
+        //                 }
+        //             })
+        //         )
+        //         .then(
+        //             state.works.map(work => {
+        //                 let PTCReqBody = {
+        //                     id_procedure: id_pro,
+        //                     id_type: work.id_type,
+        //                     id_teeth: work.id_teeth,
+        //                     price: (work.price == "" || !work.price) ? 0 : work.price
+        //                 };
+        //                 API.post(`PTC`, PTCReqBody, {
+        //                     headers: {
+        //                         id: id,
+        //                         token: token,
+        //                         isAdmin: isAdmin
+        //                     }
+        //                 });
+        //             })
+        //         )
+        //         .then(history.push({ pathname: "/procedure/list" }));
+        // } catch (e) {
+        //     console.log("ERROR", e);
+        // }
 
     }
 
     useEffect(() => {
         async function fetchData() {
             try {
+
                 await API.get(`procedure/${id_pro}`, {
                     headers: {
                         id: id,
@@ -192,38 +178,9 @@ export default function Edit_Procedure() {
                         const result = res.data.result;
                         const success = res.data.success;
                         if (success) {
-                            if (result.id_patient && result.id_patient !== "") {
-                                API.get(`patient/${result.id_patient}`, {
-                                    headers: {
-                                        id: id,
-                                        token: token,
-                                        isAdmin: isAdmin
-                                    }
-                                })
-                                    .then(res => {
-                                        const patient = res.data.result;
-                                        const str = patient.first_name + " " + patient.middle_name + " " + patient.last_name + " - " + patient.id;
-                                        console.log(str);
-                                        setState({ id_patient: str });
-                                    });
-                            }
-
-                            if (result.id_doctor && result.id_doctor !== "") {
-                                API.get(`doctor/${result.id_doctor}`, {
-                                    headers: {
-                                        id: id,
-                                        token: token,
-                                        isAdmin: isAdmin
-                                    }
-                                })
-                                    .then(res => {
-                                        const doctor = res.data.result;
-                                        const str = doctor.first_name + " " + doctor.middle_name + " " + doctor.last_name + " - " + doctor.id;
-                                        console.log(str);
-                                        setState({ id_doctor: str });
-                                    });
-                            }
                             setState({
+                                id_patient: result.id_patient,
+                                id_doctor: result.id_doctor,
                                 payment: result.payment,
                                 date: moment(result.date).format("YYYY-MM-DDTHH:mm"),
                                 total: result.balance
@@ -246,19 +203,56 @@ export default function Edit_Procedure() {
                             setState({ works: data });
                         }
                     });
+
+                await API.get(`patient`, {
+                    headers: {
+                        id: id,
+                        token: token,
+                        isAdmin: isAdmin
+                    }
+                })
+                    .then(res => {
+                        const result = res.data.result;
+                        setState({ patients: result });
+                    });
+
+
+                await API.get(`doctor`, {
+                    headers: {
+                        id: id,
+                        token: token,
+                        isAdmin: isAdmin
+                    }
+                })
+                    .then(res => {
+                        const result = res.data.result;
+                        setState({ doctors: result });
+                    });
+
+
+                await API.get(`type`, {
+                    headers: {
+                        id: id,
+                        token: token,
+                        isAdmin: isAdmin
+                    }
+                })
+                    .then(res => {
+                        const result = res.data.result;
+                        setState({ acts: result });
+                    });
             } catch (e) {
                 console.log("ERROR", e);
             }
         }
-
         fetchData();
     }, [])
 
     return (
         <div>
+            {console.log("page", state)}
             <h1>Edit Procedure</h1>
             <form onSubmit={handleSubmit}>
-
 
                 <input
                     type="number"
@@ -275,18 +269,40 @@ export default function Edit_Procedure() {
                     onChange={handleChange}
                 />
 
-                <Patients
-                    value={state.id_patient}
-                    name="id_patient"
-                    onChange={handleChange}
-                    resetValue={() => setState({ id_patient: "" })}
+                <Autocomplete
+                    options={state.patients}
+                    getOptionLabel={(option) => option.first_name + " " + option.middle_name + " " + option.last_name + " - " + option.id}
+                    defaultValue={state.id_patient != "" ? state.patients.find(p => p.id == state.id_patient) : ""}
+                    onChange={(event, newValue) => {
+                        setState({ id_patient: newValue ? newValue.id : "" });
+                    }}
+                    renderInput={(params) =>
+                        <TextField
+                            required
+                            fullWidth
+                            {...params}
+                            variant="outlined"
+                            label="Patient"
+                        />
+                    }
                 />
 
-                <Doctors
-                    value={state.id_doctor}
-                    name="id_doctor"
-                    onChange={handleChange}
-                    resetValue={() => setState({ id_doctor: "" })}
+                <Autocomplete
+                    options={state.doctors}
+                    defaultValue={state.id_doctor != "" ? state.doctors.find(d => d.id == state.id_doctor) : ""}
+                    getOptionLabel={(option) => option.first_name + " " + option.middle_name + " " + option.last_name}
+                    variant="outlined"
+                    onChange={(event, newValue) => {
+                        setState({ id_doctor: newValue ? newValue.id : "" });
+                    }}
+                    renderInput={(params) =>
+                        <TextField
+                            fullWidth
+                            {...params}
+                            variant="outlined"
+                            label="Doctor"
+                        />
+                    }
                 />
 
                 <select name="category" onChange={handleChange}>
@@ -302,9 +318,10 @@ export default function Edit_Procedure() {
                 />
 
                 <Types
-                    name='id_type'
-                    value={state.id_type}
-                    onChange={handleChange}
+                    value={state.types}
+                    onChange={(event, newValue) => {
+                        setState({ types: newValue });
+                    }}
                 />
 
                 <button type="button" onClick={handleRow}>+++</button>

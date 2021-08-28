@@ -32,10 +32,12 @@ import {
     VisibilityOff
 } from '@material-ui/icons'
 
-import { DatePicker, KeyboardDatePicker } from "@material-ui/pickers"
+import MomentUtils from '@date-io/moment'
 
-import DateFnsUtils from '@date-io/date-fns';
-import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+import {
+    KeyboardDatePicker,
+    MuiPickersUtilsProvider
+} from '@material-ui/pickers'
 
 
 const useStyles = makeStyles((theme) => ({
@@ -94,12 +96,10 @@ const useStyles = makeStyles((theme) => ({
         display: "flex",
         flexFlow: "row",
         justifyContent: "space-around",
-        // marginLeft: "5%",
         '& .radioR1': {
             display: "flex",
             flexFlow: "row",
             justifyContent: "space-between",
-            // marginLeft: "7%",
             '& .MuiFormControlLabel-root:nth-child(2)': {
                 // marginLeft: "9%"
             }
@@ -107,7 +107,6 @@ const useStyles = makeStyles((theme) => ({
         '& .radioR2': {
             display: "flex",
             flexFlow: "row",
-            // marginLeft: "8%",
             '& .MuiFormControlLabel-root:nth-child(2)': {
                 // marginLeft: "8%"
             }
@@ -140,11 +139,11 @@ export default function Edit_Patient() {
         phone: "",
         lastPhone: "",
         gender: "Male",
-        birth: "",
+        birth: moment().format('YYYY-MM-DD'),
         marital: "Single",
         health: "",
         address: "",
-        show: true
+        show: false
     });
 
     function setState(nextState) {
@@ -157,6 +156,11 @@ export default function Edit_Patient() {
     function handleChange(e) {
         let { name, value } = e.target;
         setState({ [name]: value });
+    }
+
+    function handleDateChange(date) {
+        let d = moment(date).format("YYYY-MM-DD")
+        setState({ birth: d });
     }
 
     function handleShow() {
@@ -365,7 +369,6 @@ export default function Edit_Patient() {
 
                         <Grid item xs={6} >
                             <TextField
-                                required
                                 fullWidth
                                 variant="outlined"
                                 label="health Problem"
@@ -390,17 +393,22 @@ export default function Edit_Patient() {
                         </Grid>
 
                         <Grid item xs={6} >
-                            Date
-                            {/* <KeyboardDatePicker
-                                    autoOk
-                                    variant="inline"
+                            <MuiPickersUtilsProvider utils={MomentUtils} >
+                                <KeyboardDatePicker
+                                    fullWidth
+                                    required
+                                    label="Date Of Birth"
+                                    variant="outlined"
                                     inputVariant="outlined"
-                                    label="Birth Date"
-                                    format="yyyy/dd/MM"
+                                    format="YYYY/MM/DD"
                                     value={state.birth}
-                                    InputAdornmentProps={{ position: "start" }}
-                                    onChange={date => handleDateChange(date)}
-                                /> */}
+                                    onChange={(date) => handleDateChange(date)}
+                                    KeyboardButtonProps={{
+                                        'aria-label': 'change date',
+                                    }}
+                                    className={classes.root}
+                                />
+                            </MuiPickersUtilsProvider>
                         </Grid>
 
                         <Grid item xs={6} >

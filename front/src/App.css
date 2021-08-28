@@ -20,19 +20,6 @@
     flex: 10;
 }
 
-/*
-a {
-    color: #6c757d;
-    text-decoration: none;
-    background-color: transparent;
-}
-
-a:hover {
-    text-decoration: none;
-    color: black;
-}
-*/
-
 .MuiIconButton-label {
     color: #8BE3D9 !important;
 }
@@ -60,4 +47,8 @@ a:hover {
     padding-bottom: 30%;
     vertical-align: middle;
     overflow: hidden;
+}
+
+.MuiTypography-colorInherit {
+    color: gray !important;
 }

@@ -572,9 +572,12 @@ const start = async () => {
             att += ` marital = ? ,`;
             attValues.push(marital);
         }
-        if (health) {
+        if (health && health !== "") {
             att += ` health = ? ,`;
             attValues.push(health);
+        } else {
+            att += ` health = ? ,`;
+            attValues.push("Null");
         }
         if (address) {
             att += ` address = ? ,`;
@@ -605,7 +608,7 @@ const start = async () => {
 
         let att = "username, password, first_name, middle_name, last_name, phone, gender, birth, marital, address ";
         let values = [username, hashedPassword, first_name, middle_name, last_name, phone, gender, birth, marital, address];
-        let inValues = "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?";
+        let inValues = "?, ?, ?, ?, ?, ?, ?, ?, ?, ?";
 
         if (health) {
             att += `, health `;

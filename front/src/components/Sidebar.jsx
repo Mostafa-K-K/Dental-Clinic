@@ -42,6 +42,10 @@ const useStyles = makeStyles(theme => ({
             display: "none",
             paddingTop: theme.spacing(10),
         },
+        [theme.breakpoints.down('sm')]: {
+            display: "none",
+            paddingTop: theme.spacing(10),
+        }
     },
     item: {
         display: "flex",
@@ -53,7 +57,7 @@ const useStyles = makeStyles(theme => ({
         padding: "10px",
         '&:hover': {
             backgroundColor: "#FFFFFF",
-            color: "#8BE3D9"
+            color: "#000000"
         },
     },
     item2: {
@@ -66,7 +70,7 @@ const useStyles = makeStyles(theme => ({
         padding: "6px",
         '&:hover': {
             backgroundColor: "#FFFFFF",
-            color: "#6DCFF6"
+            color: "#000000"
         },
     },
     icon: {

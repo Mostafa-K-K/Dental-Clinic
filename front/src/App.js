@@ -12,11 +12,9 @@ export default function App(props) {
   return (
     <SessionProvider>
       <ThemeProvider theme={theme}>
-
         <Router>
           <Routes {...props} />
         </Router>
-
       </ThemeProvider>
       <ToastContainer />
     </SessionProvider>

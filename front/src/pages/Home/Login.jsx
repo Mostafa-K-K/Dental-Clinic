@@ -4,7 +4,6 @@ import API from '../../API'
 import { setCookie } from '../../cookie'
 import SessionContext from '../../components/session/SessionContext'
 
-import { injectStyle } from "react-toastify/dist/inject-style"
 import { toast } from "react-toastify"
 
 import {
@@ -29,12 +28,6 @@ import {
     LockOutlined,
     VisibilityOff
 } from '@material-ui/icons'
-
-
-if (typeof window !== "undefined") {
-    injectStyle();
-}
-
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -95,10 +88,14 @@ const useStyles = makeStyles((theme) => ({
             color: "gray",
             textDecoration: "none",
         }
-
+    },
+    flexDiv: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: "space-around"
     }
 }));
-
 
 export default function Login() {
 
@@ -205,6 +202,7 @@ export default function Login() {
                         value={state.username}
                         onChange={handleChange}
                     />
+
                     <FormControl variant="outlined" fullWidth className={classes.root}>
                         <InputLabel htmlFor="pass">Password</InputLabel>
                         <OutlinedInput

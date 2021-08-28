@@ -1,11 +1,77 @@
 import React, { useEffect, useState, useContext } from "react"
 import { useHistory } from 'react-router'
 import API from "../../../API"
+import { Link } from 'react-router-dom'
 import SessionContext from "../../../components/session/SessionContext"
 
+import {
+    IconButton,
+    Container,
+    Grid,
+    CssBaseline,
+    Typography,
+    Paper,
+    makeStyles
+} from '@material-ui/core'
+
+import EditIcon from '@material-ui/icons/Edit'
+import { AddCircleOutline } from '@material-ui/icons'
+
+import ClinicIcon from "../../../images/Clinic.svg"
 import ConfirmDelete from "../../../components/ConfirmDelete"
 
+const useStyles = makeStyles((theme) => ({
+    root: {
+        "&:hover": {
+            backgroundColor: "transparent"
+        }
+    },
+    EditIcon: {
+        color: theme.palette.primary.main
+    },
+    DeleteIcon: {
+        fill: 'red'
+    },
+    paper: {
+        height: '90%',
+        width: ' 70%',
+        textAlign: 'center',
+        display: 'flex !important',
+        flexDirection: 'column',
+        justifyContent: 'space-around',
+        alignContent: 'center',
+        paddingTop: 10
+    },
+    container: {
+        marginTop: '80px'
+    },
+    Typography: {
+        marginTop: '15px',
+        color: 'black'
+    },
+    img: {
+        width: '20%',
+        margin: 5,
+        marginTop: 10,
+        alignSelf: 'center'
+    },
+    AddCircleOutline: {
+        width: '50%',
+        height: '10%',
+    },
+    buttonsbar: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        paddingBottom: 10
+    },
+
+}));
+
+
 export default function List_Clinic() {
+
+    const classes = useStyles();
 
     let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
 
@@ -38,56 +104,60 @@ export default function List_Clinic() {
     }, [])
 
     return (
-        <div className="container-xl">
-            <div className="table-responsive">
-                <div className="table-wrapper">
-                    <div className="table-title row rowspacesp">
-                        <div className="row">
-                            <div className="col-sm-5">
-                                <h2><b>Clinics</b></h2>
-                            </div>
-                        </div>
-                        <button className="addnew" onClick={() => history.push({ pathname: '/clinic/create' })}><i className="fa fa-plus"></i> Add New</button>
-                    </div>
+        <>
+            <CssBaseline />
+            <Container className={classes.container}>
+                <Grid container className={classes.containegrid}>
+                    <Grid item xs={6} md={3} sm={4}>
+                        <Paper className={classes.paper} >
+                            <Link className="addnew" onClick={() => history.push({ pathname: '/clinic/create' })}>
+                                <IconButton className={classes.root}>
+                                    <AddCircleOutline
+                                        className={classes.AddCircleOutline}
+                                    />
+                                </IconButton>
+                            </Link>
+                        </Paper>
+                    </Grid>
 
-                    <table className="table table-striped table-hover">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Name</th>
-                                <th>Manage</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                    {clinics.map(clinic => (
+                        <Grid item xs={6} md={3} sm={4} key={clinic.id}>
 
-                            {clinics.map(clinic => (
-                                <tr key={clinic.id}>
-                                    <td>{clinic.id}</td>
-                                    <td>{clinic.name}</td>
-                                    <td>
-                                        <a href=""
-                                            onClick={() => history.push({ pathname: `/clinic/edit/${clinic.id}` })}
-                                            className="settings"
-                                            title="Settings"
-                                            data-toggle="tooltip"
-                                        >
-                                            <i className="material-icons">
-                                                &#xE8B8;
-                                            </i>
-                                        </a>
-                                        <ConfirmDelete
-                                            path={`clinic/${clinic.id}`}
-                                            name="clinic"
-                                            fetchData={fetchData}
-                                        />
-                                    </td>
-                                </tr>
-                            ))}
+                            <Paper key={clinic.id} className={classes.paper} >
 
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+                                <img src={ClinicIcon} alt="" className={classes.img} />
+
+                                <Typography
+                                    variant="h5"
+                                    color="primary"
+                                    className={classes.Typography}
+                                >
+                                    {clinic.name}
+                                </Typography>
+
+                                <div className={classes.buttonsbar}>
+                                    <Link
+                                        onClick={() => history.push({ pathname: `/clinic/edit/${clinic.id}` })}
+                                        className="settings"
+                                    >
+                                        <IconButton>
+                                            <EditIcon />
+                                        </IconButton>
+                                    </Link>
+                                    <ConfirmDelete
+                                        path={`clinic/${clinic.id}`}
+                                        name="clinic"
+                                        fetchData={fetchData}
+                                        className={classes.DeleteIcon}
+                                    />
+
+                                </div>
+                            </Paper>
+                        </Grid>
+                    ))}
+
+                </Grid>
+            </Container>
+        </>
     )
 }

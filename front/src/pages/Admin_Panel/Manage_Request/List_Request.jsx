@@ -34,7 +34,13 @@ export default function List_Request() {
 
     async function fetchData() {
         try {
-            await API.get('RP')
+            await API.get('RP', {
+                headers: {
+                    id: id,
+                    token: token,
+                    isAdmin: isAdmin
+                }
+            })
                 .then(res => {
                     let data = res.data.result;
                     const success = res.data.success;

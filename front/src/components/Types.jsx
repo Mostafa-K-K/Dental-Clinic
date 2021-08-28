@@ -2,6 +2,9 @@ import React, { useState, useEffect, useContext } from "react"
 import API from "../API"
 import SessionContext from "./session/SessionContext"
 
+import { TextField } from '@material-ui/core'
+import { Autocomplete } from '@material-ui/lab'
+
 export default function Types(props) {
 
     let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
@@ -27,22 +30,19 @@ export default function Types(props) {
     }, [])
 
     return (
-        <select
-            name={props.name}
+        <Autocomplete
+            variant="outlined"
+            options={types}
+            getOptionLabel={(option) => option.description}
             onChange={props.onChange}
-        >
-            <option value="" selected={props.value === ""}>Type</option>
-
-            {types.map(type =>
-                <option
-                    key={type.id}
-                    value={type.id}
-                    selecte={props.value === type.id}
-                >
-                    {type.description}
-                </option>
-            )}
-
-        </select>
+            renderInput={(params) =>
+                <TextField
+                    {...params}
+                    variant="outlined"
+                    label="Acts"
+                    className={props.className}
+                />
+            }
+        />
     )
 }
