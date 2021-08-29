@@ -18,6 +18,14 @@
 
 .miniContainer {
     flex: 10;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@media screen and (max-width: 955px) {
+    .miniContainer {
+        margin-top: 50px;
+    }
 }
 
 .MuiIconButton-label {
