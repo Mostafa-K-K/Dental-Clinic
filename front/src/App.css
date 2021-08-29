@@ -22,12 +22,6 @@
     margin-right: auto;
 }
 
-@media screen and (max-width: 955px) {
-    .miniContainer {
-        margin-top: 50px;
-    }
-}
-
 .MuiIconButton-label {
     color: #8BE3D9 !important;
 }
@@ -38,23 +32,6 @@
 
 .MuiButtonBase-root, .MuiIconButton-root {
     outline: none !important;
-}
-
-.svgStyle {
-    display: inline-block;
-    position: absolute;
-    top: 0;
-    left: 0;
-}
-
-.containerSvg {
-    display: inline-block;
-    position: relative;
-    width: 100%;
-    max-width: 100%;
-    padding-bottom: 30%;
-    vertical-align: middle;
-    overflow: hidden;
 }
 
 .MuiTypography-colorInherit {
