@@ -1,0 +1,19 @@
+Upcoming Appointment 
+   ->  Search by Name
+   ->  Search by Clinic
+
+
+History Appointment 
+   ->  Search by Name
+   ->  Search by Clinic
+
+
+History Appointment 
+   ->  Search by Name
+   ->  Search by Clinic
+
+
+Procedures 
+   ->  Pagination
+   ->  Filter by Name
+   ->  Filter by Date

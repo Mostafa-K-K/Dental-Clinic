@@ -31,12 +31,6 @@ import {
 } from '@material-ui/pickers'
 
 const useStyles = makeStyles((theme) => ({
-    container: {
-        width: "100%",
-        margin: 5,
-        marginTop: 30,
-        marginBottom: 30
-    },
     paperFilter: {
         backgroundColor: "#FFFFFF",
         padding: 12,
@@ -79,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
         '&:hover': {
             backgroundColor: "#BEF4F4"
         },
-        '&:active':{
+        '&:active': {
             backgroundColor: "#A1F0EB"
         }
     }
@@ -190,11 +184,12 @@ export default function List_Balance() {
     return (
         <>
             <CssBaseline />
-            <Container className={classes.container}>
 
-                <Typography variant="h3">
-                    Balances
-                </Typography>
+            <Typography variant="h3" align="center" className="titlePage">
+                Balances
+            </Typography>
+
+            <Container className={classes.container}>
 
                 <Paper className={classes.paperFilter}>
 
@@ -257,9 +252,9 @@ export default function List_Balance() {
                             <TableRow>
                                 <TableCell>ID</TableCell>
                                 <TableCell>Patient</TableCell>
-                                <TableCell align="center">balance</TableCell>
-                                <TableCell align="center">Payment</TableCell>
-                                <TableCell align="center">Remaining</TableCell>
+                                <TableCell>balance</TableCell>
+                                <TableCell>Payment</TableCell>
+                                <TableCell>Remaining</TableCell>
                                 <TableCell align="center">Details</TableCell>
                             </TableRow>
                         </TableHead>
@@ -277,15 +272,15 @@ export default function List_Balance() {
                                         {balance.first_name} {balance.middle_name} {balance.last_name}
                                     </TableCell>
 
-                                    <TableCell align="center">
+                                    <TableCell>
                                         {balance.balance}
                                     </TableCell>
 
-                                    <TableCell align="center">
+                                    <TableCell>
                                         {balance.payment}
                                     </TableCell>
 
-                                    <TableCell align="center">
+                                    <TableCell>
                                         {balance.balance - balance.payment}
                                     </TableCell>
 

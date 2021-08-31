@@ -16,7 +16,7 @@ import {
     Container
 } from '@material-ui/core'
 
-import { LockOutlined } from '@material-ui/icons'
+import PersonIcon from '@material-ui/icons/Person'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -173,7 +173,7 @@ export default function Create_Doctor() {
             <div className={classes.paper}>
 
                 <Avatar className={classes.avatar}>
-                    <LockOutlined />
+                    <PersonIcon />
                 </Avatar>
 
                 <Typography component="h1" variant="h5">

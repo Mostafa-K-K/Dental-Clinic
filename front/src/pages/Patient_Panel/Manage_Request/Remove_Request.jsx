@@ -23,9 +23,7 @@ import DeleteIcon from '@material-ui/icons/Delete'
 
 const useStyles = makeStyles((theme) => ({
     container: {
-        width: "100%",
-        margin: 5,
-        marginTop: 30
+        width: "100%"
     },
     deleteIcon: {
         fill: "#ed4f1c",
@@ -70,13 +68,12 @@ export default function Remove_Request() {
                 }
             })
                 .then(res => {
-                    let data = res.data.result;
-                    console.log(data);
+                    const data = res.data.result;
                     const success = res.data.success;
                     if (success) {
-                        data = data.filter(res => res.status === "Waiting");
-                        data = data.filter(res => res.id_patient === parseInt(id))
-                        setRequests(data);
+                        let result = data.filter(r => r.status === "Waiting");
+                        result = result.filter(r => r.id_patient == id);
+                        setRequests(result);
                     }
                 });
         } catch (e) {
@@ -86,17 +83,17 @@ export default function Remove_Request() {
 
     useEffect(() => {
         fetchData();
-    }, [id])
+    }, [])
 
     return (
         <>
             <CssBaseline />
+
+            <Typography variant="h3" align="center" className="titlePage">
+                Requests
+            </Typography>
+
             <Container className={classes.container}>
-
-                <Typography variant="h3">
-                    Requests
-                </Typography>
-
 
                 <TableContainer component={Paper}>
                     <Table>
@@ -110,32 +107,37 @@ export default function Remove_Request() {
                             </TableRow>
                         </TableHead>
 
+                        {(requests.length) ?
+                            <TableBody>
+                                {requests.map(request =>
+                                    <TableRow key={request.id}>
 
-                        <TableBody>
-                            {requests.map(request =>
-                                <TableRow key={request.id}>
+                                        <TableCell align="center">
+                                            {moment(request.date).format("YYYY-MM-DD")}
+                                        </TableCell>
 
-                                    <TableCell align="center">
-                                        {moment(request.date).format("YYYY-MM-DD")}
-                                    </TableCell>
+                                        <TableCell align="center">
+                                            {moment(request.date).format("h:mm A")}
+                                        </TableCell>
 
-                                    <TableCell align="center">
-                                        {moment(request.date).format("h:mm A")}
-                                    </TableCell>
+                                        <TableCell>
+                                            {request.description}
+                                        </TableCell>
 
-                                    <TableCell>
-                                        {request.description}
-                                    </TableCell>
+                                        <TableCell align="center" className={classes.divRow}>
+                                            <Link onClick={() => handleDelete(request.id)}>
+                                                <DeleteIcon className={classes.deleteIcon} />
+                                            </Link>
+                                        </TableCell>
 
-                                    <TableCell align="center" className={classes.divRow}>
-                                        <Link onClick={() => handleDelete(request.id)}>
-                                            <DeleteIcon className={classes.deleteIcon} />
-                                        </Link>
-                                    </TableCell>
-
-                                </TableRow>
-                            )}
-                        </TableBody>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                            :
+                            <Typography variant="h6" align="center">
+                                You don't have any request yet
+                            </Typography>
+                        }
 
                     </Table>
                 </TableContainer>

@@ -16,7 +16,7 @@ import {
     Container,
 } from '@material-ui/core'
 
-import { Person } from "@material-ui/icons"
+import { MonetizationOn } from "@material-ui/icons"
 
 import Patients from "../../../components/Patients"
 
@@ -152,10 +152,14 @@ export default function Create_Payment() {
 
     return (
         <Container component="main" maxWidth="xs" className={classes.container}>
+
+            <Typography variant="h3" align="center" className="titlePage">
+            </Typography>
+
             <CssBaseline />
             <div className={classes.paper}>
                 <Avatar className={classes.avatar}>
-                    <Person />
+                    <MonetizationOn />
                 </Avatar>
                 <Typography component="h1" variant="h5">
                     Add Payment

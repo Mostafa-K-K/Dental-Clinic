@@ -418,21 +418,24 @@ const start = async () => {
         let att = ``;
         let names = name.split(' ');
 
-        if (names.length == 1) {
-            att += ` WHERE first_name LIKE '${names}%'`;
-            att += ` OR last_name LIKE '${names}%'`;
+        if (name && name != "") {
+            if (names.length == 1) {
+                att += ` WHERE first_name LIKE '${names}%'`;
+                att += ` OR last_name LIKE '${names}%'`;
+            }
+            else if (names.length > 1) {
+                if (names[0] && names[0] !== "") {
+                    att += ` WHERE first_name LIKE '${names[0]}%'`;
+                }
+                if (names[1] && names[1] !== "") {
+                    att += ` AND middle_name LIKE '${names[1]}%'`;
+                }
+                if (names[2] && names[2] !== "") {
+                    att += ` AND last_name LIKE '${names[2]}%'`;
+                }
+            }
         }
-        else if (names.length > 1) {
-            if (names[0] && names[0] !== "") {
-                att += ` WHERE first_name LIKE '${names[0]}%'`;
-            }
-            if (names[1] && names[1] !== "") {
-                att += ` AND middle_name LIKE '${names[1]}%'`;
-            }
-            if (names[2] && names[2] !== "") {
-                att += ` AND last_name LIKE '${names[2]}%'`;
-            }
-        }
+
         try {
             let sql = `SELECT COUNT(id) AS row FROM patients ${att} `;
             connection.query(sql, function (err, result) {
@@ -694,19 +697,19 @@ const start = async () => {
         let attValues = [];
 
         if (first_name) {
-            att += ` first_name = ? , `;
+            att += ` first_name = ? ,`;
             attValues.push(first_name);
         }
         if (middle_name) {
-            att += ` middle_name = ? , `;
+            att += ` middle_name = ? ,`;
             attValues.push(middle_name);
         }
         if (last_name) {
-            att += ` last_name = ? , `;
+            att += ` last_name = ? ,`;
             attValues.push(last_name);
         }
         if (phone) {
-            att += ` phone = ? , `;
+            att += ` phone = ? ,`;
             attValues.push(phone);
         }
 
@@ -873,31 +876,31 @@ const start = async () => {
         let attValues = [];
 
         if (description) {
-            att += ` description = ? , `;
+            att += ` description = ? ,`;
             attValues.push(description);
         }
         if (data) {
-            att += ` data = ? , `;
+            att += ` data = ? ,`;
             attValues.push(data);
         }
         if (start_at) {
-            att += ` start_at = ? , `;
+            att += ` start_at = ? ,`;
             attValues.push(start_at);
         }
         if (end_at) {
-            att += ` end_at = ? , `;
+            att += ` end_at = ? ,`;
             attValues.push(end_at);
         }
         if (status) {
-            att += ` status = ? , `;
+            att += ` status = ? ,`;
             attValues.push(status);
         }
         if (id_patient) {
-            att += ` id_patient = ? , `;
+            att += ` id_patient = ? ,`;
             attValues.push(id_patient);
         }
         if (id_clinic) {
-            att += ` id_clinic = ? , `;
+            att += ` id_clinic = ? ,`;
             attValues.push(id_clinic);
         }
 

@@ -21,7 +21,6 @@ const useStyles = makeStyles((theme) => ({
     container: {
         width: "100%",
         margin: 5,
-        marginTop: 30,
         marginBottom: 30,
         display: "flex",
         flexDirection: "column",
@@ -66,41 +65,49 @@ export default function Next_Appointment() {
     return (
         <>
             <CssBaseline />
+
+            <Typography variant="h3" align="center" className="titlePage">
+                Next Appointment
+            </Typography>
+
             <Container className={classes.container}>
 
-                <Typography variant="h3">
-                    Next Appointment
-                </Typography>
-
                 <TableContainer component={Paper} style={{ marginTop: 20, width: 400 }}>
-                    <Table>
 
-                        <TableRow>
-                            <TableCell>Date</TableCell>
-                            <TableCell>{moment(appointment.date).format("YYYY-MM-DD")}</TableCell>
-                        </TableRow>
+                    {(appointment) ?
+                        <Table>
+                            <TableRow>
+                                <TableCell>Date</TableCell>
+                                <TableCell>{moment(appointment.date).format("YYYY-MM-DD")}</TableCell>
+                            </TableRow>
 
-                        <TableRow>
-                            <TableCell>Start</TableCell>
-                            <TableCell>{moment(appointment.start_at, "HH:mm").format('h:mm A')}</TableCell>
-                        </TableRow>
+                            <TableRow>
+                                <TableCell>Start</TableCell>
+                                <TableCell>{moment(appointment.start_at, "HH:mm").format('h:mm A')}</TableCell>
+                            </TableRow>
 
-                        <TableRow>
-                            <TableCell>End</TableCell>
-                            <TableCell>{moment(appointment.end_at, "HH:mm").format('h:mm A')}</TableCell>
-                        </TableRow>
+                            <TableRow>
+                                <TableCell>End</TableCell>
+                                <TableCell>{moment(appointment.end_at, "HH:mm").format('h:mm A')}</TableCell>
+                            </TableRow>
 
-                        <TableRow>
-                            <TableCell>Clinic</TableCell>
-                            <TableCell>{appointment.name}</TableCell>
-                        </TableRow>
+                            <TableRow>
+                                <TableCell>Clinic</TableCell>
+                                <TableCell>{appointment.name}</TableCell>
+                            </TableRow>
 
-                        <TableRow>
-                            <TableCell>Description</TableCell>
-                            <TableCell>{appointment.description}</TableCell>
-                        </TableRow>
+                            <TableRow>
+                                <TableCell>Description</TableCell>
+                                <TableCell>{appointment.description}</TableCell>
+                            </TableRow>
+                        </Table>
+                        :
+                        <Typography variant="h6" align="center">
+                            You don't have an appointment
+                        </Typography>
+                        
+                        }
 
-                    </Table>
                 </TableContainer>
             </Container>
         </>

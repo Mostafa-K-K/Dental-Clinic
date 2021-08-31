@@ -101,10 +101,8 @@ export default function Login() {
 
     const classes = useStyles();
 
-    console.log({ classes });
-
     const [state, updateState] = useState({
-        username: "aoeiughvadks",
+        username: "",
         password: "",
         show: false
     });
@@ -131,12 +129,15 @@ export default function Login() {
 
     async function handleSubmit(e) {
         e.preventDefault();
-
+        console.log(":heyyyy");
         try {
             await API.post('login', state)
                 .then(res => {
                     const answer = res.data.result;
-                    if (answer) {
+
+                    console.log({ res });
+                    const success = res.data.success;
+                    if (success) {
                         if (answer.isAdmin || answer.isAdmin == true) {
 
                             let user = {
@@ -153,7 +154,6 @@ export default function Login() {
                             setCookie('isAdmin', answer.isAdmin, 30);
                             setCookie('role_id', `${answer.admin.role_id}`, 30);
                             setSession({ user });
-                            toast.success("Welcome!");
                         }
                         else if (!answer.isAdmin || answer.isAdmin == false) {
 
@@ -169,13 +169,13 @@ export default function Login() {
                             setCookie('id', answer.patient.id, 30);
                             setCookie('isAdmin', answer.isAdmin, 30);
                             setSession({ user });
-                            toast.success("Welcome!");
                         }
-                    } else {
+                    }
+                    else {
                         toast.error("Wrong Username or Password")
                         setState({ username: "", password: "" });
                     }
-                })
+                });
         } catch (e) {
             console.log("ERROR : ", e);
         }

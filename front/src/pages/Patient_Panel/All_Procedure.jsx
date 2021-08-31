@@ -21,7 +21,6 @@ const useStyles = makeStyles((theme) => ({
     container: {
         width: "100%",
         margin: 5,
-        marginTop: 30,
         marginBottom: 30
     }
 }));
@@ -85,11 +84,12 @@ export default function All_Procedure() {
     return (
         <>
             <CssBaseline />
-            <Container className={classes.container}>
 
-                <Typography variant="h3">
-                    Procedures
-                </Typography>
+            <Typography variant="h3" align="center" className="titlePage">
+                Procedures
+            </Typography>
+
+            <Container className={classes.container}>
 
                 <TableContainer component={Paper}>
                     <Table>
@@ -107,67 +107,73 @@ export default function All_Procedure() {
                             </TableRow>
                         </TableHead>
 
+                        {(procedures.length) ?
+                            <TableBody>
+                                {procedures.map((procedure, i = 1) =>
+                                    <TableRow key={procedure.id}>
 
-                        <TableBody>
-                            {procedures.map((procedure, i = 1) =>
-                                <TableRow key={procedure.id}>
+                                        <TableCell>
+                                            {i += 1}
+                                        </TableCell>
 
-                                    <TableCell>
-                                        {i += 1}
-                                    </TableCell>
+                                        <TableCell>
+                                            {moment(procedure.date).format("YYYY-MM-DD")}
+                                        </TableCell>
 
-                                    <TableCell>
-                                        {moment(procedure.date).format("YYYY-MM-DD")}
-                                    </TableCell>
+                                        <TableCell>
+                                            {moment(procedure.date).format("h:mm A")}
+                                        </TableCell>
 
-                                    <TableCell>
-                                        {moment(procedure.date).format("h:mm A")}
-                                    </TableCell>
+                                        <TableCell>
+                                            {procedure.f_n_doctor} {procedure.m_n_doctor} {procedure.l_n_doctor}
+                                        </TableCell>
 
-                                    <TableCell>
-                                        {procedure.f_n_doctor} {procedure.m_n_doctor} {procedure.l_n_doctor}
-                                    </TableCell>
+                                        <TableCell align="center">
+                                            {procedure.payment}
+                                        </TableCell>
 
-                                    <TableCell align="center">
-                                        {procedure.payment}
-                                    </TableCell>
+                                        <TableCell align="center">
+                                            {works.filter(work => work.id_procedure == procedure.id_procedure).map(work => (
+                                                <div key={work.id}>
+                                                    <span key={work.id}>
+                                                        {(work.id_teeth == 1 || work.id_teeth == 2) ? "All" : work.id_teeth}
+                                                    </span>
+                                                    <br />
+                                                </div>
+                                            ))}
+                                        </TableCell>
 
-                                    <TableCell align="center">
-                                        {works.filter(work => work.id_procedure == procedure.id_procedure).map(work => (
-                                            <div key={work.id}>
-                                                <span key={work.id}>
-                                                    {(work.id_teeth == 1 || work.id_teeth == 2) ? "All" : work.id_teeth}
-                                                </span>
-                                                <br />
-                                            </div>
-                                        ))}
-                                    </TableCell>
+                                        <TableCell align="center">
+                                            {works.filter(work => work.id_procedure == procedure.id_procedure).map(work => (
+                                                <div key={work.id}>
+                                                    <span>
+                                                        {work.description}
+                                                    </span>
+                                                    <br />
+                                                </div>
+                                            ))}
+                                        </TableCell>
 
-                                    <TableCell align="center">
-                                        {works.filter(work => work.id_procedure == procedure.id_procedure).map(work => (
-                                            <div key={work.id}>
-                                                <span>
-                                                    {work.description}
-                                                </span>
-                                                <br />
-                                            </div>
-                                        ))}
-                                    </TableCell>
+                                        <TableCell align="center">
+                                            {works.filter(work => work.id_procedure == procedure.id_procedure).map(work => (
+                                                <div key={work.id}>
+                                                    <span key={work.id}>
+                                                        {work.price}
+                                                    </span>
+                                                    <br />
+                                                </div>
+                                            ))}
+                                        </TableCell>
 
-                                    <TableCell align="center">
-                                        {works.filter(work => work.id_procedure == procedure.id_procedure).map(work => (
-                                            <div key={work.id}>
-                                                <span key={work.id}>
-                                                    {work.price}
-                                                </span>
-                                                <br />
-                                            </div>
-                                        ))}
-                                    </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                            :
+                            <Typography variant="h6" align="center">
+                                You don't maked any procedure
+                            </Typography>
 
-                                </TableRow>
-                            )}
-                        </TableBody>
+                        }
 
                     </Table>
                 </TableContainer>

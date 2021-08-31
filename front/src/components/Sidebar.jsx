@@ -24,7 +24,13 @@ import {
     Group,
     EventNote,
     Menu,
-    ClearAll
+    ClearAll,
+    MonetizationOn,
+    InsertInvitation,
+    AssignmentTurnedIn,
+    AssignmentInd,
+    AddBox,
+    Timer
 } from "@material-ui/icons"
 
 import Logo from '../images/Logo.png'
@@ -161,22 +167,11 @@ export default function Sidebar(props) {
         actions: { setSession }
     } = useContext(SessionContext);
 
-
-    useEffect(() => {
-        window.addEventListener('resize', e => {
-            (window.innerWidth > 960) ?
-                setShow(true) :
-                setShow(false);
-        })
-    }, [show])
-
-
     async function handleHideShow() {
         (show) ?
             setShow(false) :
             setShow(true);
     }
-
 
     async function handleLogout() {
         try {
@@ -189,14 +184,20 @@ export default function Sidebar(props) {
         removeCookie('token');
         removeCookie('isAdmin');
         removeCookie('role_id');
-        setSession({ user: {} });
-        toast.dark("Bye Bye");
+        setSession({ user: { } });
     }
+
+    useEffect(() => {
+        window.addEventListener('resize', e => {
+            (window.innerWidth > 960) ?
+                setShow(true) :
+                setShow(false);
+        })
+    }, [show])
 
     return (
         <>
             <AppBar
-
                 style={{ display: view ? 'block' : 'none' }}
             >
                 <Toolbar className={classes.toolbar}>
@@ -244,16 +245,16 @@ export default function Sidebar(props) {
                                     className={classes.item}
                                 >
                                     <EventNote className={classes.icon} />
-                                    <Typography className={classes.text}>TODAY APPOINTMENT</Typography>
+                                    <Typography className={classes.text}>APPOINTMENTS</Typography>
                                 </Link>
 
 
                                 <Link
-                                    to="/appointment/upcoming"
+                                    to="/appointment/create"
                                     className={classes.item}
                                 >
-                                    <EventNote className={classes.icon} />
-                                    <Typography className={classes.text}>UPCOMING APPOINTMENT</Typography>
+                                    <InsertInvitation className={classes.icon} />
+                                    <Typography className={classes.text}>ADD APPOINTMENT</Typography>
                                 </Link>
 
 
@@ -261,7 +262,7 @@ export default function Sidebar(props) {
                                     to="/procedure/list"
                                     className={classes.item}
                                 >
-                                    <EventNote className={classes.icon} />
+                                    <AssignmentTurnedIn className={classes.icon} />
                                     <Typography className={classes.text}>PROCEDURES</Typography>
                                 </Link>
 
@@ -270,7 +271,7 @@ export default function Sidebar(props) {
                                     to="/request/list"
                                     className={classes.item}
                                 >
-                                    <Bookmark className={classes.icon} />
+                                    <AssignmentInd className={classes.icon} />
                                     <Typography className={classes.text}>REQUESTS</Typography>
                                 </Link>
 
@@ -279,7 +280,7 @@ export default function Sidebar(props) {
                                     to="/payment/create"
                                     className={classes.item}
                                 >
-                                    <List className={classes.icon} />
+                                    <MonetizationOn className={classes.icon} />
                                     <Typography className={classes.text}>ADD PAYMENT</Typography>
                                 </Link>
 
@@ -315,7 +316,7 @@ export default function Sidebar(props) {
                                     to="/type/list"
                                     className={classes.item}
                                 >
-                                    <Storefront className={classes.icon} />
+                                    <Bookmark className={classes.icon} />
                                     <Typography className={classes.text}>ACTS</Typography>
                                 </Link>
 
@@ -390,7 +391,7 @@ export default function Sidebar(props) {
                                     to="/request/create"
                                     className={classes.item}
                                 >
-                                    <EventNote className={classes.icon} />
+                                    <AddBox className={classes.icon} />
                                     <Typography className={classes.text}>TAKE APPOINTMENT</Typography>
                                 </Link>
 
@@ -399,7 +400,7 @@ export default function Sidebar(props) {
                                     to="/request/remove"
                                     className={classes.item}
                                 >
-                                    <EventNote className={classes.icon} />
+                                    <Timer className={classes.icon} />
                                     <Typography className={classes.text}> LIST REQUESTS</Typography>
                                 </Link>
 
@@ -408,7 +409,7 @@ export default function Sidebar(props) {
                                     to="/patient/appointment"
                                     className={classes.item}
                                 >
-                                    <EventNote className={classes.icon} />
+                                    <InsertInvitation className={classes.icon} />
                                     <Typography className={classes.text}>LIST APPOINTMENTS</Typography>
                                 </Link>
 
@@ -417,7 +418,7 @@ export default function Sidebar(props) {
                                     to="/patient/procedure"
                                     className={classes.item}
                                 >
-                                    <Bookmark className={classes.icon} />
+                                    <AssignmentTurnedIn className={classes.icon} />
                                     <Typography className={classes.text}>LIST PROCEDURES</Typography>
                                 </Link>
 

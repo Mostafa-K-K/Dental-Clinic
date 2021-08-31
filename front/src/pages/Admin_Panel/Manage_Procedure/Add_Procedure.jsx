@@ -1,19 +1,147 @@
 import React, { useEffect, useState, useContext } from "react"
 import moment from "moment"
 import API from "../../../API"
+import { Link } from "react-router-dom"
 import { useHistory, useParams } from "react-router"
 import SessionContext from "../../../components/session/SessionContext"
 
-import Doctors from "../../../components/Doctors"
 import Teeth from "../../../components/Teeth"
+import Doctors from "../../../components/Doctors"
 import Types from "../../../components/Types"
+
+import {
+    TableContainer,
+    Table,
+    TableHead,
+    TableBody,
+    TableCell,
+    TableRow,
+    Button,
+    CssBaseline,
+    TextField,
+    Typography,
+    makeStyles,
+    Container,
+    Paper
+} from '@material-ui/core'
+
+import { Autocomplete } from '@material-ui/lab'
+
+import AddBoxIcon from '@material-ui/icons/AddBox'
+import DeleteIcon from '@material-ui/icons/Delete'
+
+import MomentUtils from '@date-io/moment'
+
+import {
+    KeyboardDateTimePicker,
+    MuiPickersUtilsProvider
+} from '@material-ui/pickers'
+
+const useStyles = makeStyles((theme) => ({
+    root: {
+        '& label.Mui-focused': {
+            color: theme.palette.primary.main,
+        },
+        '& .MuiInput-underline:after': {
+            borderBottomColor: theme.palette.primary.main,
+        },
+        '& .MuiOutlinedInput-root': {
+            '& fieldset': {
+                borderColor: theme.palette.primary.main,
+            },
+            '&:hover fieldset': {
+                borderColor: theme.palette.primary.main,
+            },
+            '&.Mui-focused fieldset': {
+                borderColor: theme.palette.primary.main,
+            },
+        },
+        width: 250
+    },
+    root2: {
+        '& label.Mui-focused': {
+            color: theme.palette.primary.main,
+        },
+        '& .MuiInput-underline:after': {
+            borderBottomColor: theme.palette.primary.main,
+        },
+        '& .MuiOutlinedInput-root': {
+            '& fieldset': {
+                borderColor: theme.palette.primary.main,
+            },
+            '&:hover fieldset': {
+                borderColor: theme.palette.primary.main,
+            },
+            '&.Mui-focused fieldset': {
+                borderColor: theme.palette.primary.main,
+            },
+        },
+        width: 400
+    },
+    root3: {
+        width: 100,
+        padding: 5,
+        border: "1px solid #BEF4F4",
+        borderRadius: "5px",
+        '&:hover': {
+            border: "2px solid #BEF4F4",
+        },
+        '&:focus': {
+            border: "3px solid #BEF4F4",
+        },
+    },
+    paperFilter: {
+        backgroundColor: "#FFFFFF",
+        padding: 12,
+        marginBottom: 10,
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-around"
+    },
+    addBoxIcon: {
+        backgroundColor: "#8BE3D9",
+        color: "#FFFFFF",
+        padding: 6,
+        fontSize: 53,
+        borderRadius: "5px",
+        '&:hover': {
+            backgroundColor: "#BEF4F4"
+        },
+        '&:active': {
+            backgroundColor: "#A1F0EB"
+        }
+    },
+    inputSum: {
+        border: "none"
+    },
+    submit: {
+        width: 120,
+        marginBottom: 20,
+        marginTop: 20
+    },
+    flexDiv: {
+        backgroundColor: "#FFFFFF",
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: "space-around"
+    },
+    deleteIcon: {
+        color: "#ed4f1c",
+        '&:hover': {
+            color: "#e24414"
+        }
+    }
+}));
 
 export default function Add_Procedure() {
 
+    const classes = useStyles();
+    const history = useHistory();
+    const { id_appointment, id_patient } = useParams();
+
     let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
 
-    const { id_appointment, id_patient } = useParams();
-    const history = useHistory();
     const date = moment().format("YYYY-MM-DDTHH:mm");
 
     const [state, updateState] = useState({
@@ -21,7 +149,7 @@ export default function Add_Procedure() {
         payment: "",
         date: date,
         id_patient: id_patient,
-        doctor: "",
+        id_doctor: "",
 
         works: [],
         total: 0,
@@ -91,9 +219,9 @@ export default function Add_Procedure() {
         }
     }
 
-    async function changePriceWork(id, value) {
+    async function changePriceWork(id_w, value) {
         let work = state.works;
-        work[id].price = value;
+        work[id_w].price = value;
         setState({ works: work });
 
         let total = 0;
@@ -105,18 +233,12 @@ export default function Add_Procedure() {
         e.preventDefault();
 
         try {
-            let d_id = "";
-
-            if (state.doctor && state.doctor !== '')
-                d_id = state.doctor.id;
-
-            let dd = moment(state.date).format("YYYY-MM-DD HH:mm");
 
             let reqBody = {
                 payment: state.payment,
-                date: dd,
+                date: moment(state.date).format("YYYY-MM-DD HH:mm"),
                 id_patient: state.id_patient,
-                id_doctor: d_id,
+                id_doctor: state.id_doctor,
                 balance: state.total
             };
 
@@ -181,85 +303,198 @@ export default function Add_Procedure() {
     }, []);
 
     return (
-        <div>
-            <h1>Create Procedure</h1>
-            <form onSubmit={handleSubmit}>
+        <>
+            <CssBaseline />
 
-                <input
-                    type="number"
-                    name="payment"
-                    placeholder="Payment"
-                    value={state.payment}
-                    onChange={handleChange}
-                />
-                <input
-                    type="datetime-local"
-                    name="date"
-                    value={state.date}
-                    onChange={handleChange}
-                />
+            <Typography variant="h3" align="center" className="titlePage">
+                Create Procedure
+            </Typography>
 
-                <h3>{state.id_patient} - {state.patient}</h3>
+            <Container className={classes.container}>
 
-                <Doctors
-                    value={state.doctor}
-                    onChange={(event, newValue) => {
-                        setState({ doctor: newValue });
-                    }}
-                />
+                <form onSubmit={handleSubmit}>
 
-                <select name="category" onChange={handleChange}>
-                    <option value="Adult" selected={state.category === "Adult"}>Adult</option>
-                    <option value="Child" selected={state.category === "Child"}>Child</option>
-                </select>
+                    <Paper className={classes.paperFilter}>
 
-                <Teeth
-                    category={state.category}
-                    name='id_teeth'
-                    value={state.id_teeth}
-                    onChange={handleChange}
-                />
+                        <TextField
+                            reqBody
+                            fullWidth
+                            variant="outlined"
+                            label="Patient"
+                            value={state.id_patient + " - " + state.patient}
+                            className={classes.root}
+                        />
 
-                <Types
-                    value={state.types}
-                    onChange={(event, newValue) => {
-                        setState({ types: newValue });
-                    }}
-                />
 
-                <button type="button" onClick={handleRow}>+++</button>
+                        <MuiPickersUtilsProvider utils={MomentUtils} >
+                            <KeyboardDateTimePicker
+                                value={state.date}
+                                inputVariant="outlined"
+                                onChange={(date) => setState({ date: moment(date).format("YYYY/MM/DD hh:mm a") })}
+                                label="Date Time"
+                                format="YYYY/MM/DD hh:mm a"
+                                className={classes.root2}
+                            />
+                        </MuiPickersUtilsProvider>
 
-                <table>
+                    </Paper>
 
-                    <tr>
-                        <th>Number Tooth</th>
-                        <th>Procedure Type</th>
-                        <th>Price</th>
-                    </tr>
 
-                    {state.works.map(work =>
-                        <tr>
-                            <td>{work.teeth}</td>
-                            <td>{work.type}</td>
-                            <td>
-                                <input
-                                    type="number"
-                                    value={work.price}
-                                    onChange={e => changePriceWork(work.id, e.target.value)}
+                    <Paper className={classes.paperFilter}>
+
+                        <TextField
+                            type="number"
+                            name="payment"
+                            placeholder="Payment"
+                            value={state.payment}
+                            onChange={handleChange}
+                            variant="outlined"
+                            label="Payment"
+                            className={classes.root2}
+                        />
+
+                        <Doctors
+                            value={state.id_doctor}
+                            onChange={(event, newValue) => {
+                                setState({ id_doctor: newValue ? newValue.id : "" });
+                            }}
+                            className={classes.root2}
+                        />
+
+                    </Paper>
+
+
+                    <Paper className={classes.paperFilter}>
+
+                        <Autocomplete
+                            variant="outlined"
+                            options={["Adult", "Child"]}
+                            getOptionLabel={(option) => option}
+                            onChange={(event, newValue) => setState({ category: newValue })}
+                            renderInput={(params) =>
+                                <TextField
+                                    {...params}
+                                    variant="outlined"
+                                    label="Category"
+                                    className={classes.root}
                                 />
-                            </td>
-                            <td><button type="button" onClick={() => removeRow(work.id)}>Remove</button></td>
-                        </tr>
-                    )}
-                    <tr>
-                        <th>Total</th>
-                        <th></th>
-                        <th><input readOnly name="total" value={state.total} onChange={handleChange} /></th>
-                    </tr>
-                </table>
+                            }
+                        />
 
-                <button type="submit">ADD</button>
-            </form>
-        </div>
+                        <Teeth
+                            value={state.id_teeth}
+                            category={state.category}
+                            onChange={(event, newValue) => setState({ id_teeth: newValue ? newValue.id : "" })}
+                            className={classes.root}
+                        />
+
+                        <Types
+                            value={state.id_doctor}
+                            onChange={(event, newValue) => setState({ types: newValue ? newValue : "" })}
+                            className={classes.root}
+                        />
+
+                        <Link onClick={handleRow}>
+                            <AddBoxIcon className={classes.addBoxIcon} />
+                        </Link>
+
+                    </Paper>
+
+
+                    <TableContainer component={Paper}>
+                        <Table>
+
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell align="center">#</TableCell>
+                                    <TableCell align="center">Tooth</TableCell>
+                                    <TableCell align="center">Act</TableCell>
+                                    <TableCell align="center">Price</TableCell>
+                                    <TableCell>Remove</TableCell>
+                                </TableRow>
+                            </TableHead>
+
+
+                            <TableBody>
+                                {state.works.map((work, i = 1) =>
+                                    <TableRow key={work.id}>
+
+                                        <TableCell align="center">
+                                            {i += 1}
+                                        </TableCell>
+
+                                        <TableCell align="center">
+                                            {work.teeth}
+                                        </TableCell>
+
+                                        <TableCell align="center">
+                                            {work.type}
+                                        </TableCell>
+
+                                        <TableCell align="center">
+                                            <input
+                                                type="number"
+                                                style={{ textAlign: "center" }}
+                                                placeholder="Price"
+                                                value={work.price}
+                                                onChange={e => changePriceWork(work.id, e.target.value)}
+                                                className={classes.root3}
+                                            />
+                                        </TableCell>
+
+                                        <TableCell align="center" className={classes.divRow}>
+                                            <Link onClick={() => removeRow(work.id)}>
+                                                <DeleteIcon className={classes.deleteIcon} />
+                                            </Link>
+                                        </TableCell>
+
+                                    </TableRow>
+                                )}
+
+                                <TableRow>
+                                    <TableCell></TableCell>
+                                    <TableCell>Total</TableCell>
+                                    <TableCell></TableCell>
+                                    <TableCell align="center">
+                                        <input
+                                            readOnly
+                                            name="total"
+                                            style={{ textAlign: "center" }}
+                                            value={state.total}
+                                            className={classes.inputSum}
+                                            onChange={handleChange}
+                                        />
+                                    </TableCell>
+                                    <TableCell></TableCell>
+                                </TableRow>
+
+                            </TableBody>
+
+                        </Table>
+                    </TableContainer>
+
+                    <div className={classes.flexDiv}>
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            color="primary"
+                            className={classes.submit}
+                        >
+                            Add
+                        </Button>
+
+                        <Button
+                            type="button"
+                            variant="contained"
+                            className={classes.submit}
+                            onClick={() => history.push({ pathname: "/procedure/list" })}
+                        >
+                            Cancel
+                        </Button>
+                    </div>
+
+                </form>
+            </Container>
+        </>
     )
 }

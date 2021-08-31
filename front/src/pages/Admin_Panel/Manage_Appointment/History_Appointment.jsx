@@ -1,19 +1,162 @@
-import React, { useEffect, useState, useContext } from "react"
+import React, { useState, useEffect, useContext } from "react"
 import { useHistory } from 'react-router'
 import API from "../../../API"
+import { Link } from "react-router-dom"
 import moment from "moment"
 import SessionContext from "../../../components/session/SessionContext"
 
+import {
+    TableContainer,
+    Table,
+    TableHead,
+    TableBody,
+    TableCell,
+    TableRow,
+    Container,
+    Paper,
+    CssBaseline,
+    makeStyles,
+    Typography,
+    FormControl,
+    FormControlLabel,
+    RadioGroup,
+    FormLabel,
+    Radio,
+} from '@material-ui/core'
+
+import RefreshIcon from '@material-ui/icons/Refresh'
+
+import MomentUtils from '@date-io/moment'
+
+import {
+    KeyboardDatePicker,
+    MuiPickersUtilsProvider
+} from '@material-ui/pickers'
+
+const useStyles = makeStyles((theme) => ({
+    root: {
+        '& label.Mui-focused': {
+            color: theme.palette.primary.main,
+        },
+        '& .MuiInput-underline:after': {
+            borderBottomColor: theme.palette.primary.main,
+        },
+        '& .MuiOutlinedInput-root': {
+            '& fieldset': {
+                borderColor: theme.palette.primary.main,
+            },
+            '&:hover fieldset': {
+                borderColor: theme.palette.primary.main,
+            },
+            '&.Mui-focused fieldset': {
+                borderColor: theme.palette.primary.main,
+            },
+        },
+        '& .MuiFormHelperText-contained': {
+            display: "none"
+        },
+        '& label': {
+            color: "#8BE3D9 !important",
+        },
+        '& .PrivateNotchedOutline-root-28': {
+            borderColor: "#8BE3D9 !important",
+        }
+    },
+    container: {
+        width: "100%",
+    },
+    rejectIcon: {
+        fill: "#ed4f1c",
+        "&:hover": {
+            fill: "#e24414"
+        },
+        marginLeft: "1%"
+    },
+    acceptIcon: {
+        fill: "#8BE3D9",
+        "&:hover": {
+            fill: "#BEF4F4"
+        },
+        marginRight: "1%"
+    },
+    historyBtnLink: {
+        textDecoration: "none",
+        fontSize: 20,
+        color: "#000000",
+        width: "25%",
+        '&:hover': {
+            backgroundColor: "#BEF4F4"
+        },
+        padding: 10,
+        textAlign: "center",
+        borderRadius: 5
+    },
+    historyBtnLinkActive: {
+        textDecoration: "none",
+        fontSize: 20,
+        color: "#000000",
+        width: "25%",
+        backgroundColor: "#8BE3D9",
+        padding: 10,
+        textAlign: "center",
+        borderRadius: 5
+    },
+    paperFilter: {
+        backgroundColor: "#FFFFFF",
+        padding: 12,
+        marginBottom: 10,
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between"
+    },
+    resetSearch: {
+        backgroundColor: "#8BE3D9",
+        color: "#FFFFFF",
+        padding: 6,
+        fontSize: 53,
+        borderRadius: "5px",
+        '&:hover': {
+            backgroundColor: "#BEF4F4"
+        }
+    },
+    FormLabel: {
+        textAlign: "center",
+        marginTop: 12
+    },
+    FormControl: {
+        display: "flex",
+        flexFlow: "row",
+        marginLeft: 20,
+        '& .radioR1': {
+            display: "flex",
+            flexFlow: "row",
+            marginLeft: 70,
+            '& .MuiFormControlLabel-root:nth-child(2)': {
+                marginLeft: 35
+            }
+        },
+        '& .radioR2': {
+            display: "flex",
+            flexFlow: "row",
+            marginLeft: 75,
+            '& .MuiFormControlLabel-root:nth-child(2)': {
+                marginLeft: 25
+            }
+        }
+    },
+}));
+
 export default function Today_Appointment() {
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    const classes = useStyles();
+    const history = useHistory();
 
-    const history = useHistory()
+    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
 
     const [appointments, setAppointments] = useState([]);
 
     const [state, updateState] = useState({
-        date: "",
+        date: null,
         status: ""
     })
 
@@ -60,88 +203,141 @@ export default function Today_Appointment() {
     }, [JSON.stringify(state)])
 
     return (
+        <>
+            <CssBaseline />
 
-        <div className="container-xl">
-            <div className="table-responsive">
-                <div className="table-wrapper">
-                    <div className="table-title row rowspacesp">
-                        <div className="row">
-                            <div className="col-sm-5">
-                                <h2><b>History Appointments</b></h2>
-                            </div>
-                        </div>
-                        <button onClick={() => history.push({ pathname: '/appointment/create' })}><i className="fa fa-plus"></i> Add New</button>
-                    </div>
+            <Typography variant="h3" align="center" className="titlePage">
+                History Appointments
+            </Typography>
 
-                    <input
-                        type="date"
-                        name="date"
-                        value={state.date}
-                        onChange={handleChange}
-                    />
+            <Container className={classes.container}>
 
-                    <input
-                        checked={state.status === ''}
-                        type="radio"
-                        name="status"
-                        id="all"
-                        value=""
-                        onChange={handleChange}
-                    />
-                    <label for="all">All</label>
-                    <input
-                        checked={state.status === 'Present'}
-                        type="radio"
-                        name="status"
-                        id="present"
-                        value="Present"
-                        onChange={handleChange}
-                    />
-                    <label for="present">Present</label>
-                    <input
-                        checked={state.status === 'Absent'}
-                        type="radio"
-                        name="status"
-                        id="absent"
-                        value="Absent"
-                        onChange={handleChange}
-                    />
-                    <label for="absent">Absent</label>
+                <Paper className={classes.paperFilter}>
+                    <Link
+                        onClick={() => history.push({ pathname: '/appointment/today' })}
+                        className={classes.historyBtnLink}
+                    >
+                        Today
+                    </Link>
+
+                    <Link
+                        onClick={() => history.push({ pathname: '/appointment/upcoming' })}
+                        className={classes.historyBtnLink}
+                    >
+                        Upcoming
+                    </Link>
+
+                    <Link
+                        onClick={() => history.push({ pathname: '/appointment/history' })}
+                        className={classes.historyBtnLinkActive}
+                    >
+                        History
+                    </Link>
+                </Paper>
+
+                <Paper className={classes.paperFilter}>
+
+                    <MuiPickersUtilsProvider utils={MomentUtils} >
+                        <KeyboardDatePicker
+                            focused={state.date != null}
+                            label="Date"
+                            variant="outlined"
+                            inputVariant="outlined"
+                            format="YYYY/MM/DD"
+                            value={state.date}
+                            onChange={(date) => setState({ date: moment(date).format("YYYY-MM-DD") })}
+                            KeyboardButtonProps={{
+                                'aria-label': 'change date',
+                            }}
+                            className={classes.root}
+                        />
+                    </MuiPickersUtilsProvider>
+
+                    <FormControl className={classes.FormControl}>
+                        <RadioGroup
+                            name="status"
+                            value={state.status}
+                            onChange={handleChange}
+                            className="radioR1"
+                        >
+                            <FormControlLabel value="Present" control={<Radio />} label="Present" />
+                            <FormControlLabel value="Absent" control={<Radio />} label="Absent" />
+                        </RadioGroup>
+                    </FormControl>
+
+                    <Link
+                        onClick={() => {
+                            setState({
+                                date: null,
+                                status: ""
+                            })
+                        }}
+                    >
+                        <RefreshIcon className={classes.resetSearch} />
+                    </Link>
+
+                </Paper>
+
+                <TableContainer component={Paper}>
+                    <Table>
+
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>ID</TableCell>
+                                <TableCell>Patient</TableCell>
+                                <TableCell>Clinic</TableCell>
+                                <TableCell>Date</TableCell>
+                                <TableCell>Start</TableCell>
+                                <TableCell>End</TableCell>
+                                <TableCell>Description</TableCell>
+                                <TableCell>Status</TableCell>
+                            </TableRow>
+                        </TableHead>
 
 
+                        <TableBody>
+                            {appointments.map(appointment =>
+                                <TableRow key={appointment.id}>
 
-                    <table className="table table-striped table-hover">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Patient</th>
-                                <th>Clinic</th>
-                                <th>Date</th>
-                                <th>Start</th>
-                                <th>End</th>
-                                <th>Description</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                                    <TableCell>
+                                        {appointment.id_patient}
+                                    </TableCell>
 
-                            {appointments.map(appointment => (
-                                <tr key={appointment.id}>
-                                    <td>{appointment.id}</td>
-                                    <td>{appointment.first_name} {appointment.middle_name} {appointment.last_name}</td>
-                                    <td>{appointment.name}</td>
-                                    <td>{moment(appointment.date).format("YYYY-MM-DD")}</td>
-                                    <td>{moment(appointment.start_at, "HH:mm").format('h:mm A')}</td>
-                                    <td>{moment(appointment.end_at, "HH:mm").format('h:mm A')}</td>
-                                    <td>{appointment.description}</td>
-                                    <td>{appointment.status}</td>
-                                </tr>
-                            ))}
+                                    <TableCell>
+                                        {appointment.first_name} {appointment.middle_name} {appointment.last_name}
+                                    </TableCell>
 
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+                                    <TableCell>
+                                        {appointment.name}
+                                    </TableCell>
+
+                                    <TableCell>
+                                        {moment(appointment.date).format("YYYY-MM-DD")}
+                                    </TableCell>
+
+                                    <TableCell>
+                                        {moment(appointment.start_at, "HH:mm").format("h:mm A")}
+                                    </TableCell>
+
+                                    <TableCell>
+                                        {moment(appointment.end_at, "HH:mm").format("h:mm A")}
+                                    </TableCell>
+
+                                    <TableCell>
+                                        {appointment.description}
+                                    </TableCell>
+
+                                    <TableCell>
+                                        {appointment.status}
+                                    </TableCell>
+
+                                </TableRow>
+                            )}
+                        </TableBody>
+
+                    </Table>
+                </TableContainer>
+            </Container>
+        </>
     )
 }

@@ -231,14 +231,11 @@ export default function Create_Procedure() {
     async function handleSubmit(e) {
         e.preventDefault();
 
-        console.log(state);
-
         try {
-            let dd = moment(state.date).format("YYYY-MM-DD HH:mm");
 
             let reqBody = {
                 payment: state.payment,
-                date: dd,
+                date: moment(state.date).format("YYYY-MM-DD HH:mm"),
                 id_patient: state.id_patient,
                 id_doctor: state.id_doctor,
                 balance: state.total
@@ -281,11 +278,12 @@ export default function Create_Procedure() {
     return (
         <>
             <CssBaseline />
-            <Container className={classes.container}>
 
-                <Typography variant="h3">
-                    Create Procedure
-                </Typography>
+            <Typography variant="h3" align="center" className="titlePage">
+            Create Procedure
+            </Typography>
+
+            <Container className={classes.container}>
 
                 <form onSubmit={handleSubmit}>
 

@@ -17,6 +17,8 @@ import {
     Container
 } from '@material-ui/core'
 
+// import {Alert,AlertTitle} from '@material-ui/lab'
+
 import { AddCircle } from "@material-ui/icons"
 
 
@@ -65,7 +67,6 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: "#FFFFFF",
         paddingBottom: "10px",
         marginBottom: "70px",
-        marginTop: "50px",
         borderRadius: "5px"
     },
     flexDiv: {
@@ -92,7 +93,7 @@ export default function Create_Request() {
     const [state, updateState] = useState({
         description: "",
         date: date,
-        status: "Watting",
+        status: "Waiting",
         id_patient: id
     });
 
@@ -132,7 +133,22 @@ export default function Create_Request() {
 
     return (
         <Container component="main" maxWidth="xs" className={classes.container}>
+
             <CssBaseline />
+
+            {/* <Alert severity="error">
+                <AlertTitle>Error</AlertTitle>
+                This is an error alert — <strong>check it out!</strong>
+            </Alert>
+
+            <Alert severity="success" onClose={() => { }}>This is a success alert — check it out!</Alert>
+            
+            <Alert severity="warning">This is a warning alert — check it out!</Alert>
+            <Alert severity="info">This is an info alert — check it out!</Alert> */}
+
+            <Typography variant="h3" align="center" className="titlePage">
+            </Typography>
+
             <div className={classes.paper}>
                 <Avatar className={classes.avatar}>
                     <AddCircle />

@@ -32,19 +32,18 @@ const useStyles = makeStyles((theme) => ({
     DeleteIcon: {
         fill: 'red'
     },
+    container:{
+        width:"85%"
+    },
     paper: {
         height: '90%',
-        width: ' 70%',
+        width: ' 85%',
         textAlign: 'center',
         display: 'flex !important',
         flexDirection: 'column',
         justifyContent: 'space-around',
         alignContent: 'center',
         paddingTop: 10
-    },
-    container: {
-        marginTop: '80px'
-
     },
     Typography: {
         color: 'black'
@@ -104,6 +103,11 @@ export default function List_Type() {
     return (
         <>
             <CssBaseline />
+
+            <Typography variant="h3" align="center" className="titlePage">
+                Acts
+            </Typography>
+
             <Container className={classes.container}>
                 <Grid container>
                     <Grid item xs={6} md={3} sm={4}>

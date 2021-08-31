@@ -26,12 +26,6 @@ import EditIcon from '@material-ui/icons/Edit'
 import ConfirmDelete from "../../../components/ConfirmDelete"
 
 const useStyles = makeStyles((theme) => ({
-    container: {
-        width: "100%",
-        margin: 5,
-        marginTop: 30,
-        marginBottom: 30
-    },
     paperFilter: {
         backgroundColor: "#FFFFFF",
         padding: 12,
@@ -159,12 +153,12 @@ export default function List_Procedure() {
     return (
         <>
             <CssBaseline />
+
+            <Typography variant="h3" align="center" className="titlePage">
+                Procedures
+            </Typography>
+
             <Container className={classes.container}>
-
-                <Typography variant="h3">
-                    Procedures
-                </Typography>
-
 
                 <Link
                     onClick={() => history.push({ pathname: '/procedure/create' })}
@@ -265,7 +259,7 @@ export default function List_Procedure() {
 
                                         <ConfirmDelete
                                             path={`procedure/${procedure.id}`}
-                                            name="procedure"
+                                            name="Procedure"
                                             fetchData={fetchData}
                                             classNameLink={classes.widthBtn}
                                             className={classes.deleteIcon}

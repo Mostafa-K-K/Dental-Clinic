@@ -135,6 +135,10 @@ export default function Create_Type() {
 
     return (
         <Container component="main" maxWidth="xs" className={classes.container}>
+
+            <Typography variant="h3" align="center" className="titlePage">
+            </Typography>
+            
             <CssBaseline />
 
             <div className={classes.paper}>

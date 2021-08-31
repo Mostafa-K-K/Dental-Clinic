@@ -1,17 +1,112 @@
-import React, { useEffect, useState, useContext } from "react"
+import React, { useState, useEffect, useContext } from "react"
 import { useHistory } from 'react-router'
-import moment from "moment"
 import API from "../../../API"
+import { Link } from "react-router-dom"
+import moment from "moment"
 import SessionContext from "../../../components/session/SessionContext"
+
+import {
+    TableContainer,
+    Table,
+    TableHead,
+    TableBody,
+    TableCell,
+    TableRow,
+    Container,
+    Paper,
+    CssBaseline,
+    makeStyles,
+    Typography
+} from '@material-ui/core'
+
+import CloseIcon from '@material-ui/icons/Cancel'
+import DoneIcon from '@material-ui/icons/CheckCircle'
+
+const useStyles = makeStyles((theme) => ({
+    container: {
+        width: "100%"
+    },
+    rejectIcon: {
+        fill: "#ed4f1c",
+        "&:hover": {
+            fill: "#e24414"
+        },
+        marginLeft: "1%"
+    },
+    acceptIcon: {
+        fill: "#8BE3D9",
+        "&:hover": {
+            fill: "#BEF4F4"
+        },
+        marginRight: "1%"
+    },
+    historyBtnLink: {
+        textDecoration: "none",
+        fontSize: 20,
+        color: "#000000",
+        width: "25%",
+        '&:hover': {
+            backgroundColor: "#BEF4F4"
+        },
+        padding: 10,
+        textAlign: "center",
+        borderRadius: 5
+    },
+    historyBtnLinkActive: {
+        textDecoration: "none",
+        fontSize: 20,
+        color: "#000000",
+        width: "25%",
+        backgroundColor: "#8BE3D9",
+        padding: 10,
+        textAlign: "center",
+        borderRadius: 5
+    },
+    paperFilter: {
+        backgroundColor: "#FFFFFF",
+        padding: 12,
+        marginBottom: 10,
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between"
+    }
+}));
 
 export default function Today_Appointment() {
 
+    const classes = useStyles();
+    const history = useHistory();
+
     let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
 
-    const history = useHistory();
     const date = moment().format("YYYY-MM-DD");
 
     const [appointments, setAppointments] = useState([]);
+
+    async function handleReject(id_app) {
+        try {
+            const del = window.confirm("are you sure");
+            if (del) await API.put(`appointment/${id_app}`, { status: "Absent" }, {
+                headers: {
+                    id: id,
+                    token: token,
+                    isAdmin: isAdmin
+                }
+            });
+            await fetchData();
+        } catch (e) {
+            console.log("ERROR", e);
+        }
+    }
+
+    async function handleAccept(id_appointment, id_patient) {
+        try {
+            const del = window.confirm("are you sure");
+            if (del) history.push({ pathname: `/create/procedure/patient/${id_appointment}/${id_patient}` });
+        } catch (e) {
+            console.log("ERROR", e);
+        }
+    }
 
     async function fetchData() {
         try {
@@ -39,103 +134,109 @@ export default function Today_Appointment() {
         }
     }
 
-    async function handleUpdate(id) {
-        try {
-            const del = window.confirm("are you sure");
-            if (del) await API.put(`appointment/${id}`, { status: "Absent" }, {
-                headers: {
-                    id: id,
-                    token: token,
-                    isAdmin: isAdmin
-                }
-            });
-            await fetchData();
-        } catch (e) {
-            console.log("ERROR", e);
-        }
-    }
-
-    async function handleAccept(id_appointment, id_patient) {
-        try {
-            const del = window.confirm("are you sure");
-            if (del) await history.push({ pathname: `/create/procedure/patient/${id_appointment}/${id_patient}` });
-        } catch (e) {
-            console.log("ERROR", e);
-        }
-    }
-
     useEffect(() => {
         fetchData();
     }, [])
 
     return (
+        <>
+            <CssBaseline />
 
-        <div className="container-xl">
-            <div className="table-responsive">
-                <div className="table-wrapper">
-                    <div className="table-title row rowspacesp">
-                        <div className="row">
-                            <div className="col-sm-5">
-                                <h2><b>Today's Appointments</b></h2>
-                            </div>
-                        </div>
-                        <button onClick={() => history.push({ pathname: '/appointment/create' })}><i className="fa fa-plus"></i> Add New</button>
-                        <button onClick={() => history.push({ pathname: '/appointment/history' })}>History</button>
-                    </div>
+            <Typography variant="h3" align="center" className="titlePage">
+                Today's Appointments
+            </Typography>
 
-                    <table className="table table-striped table-hover">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Patient</th>
-                                <th>Clinic</th>
-                                <th>Start</th>
-                                <th>End</th>
-                                <th>Description</th>
-                                <th>Status</th>
-                                <th>Manage</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {appointments.map(appointment => (
-                                <tr key={appointment.id}>
-                                    <td>{appointment.id}</td>
-                                    <td>{appointment.first_name} {appointment.middle_name} {appointment.last_name}</td>
-                                    <td>{appointment.name}</td>
-                                    <td>{moment(appointment.start_at, "HH:mm").format("h:mm A")}</td>
-                                    <td>{moment(appointment.end_at, "HH:mm").format("h:mm A")}</td>
-                                    <td>{appointment.description}</td>
-                                    <td>{appointment.status}</td>
-                                    <td>
-                                        <a href=""
-                                            onClick={() => handleAccept(appointment.id, appointment.id_patient)}
-                                            className="settings"
-                                            title="Settings"
-                                            data-toggle="tooltip"
-                                        >
-                                            <i className="material-icons">
-                                                &#xE8B8;
-                                            </i>
-                                        </a>
-                                        <a href="#"
-                                            onClick={() => handleUpdate(appointment.id)}
-                                            className="delete"
-                                            title="Delete"
-                                            data-toggle="tooltip"
-                                        >
-                                            <i className="material-icons">
-                                                &#xE5C9;
-                                            </i>
-                                        </a>
+            <Container className={classes.container}>
 
-                                    </td>
-                                </tr>
-                            ))}
+                <Paper className={classes.paperFilter}>
+                    <Link
+                        onClick={() => history.push({ pathname: '/appointment/today' })}
+                        className={classes.historyBtnLinkActive}
+                    >
+                        Today
+                    </Link>
 
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+                    <Link
+                        onClick={() => history.push({ pathname: '/appointment/upcoming' })}
+                        className={classes.historyBtnLink}
+                    >
+                        Upcoming
+                    </Link>
+
+                    <Link
+                        onClick={() => history.push({ pathname: '/appointment/history' })}
+                        className={classes.historyBtnLink}
+                    >
+                        History
+                    </Link>
+                </Paper>
+
+                <TableContainer component={Paper}>
+                    <Table>
+
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>ID</TableCell>
+                                <TableCell>Patient</TableCell>
+                                <TableCell>Clinic</TableCell>
+                                <TableCell>Start</TableCell>
+                                <TableCell>End</TableCell>
+                                <TableCell>Description</TableCell>
+                                <TableCell>Status</TableCell>
+                                <TableCell align="center">Manage</TableCell>
+                            </TableRow>
+                        </TableHead>
+
+
+                        <TableBody>
+                            {appointments.map(appointment =>
+                                <TableRow key={appointment.id}>
+
+                                    <TableCell>
+                                        {appointment.id_patient}
+                                    </TableCell>
+
+                                    <TableCell>
+                                        {appointment.first_name} {appointment.middle_name} {appointment.last_name}
+                                    </TableCell>
+
+                                    <TableCell>
+                                        {appointment.name}
+                                    </TableCell>
+
+                                    <TableCell>
+                                        {moment(appointment.start_at, "HH:mm").format("h:mm A")}
+                                    </TableCell>
+
+                                    <TableCell>
+                                        {moment(appointment.end_at, "HH:mm").format("h:mm A")}
+                                    </TableCell>
+
+                                    <TableCell>
+                                        {appointment.description}
+                                    </TableCell>
+
+                                    <TableCell>
+                                        {appointment.status}
+                                    </TableCell>
+
+                                    <TableCell align="center" className={classes.divRow}>
+                                        <Link onClick={() => handleAccept(appointment.id, appointment.id_patient)}>
+                                            <DoneIcon className={classes.acceptIcon} />
+                                        </Link>
+
+                                        <Link onClick={() => handleReject(appointment.id)}>
+                                            <CloseIcon className={classes.rejectIcon} />
+                                        </Link>
+                                    </TableCell>
+
+                                </TableRow>
+                            )}
+                        </TableBody>
+
+                    </Table>
+                </TableContainer>
+            </Container>
+        </>
     )
 }

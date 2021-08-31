@@ -1,17 +1,19 @@
 import React from "react"
 import { Link } from "react-router-dom"
-import home1 from '../../images/pictures/home1.jpg';
-import home2 from '../../images/pictures/home2.jpg';
-import home3 from '../../images/pictures/home3.jpg';
-import home4 from '../../images/pictures/home4.jpg';
-import home5 from '../../images/pictures/home5.jpg';
-import home6 from '../../images/pictures/home6.jpg';
-import home7 from '../../images/pictures/home7.jpg';
-import home8 from '../../images/pictures/home8.jpg';
-import home9 from '../../images/pictures/home9.jpg';
-import home10 from '../../images/pictures/home10.jpg';
-import home11 from '../../images/pictures/home11.jpg';
 
+
+import home1 from '../../images/pictures/home1.jpg'
+import home2 from '../../images/pictures/home2.jpg'
+import home3 from '../../images/pictures/home3.jpg'
+import home4 from '../../images/pictures/home4.jpg'
+import home5 from '../../images/pictures/home5.jpg'
+import home6 from '../../images/pictures/home6.jpg'
+import home7 from '../../images/pictures/home7.jpg'
+import home8 from '../../images/pictures/home8.jpg'
+import home9 from '../../images/pictures/home9.jpg'
+import home10 from '../../images/pictures/home10.jpg'
+import home11 from '../../images/pictures/home11.jpg'
+import Logo from '../../images/Logo_L.svg'
 
 import {
     Typography,
@@ -21,7 +23,14 @@ import {
 
 import HomeIcon from '@material-ui/icons/Home'
 
-import Logo from '../../images/Logo_L.svg'
+import {
+    WhatsApp,
+    Instagram,
+    Facebook,
+    MailOutline,
+    PhoneInTalk,
+} from '@material-ui/icons'
+
 
 const useStyles = makeStyles((theme) => ({
     logo: {
@@ -77,6 +86,7 @@ const useStyles = makeStyles((theme) => ({
             margin: 60,
         },
         borderRadius: "5px",
+
         borderBottom: "5px solid #FFFFFF",
         borderTop: "5px solid #FFFFFF",
         borderRight: "15px solid #FFFFFF",
@@ -108,6 +118,30 @@ const useStyles = makeStyles((theme) => ({
     },
     svgStyleFooter: {
         position: "absolute",
+
+    },
+    socialDiv: {
+        position: "relative",
+        width: "40%",
+        display: "flex",
+        flexFlow: "row",
+        justifyContent: "space-between",
+        left: "30%",
+        bottom: 0,
+        zIndex: "1",
+    },
+    socialIcon: {
+        color: "gray",
+        fontSize: 50,
+        borderRadius: "5px",
+        padding: 5,
+        '&:hover': {
+            color: "#FFFFFF",
+            backgroundColor: "#8BE3D9",
+        },
+        [theme.breakpoints.down('md')]: {
+            fontSize: 35,
+        },
     }
 }))
 
@@ -118,39 +152,66 @@ export default function Home() {
     return (
         <>
             <CssBaseline />
-            <img src={Logo} alt="Dental" className={classes.logo} />
+            <div>
 
-            <Link
-                to="/login"
-                className={classes.login}
-            >
-                <HomeIcon />
-                <Typography>Login</Typography>
-            </Link>
+                <img src={Logo} alt="Dental" className={classes.logo} />
 
-            <div className={classes.whiteDiv} />
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
-                <path fill="#FFFFFF" fill-opacity="1" d="M0,224L30,234.7C60,245,120,267,180,256C240,245,300,203,360,202.7C420,203,480,245,540,261.3C600,277,660,267,720,245.3C780,224,840,192,900,154.7C960,117,1020,75,1080,96C1140,117,1200,203,1260,218.7C1320,235,1380,181,1410,154.7L1440,128L1440,0L1410,0C1380,0,1320,0,1260,0C1200,0,1140,0,1080,0C1020,0,960,0,900,0C840,0,780,0,720,0C660,0,600,0,540,0C480,0,420,0,360,0C300,0,240,0,180,0C120,0,60,0,30,0L0,0Z"></path>
-            </svg>
+                <Link
+                    to="/login"
+                    className={classes.login}
+                >
+                    <HomeIcon />
+                    <Typography>Login</Typography>
+                </Link>
+
+                <div className={classes.whiteDiv} />
+
+                <svg viewBox="0 0 1440 320">
+                    <path fill="#FFFFFF" fill-opacity="1" d="M0,224L30,234.7C60,245,120,267,180,256C240,245,300,203,360,202.7C420,203,480,245,540,261.3C600,277,660,267,720,245.3C780,224,840,192,900,154.7C960,117,1020,75,1080,96C1140,117,1200,203,1260,218.7C1320,235,1380,181,1410,154.7L1440,128L1440,0L1410,0C1380,0,1320,0,1260,0C1200,0,1140,0,1080,0C1020,0,960,0,900,0C840,0,780,0,720,0C660,0,600,0,540,0C480,0,420,0,360,0C300,0,240,0,180,0C120,0,60,0,30,0L0,0Z"></path>
+                </svg>
 
 
-            <div className={classes.picDiv}>
-                <img src={home1} alt="Dental" className={classes.homePic} />
-                <img src={home2} alt="Dental" className={classes.homePic} />
-                <img src={home3} alt="Dental" className={classes.homePic} />
-                <img src={home4} alt="Dental" className={classes.homePic} />
-                <img src={home5} alt="Dental" className={classes.homePic} />
-                <img src={home6} alt="Dental" className={classes.homePic} />
-                <img src={home7} alt="Dental" className={classes.homePic} />
-                <img src={home8} alt="Dental" className={classes.homePic} />
-                <img src={home9} alt="Dental" className={classes.homePic} />
-                <img src={home10} alt="Dental" className={classes.homePic} />
-                <img src={home11} alt="Dental" className={classes.homePic} />
+                <div className={classes.picDiv}>
+                    <img src={home1} alt="Dental" className={classes.homePic} />
+                    <img src={home2} alt="Dental" className={classes.homePic} />
+                    <img src={home3} alt="Dental" className={classes.homePic} />
+                    <img src={home4} alt="Dental" className={classes.homePic} />
+                    <img src={home5} alt="Dental" className={classes.homePic} />
+                    <img src={home6} alt="Dental" className={classes.homePic} />
+                    <img src={home7} alt="Dental" className={classes.homePic} />
+                    <img src={home8} alt="Dental" className={classes.homePic} />
+                    <img src={home9} alt="Dental" className={classes.homePic} />
+                    <img src={home10} alt="Dental" className={classes.homePic} />
+                    <img src={home11} alt="Dental" className={classes.homePic} />
+                </div>
+
+                <div className={classes.socialDiv}>
+                    <Link className={classes.socialLink}>
+                        <WhatsApp className={classes.socialIcon} />
+                    </Link>
+
+                    <Link className={classes.socialLink}>
+                        <Instagram className={classes.socialIcon} />
+                    </Link>
+
+                    <Link className={classes.socialLink}>
+                        <Facebook className={classes.socialIcon} />
+                    </Link>
+
+                    <Link className={classes.socialLink}>
+                        <MailOutline className={classes.socialIcon} />
+                    </Link>
+
+                    <Link className={classes.socialLink}>
+                        <PhoneInTalk className={classes.socialIcon} />
+                    </Link>
+                </div>
+
+                <svg viewBox="0 0 1440 320" className={classes.svgStyleFooter}>
+                    <path fill="#FFFFFF" fill-opacity="1" d="M0,160L60,149.3C120,139,240,117,360,122.7C480,128,600,160,720,165.3C840,171,960,149,1080,138.7C1200,128,1320,128,1380,128L1440,128L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path>
+                </svg>
+
             </div>
-
-            <svg className={classes.svgStyleFooter} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
-                <path fill="#FFFFFF" fill-opacity="1" d="M0,160L60,149.3C120,139,240,117,360,122.7C480,128,600,160,720,165.3C840,171,960,149,1080,138.7C1200,128,1320,128,1380,128L1440,128L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path>
-            </svg>
         </>
     )
 }

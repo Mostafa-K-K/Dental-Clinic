@@ -42,7 +42,7 @@ export default function Types(props) {
                     label="Acts"
                     className={props.className}
                 />
-            }
+            } 
         />
     )
 }

@@ -28,9 +28,10 @@ import {
 
 import {
     Visibility,
-    LockOutlined,
     VisibilityOff
 } from '@material-ui/icons'
+
+import PersonIcon from '@material-ui/icons/Person'
 
 import MomentUtils from '@date-io/moment'
 
@@ -84,7 +85,6 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: "white",
         paddingBottom: "10px",
         marginBottom: "70px",
-        marginTop: "50px",
         borderRadius: "5px"
     },
     FormLabel: {
@@ -210,11 +210,15 @@ export default function Create_Patient() {
 
     return (
         <Container component="main" className={classes.container}>
+
+            <Typography variant="h3" align="center" className="titlePage">
+            </Typography>
+
             <CssBaseline />
             <div className={classes.paper}>
 
                 <Avatar className={classes.avatar}>
-                    <LockOutlined />
+                    <PersonIcon />
                 </Avatar>
 
                 <Typography component="h1" variant="h5">

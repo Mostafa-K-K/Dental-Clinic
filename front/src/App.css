@@ -22,6 +22,22 @@
     margin-right: auto;
 }
 
+.titlePage {
+    margin: 20px !important;
+}
+
+@media screen and (max-width: 900px) {
+    .titlePage {
+        margin: 60px !important;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .titlePage {
+        margin: 50px !important;
+    }
+}
+
 .MuiIconButton-label {
     color: #8BE3D9 !important;
 }

@@ -43,8 +43,7 @@ const useStyles = makeStyles((theme) => ({
         paddingTop: 10
     },
     container: {
-        width: ' 100%',
-        marginTop: '80px'
+        width: ' 100%'
     },
     Typography: {
         marginTop: '15px',
@@ -105,6 +104,11 @@ export default function List_Clinic() {
     return (
         <>
             <CssBaseline />
+
+            <Typography variant="h3" align="center" className="titlePage">
+                Clinics
+            </Typography>
+
             <Container className={classes.container}>
                 <Grid container>
                     <Grid item xs={6} md={3} sm={4}>

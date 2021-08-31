@@ -26,8 +26,7 @@ import CachedIcon from '@material-ui/icons/Cached'
 const useStyles = makeStyles((theme) => ({
     container: {
         width: "100%",
-        margin: 5,
-        marginTop: 30
+        margin: 5
     },
     deleteIcon: {
         fill: "#ed4f1c",
@@ -112,12 +111,12 @@ export default function List_Request() {
     return (
         <>
             <CssBaseline />
+
+            <Typography variant="h3" align="center" className="titlePage">
+                History Requests
+            </Typography>
+
             <Container className={classes.container}>
-
-                <Typography variant="h3">
-                    History Requests
-                </Typography>
-
 
                 <Link
                     onClick={() => history.push({ pathname: '/request/list' })}

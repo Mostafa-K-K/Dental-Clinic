@@ -16,7 +16,7 @@ import {
     Container
 } from '@material-ui/core'
 
-import { LockOutlined } from '@material-ui/icons'
+import ActIcon from "../../../images/Act.svg"
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -70,6 +70,11 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: "space-around"
+    },
+    img: {
+        width: '15%',
+        margin: 20,
+        alignSelf: 'center'
     },
 }));
 
@@ -154,13 +159,15 @@ export default function Edit_Type() {
 
     return (
         <Container component="main" maxWidth="xs" className={classes.container}>
+
+            <Typography variant="h3" align="center" className="titlePage">
+            </Typography>
+
             <CssBaseline />
 
             <div className={classes.paper}>
 
-                <Avatar className={classes.avatar}>
-                    <LockOutlined />
-                </Avatar>
+                <img src={ActIcon} alt="" className={classes.img} />
 
                 <Typography component="h1" variant="h5">
                     Update Act

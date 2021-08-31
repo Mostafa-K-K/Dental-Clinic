@@ -1,19 +1,150 @@
-import React, { useEffect, useState, useContext } from "react"
+import React, { useState, useEffect, useContext } from "react"
 import { useHistory } from 'react-router'
 import API from "../../../API"
+import { Link } from "react-router-dom"
 import moment from "moment"
 import SessionContext from "../../../components/session/SessionContext"
 
+import {
+    TableContainer,
+    Table,
+    TableHead,
+    TableBody,
+    TableCell,
+    TableRow,
+    Container,
+    Paper,
+    CssBaseline,
+    makeStyles,
+    Typography,
+    IconButton
+} from '@material-ui/core'
+
+import RefreshIcon from '@material-ui/icons/Refresh'
+
+import MomentUtils from '@date-io/moment'
+
+import {
+    KeyboardDatePicker,
+    MuiPickersUtilsProvider
+} from '@material-ui/pickers'
+
+import EditIcon from '@material-ui/icons/Edit'
+
 import ConfirmDelete from "../../../components/ConfirmDelete"
+
+const useStyles = makeStyles((theme) => ({
+    root: {
+        '& label.Mui-focused': {
+            color: theme.palette.primary.main,
+        },
+        '& .MuiInput-underline:after': {
+            borderBottomColor: theme.palette.primary.main,
+        },
+        '& .MuiOutlinedInput-root': {
+            '& fieldset': {
+                borderColor: theme.palette.primary.main,
+            },
+            '&:hover fieldset': {
+                borderColor: theme.palette.primary.main,
+            },
+            '&.Mui-focused fieldset': {
+                borderColor: theme.palette.primary.main,
+            },
+        },
+        '& .MuiFormHelperText-contained': {
+            display: "none"
+        },
+        '& label': {
+            color: "#8BE3D9 !important",
+        },
+        '& .PrivateNotchedOutline-root-28': {
+            borderColor: "#8BE3D9 !important",
+        }
+    },
+    container: {
+        width: "100%"
+    },
+    rejectIcon: {
+        fill: "#ed4f1c",
+        "&:hover": {
+            fill: "#e24414"
+        },
+        marginLeft: "1%"
+    },
+    acceptIcon: {
+        fill: "#8BE3D9",
+        "&:hover": {
+            fill: "#BEF4F4"
+        },
+        marginRight: "1%"
+    },
+    historyBtnLink: {
+        textDecoration: "none",
+        fontSize: 20,
+        color: "#000000",
+        width: "25%",
+        '&:hover': {
+            backgroundColor: "#BEF4F4"
+        },
+        padding: 10,
+        textAlign: "center",
+        borderRadius: 5
+    },
+    historyBtnLinkActive: {
+        textDecoration: "none",
+        fontSize: 20,
+        color: "#000000",
+        width: "25%",
+        backgroundColor: "#8BE3D9",
+        padding: 10,
+        textAlign: "center",
+        borderRadius: 5
+    },
+    paperFilter: {
+        backgroundColor: "#FFFFFF",
+        padding: 12,
+        marginBottom: 10,
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between"
+    },
+    resetSearch: {
+        backgroundColor: "#8BE3D9",
+        color: "#FFFFFF",
+        padding: 6,
+        fontSize: 53,
+        borderRadius: "5px",
+        '&:hover': {
+            backgroundColor: "#BEF4F4"
+        }
+    },
+    widthBtn: {
+        width: 20
+    },
+    editIcon: {
+        color: "#8BE3D9",
+        '&:hover': {
+            color: "#BEF4F4"
+        }
+    },
+    deleteIcon: {
+        color: "#ed4f1c",
+        '&:hover': {
+            color: "#e24414"
+        }
+    }
+}));
 
 export default function Upcoming_Appointment() {
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
-
+    const classes = useStyles();
     const history = useHistory();
 
+    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+
     const [appointments, setAppointments] = useState([]);
-    const [date, setDate] = useState("")
+    const [date, setDate] = useState(null)
 
     async function fetchData() {
         try {
@@ -43,74 +174,145 @@ export default function Upcoming_Appointment() {
     }, [date])
 
     return (
+        <>
+            <CssBaseline />
 
-        <div className="container-xl">
-            <div className="table-responsive">
-                <div className="table-wrapper">
-                    <div className="table-title row rowspacesp">
-                        <div className="row">
-                            <div className="col-sm-5">
-                                <h2><b>Upcoming Appointments</b></h2>
-                            </div>
-                        </div>
-                        <button onClick={() => history.push({ pathname: '/appointment/create' })}><i className="fa fa-plus"></i> Add New</button>
-                        <button onClick={() => history.push({ pathname: '/appointment/history' })}>History</button>
-                    </div>
-                    <input
-                        type="date"
-                        value={date}
-                        onChange={e => setDate(e.target.value)}
-                    />
-                    <table className="table table-striped table-hover">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Patient</th>
-                                <th>Clinic</th>
-                                <th>Date</th>
-                                <th>Start</th>
-                                <th>End</th>
-                                <th>Description</th>
-                                <th>Status</th>
-                                <th>Manage</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+            <Typography variant="h3" align="center" className="titlePage">
+                Upcoming Appointments
+            </Typography>
 
-                            {appointments.map(appointment => (
-                                <tr key={appointment.id}>
-                                    <td>{appointment.id}</td>
-                                    <td>{appointment.first_name} {appointment.middle_name} {appointment.last_name}</td>
-                                    <td>{appointment.name}</td>
-                                    <td>{moment(appointment.date).format("YYYY-MM-DD")}</td>
-                                    <td>{moment(appointment.start_at, "HH:mm").format('h:mm A')}</td>
-                                    <td>{moment(appointment.end_at, "HH:mm").format('h:mm A')}</td>
-                                    <td>{appointment.description}</td>
-                                    <td>{appointment.status}</td>
-                                    <td>
-                                        <a href=""
+            <Container className={classes.container}>
+
+                <Paper className={classes.paperFilter}>
+                    <Link
+                        onClick={() => history.push({ pathname: '/appointment/today' })}
+                        className={classes.historyBtnLink}
+                    >
+                        Today
+                    </Link>
+
+                    <Link
+                        onClick={() => history.push({ pathname: '/appointment/upcoming' })}
+                        className={classes.historyBtnLinkActive}
+                    >
+                        Upcoming
+                    </Link>
+
+                    <Link
+                        onClick={() => history.push({ pathname: '/appointment/history' })}
+                        className={classes.historyBtnLink}
+                    >
+                        History
+                    </Link>
+                </Paper>
+
+                <Paper className={classes.paperFilter}>
+
+
+                    <MuiPickersUtilsProvider utils={MomentUtils} >
+                        <KeyboardDatePicker
+                            focused={date != null}
+                            label="Date"
+                            variant="outlined"
+                            inputVariant="outlined"
+                            format="YYYY/MM/DD"
+                            value={date}
+                            onChange={date => setDate(moment(date).format("YYYY-MM-DD"))}
+                            KeyboardButtonProps={{
+                                'aria-label': 'change date',
+                            }}
+                            className={classes.root}
+                        />
+                    </MuiPickersUtilsProvider>
+
+                    <Link
+                        onClick={() => setDate(null)}
+                    >
+                        <RefreshIcon className={classes.resetSearch} />
+                    </Link>
+
+                </Paper>
+
+                <TableContainer component={Paper}>
+                    <Table>
+
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>ID</TableCell>
+                                <TableCell>Patient</TableCell>
+                                <TableCell>Clinic</TableCell>
+                                <TableCell>Date</TableCell>
+                                <TableCell>Start</TableCell>
+                                <TableCell>End</TableCell>
+                                <TableCell>Description</TableCell>
+                                <TableCell>Status</TableCell>
+                                <TableCell align="center">Manage</TableCell>
+                            </TableRow>
+                        </TableHead>
+
+
+                        <TableBody>
+                            {appointments.map(appointment =>
+                                <TableRow key={appointment.id}>
+
+                                    <TableCell>
+                                        {appointment.id_patient}
+                                    </TableCell>
+
+                                    <TableCell>
+                                        {appointment.first_name} {appointment.middle_name} {appointment.last_name}
+                                    </TableCell>
+
+                                    <TableCell>
+                                        {appointment.name}
+                                    </TableCell>
+
+                                    <TableCell>
+                                        {moment(appointment.date).format("YYYY-MM-DD")}
+                                    </TableCell>
+
+                                    <TableCell>
+                                        {moment(appointment.start_at, "HH:mm").format("h:mm A")}
+                                    </TableCell>
+
+                                    <TableCell>
+                                        {moment(appointment.end_at, "HH:mm").format("h:mm A")}
+                                    </TableCell>
+
+                                    <TableCell>
+                                        {appointment.description}
+                                    </TableCell>
+
+                                    <TableCell>
+                                        {appointment.status}
+                                    </TableCell>
+
+                                    <TableCell align="center">
+                                        <Link
                                             onClick={() => history.push({ pathname: `/appointment/edit/${appointment.id}` })}
-                                            className="settings"
-                                            title="Settings"
-                                            data-toggle="tooltip"
+                                            className={classes.widthBtn}
                                         >
-                                            <i className="material-icons">
-                                                &#xE8B8;
-                                            </i>
-                                        </a>
+                                            <IconButton>
+                                                <EditIcon className={classes.editIcon} />
+                                            </IconButton>
+                                        </Link>
+
                                         <ConfirmDelete
                                             path={`appointment/${appointment.id}`}
-                                            name="appointment"
+                                            name="Appointment"
                                             fetchData={fetchData}
+                                            classNameLink={classes.widthBtn}
+                                            className={classes.deleteIcon}
                                         />
-                                    </td>
-                                </tr>
-                            ))}
+                                    </TableCell>
 
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+                                </TableRow>
+                            )}
+                        </TableBody>
+
+                    </Table>
+                </TableContainer>
+            </Container>
+        </>
     )
 }

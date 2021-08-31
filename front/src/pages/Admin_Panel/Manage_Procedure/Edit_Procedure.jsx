@@ -105,6 +105,9 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: "row",
         justifyContent: "space-around"
     },
+    container:{
+        marginBottom:30
+    },
     addBoxIcon: {
         backgroundColor: "#8BE3D9",
         color: "#FFFFFF",
@@ -336,11 +339,12 @@ export default function Edit_Procedure() {
     return (
         <>
             <CssBaseline />
-            <Container className={classes.container}>
 
-                <Typography variant="h3">
-                    Edit Procedure
-                </Typography>
+            <Typography variant="h3" align="center" className="titlePage">
+            Edit Procedure
+            </Typography>
+
+            <Container className={classes.container}>
 
                 <form onSubmit={handleSubmit}>
 

@@ -209,7 +209,7 @@ export default function Register() {
                                         setCookie('isAdmin', answer.isAdmin, 30);
                                         setSession({ user });
                                     })
-                                    .then(toast.error("Welcome!"));
+                                    .then(toast.success("Welcome!"));
                             }
                         });
                 });
@@ -306,7 +306,6 @@ export default function Register() {
 
                         <Grid item xs={12} >
                             <TextField
-                                required
                                 fullWidth
                                 variant="outlined"
                                 label="health Problem"

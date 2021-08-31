@@ -27,8 +27,7 @@ import HistoryIcon from '@material-ui/icons/History'
 const useStyles = makeStyles((theme) => ({
     container: {
         width: "100%",
-        margin: 5,
-        marginTop: 30
+        margin: 5
     },
     rejectIcon: {
         fill: "#ed4f1c",
@@ -76,19 +75,21 @@ export default function List_Request() {
 
     async function handleAccept(id_req, id_patient) {
         const del = window.confirm("are you sure");
-        if (del) await history.push({ pathname: `/create/appointment/patient/${id_req}/${id_patient}` });
+        if (del) history.push({ pathname: `/create/appointment/patient/${id_req}/${id_patient}` });
     }
 
     async function handleReject(id_req) {
         try {
-            await API.put(`request/${id_req}`, { status: "Rejected" }, {
-                headers: {
-                    id: id,
-                    token: token,
-                    isAdmin: isAdmin
-                }
-            });
-            fetchData();
+            const del = window.confirm("are you sure");
+            if (del)
+                await API.put(`request/${id_req}`, { status: "Rejected" }, {
+                    headers: {
+                        id: id,
+                        token: token,
+                        isAdmin: isAdmin
+                    }
+                });
+            await fetchData();
         } catch (e) {
             console.log("ERROR", e);
         }
@@ -107,7 +108,7 @@ export default function List_Request() {
                     let data = res.data.result;
                     const success = res.data.success;
                     if (success) {
-                        data = data.filter(res => res.status === "Watting");
+                        data = data.filter(res => res.status === "Waiting");
                         setRequests(data);
                     }
                 });
@@ -123,12 +124,12 @@ export default function List_Request() {
     return (
         <>
             <CssBaseline />
+
+            <Typography variant="h3" align="center" className="titlePage">
+                List Requests
+            </Typography>
+
             <Container className={classes.container}>
-
-                <Typography variant="h3">
-                    List Requests
-                </Typography>
-
 
                 <Link
                     onClick={() => history.push({ pathname: '/request/old' })}

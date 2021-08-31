@@ -33,7 +33,6 @@ const useStyles = makeStyles((theme) => ({
     container: {
         width: "100%",
         margin: 5,
-        marginTop: 30,
         marginBottom: 30
     },
     paperFilter: {
@@ -43,6 +42,14 @@ const useStyles = makeStyles((theme) => ({
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between"
+    },
+    paperFilterTH: {
+        backgroundColor: "#FFFFFF",
+        padding: 12,
+        marginBottom: 10,
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-around"
     },
     root: {
         '& label.Mui-focused': {
@@ -156,21 +163,24 @@ export default function Details_Balance() {
     return (
         <>
             <CssBaseline />
+
+            <Typography variant="h3" align="center" className="titlePage">
+                Details Balance
+            </Typography>
+
             <Container className={classes.container}>
 
-                <Typography variant="h3">
-                    Details Balance
-                </Typography>
-
-                <Typography variant="h5">
-                    {state.patient.first_name} {state.patient.middle_name} {state.patient.last_name} - {state.patient.id}
-                </Typography>
-
-                <Paper className={classes.paperFilter}>
+                <Paper className={classes.paperFilterTH}>
+                    <Typography variant="h5">
+                        {state.patient.id} - {state.patient.first_name} {state.patient.middle_name} {state.patient.last_name}
+                    </Typography>
 
                     <Typography variant="h5">
-                        Remaining <br /> {state.patient.balance - state.patient.payment}
+                        Remaining : {state.patient.balance - state.patient.payment}
                     </Typography>
+                </Paper>
+
+                <Paper className={classes.paperFilter}>
 
                     <MuiPickersUtilsProvider utils={MomentUtils} >
                         <KeyboardDatePicker
@@ -210,10 +220,10 @@ export default function Details_Balance() {
                     <Table>
                         <TableHead>
                             <TableRow>
-                                <TableCell align="center">Date</TableCell>
-                                <TableCell align="center">Hours</TableCell>
-                                <TableCell align="center">Balance</TableCell>
-                                <TableCell align="center">Payment</TableCell>
+                                <TableCell>Date</TableCell>
+                                <TableCell>Hours</TableCell>
+                                <TableCell>Balance</TableCell>
+                                <TableCell>Payment</TableCell>
                             </TableRow>
                         </TableHead>
 
@@ -230,11 +240,11 @@ export default function Details_Balance() {
                                         {moment(detail.date).format("h:mm A")}
                                     </TableCell>
 
-                                    <TableCell align="center">
+                                    <TableCell>
                                         {detail.balance}
                                     </TableCell>
 
-                                    <TableCell align="center">
+                                    <TableCell>
                                         {detail.payment}
                                     </TableCell>
 
@@ -244,17 +254,17 @@ export default function Details_Balance() {
                             {(state.date && state.date != "") ?
                                 null :
                                 <TableRow style={{ 'border-top': "1px solid blue" }}>
-                                    <TableCell>
-                                        Totale
+                                    <TableCell align="center">
+                                        Total
                                     </TableCell>
 
                                     <TableCell> </TableCell>
 
-                                    <TableCell align="center">
+                                    <TableCell>
                                         {state.patient.balance}
                                     </TableCell>
 
-                                    <TableCell align="center">
+                                    <TableCell>
                                         {state.patient.payment}
                                     </TableCell>
                                 </TableRow>

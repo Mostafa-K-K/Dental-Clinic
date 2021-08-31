@@ -12,7 +12,8 @@ import {
     Paper,
     makeStyles,
     CardContent,
-    Avatar
+    Avatar,
+    Typography
 } from '@material-ui/core'
 
 import EditIcon from '@material-ui/icons/Edit'
@@ -32,18 +33,18 @@ const useStyles = makeStyles((theme) => ({
     DeleteIcon: {
         fill: 'red'
     },
+    container:{
+        width:"85%"
+    },
     paper: {
         height: '90%',
-        width: ' 80%',
+        width: ' 85%',
         textAlign: 'center',
         display: 'flex !important',
         flexDirection: 'column',
         justifyContent: 'space-around',
         alignContent: 'center',
         paddingTop: 10
-    },
-    container: {
-        marginTop: '80px'
     },
     AddCircleOutline: {
         width: '20%',
@@ -97,6 +98,11 @@ export default function List_Doctor() {
     return (
         <>
             <CssBaseline />
+
+            <Typography variant="h3" align="center" className="titlePage">
+                Doctors
+            </Typography>
+
             <Container className={classes.container}>
                 <Grid container>
                     <Grid item xs={12} md={6} sm={6}>
