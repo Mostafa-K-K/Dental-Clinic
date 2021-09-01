@@ -57,7 +57,7 @@ export default function Next_Appointment() {
                 console.log("ERROR", e);
             }
         }
-        
+
         fetchData();
     }, [])
 
