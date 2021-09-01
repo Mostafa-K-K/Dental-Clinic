@@ -90,7 +90,7 @@ export default function Change_Username_Admin() {
     const classes = useStyles();
     const history = useHistory();
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const [state, updateState] = useState({
         id: id,
@@ -138,8 +138,7 @@ export default function Change_Username_Admin() {
                             await API.put(`admin/${id}`, reqBody, {
                                 headers: {
                                     id: id,
-                                    token: token,
-                                    isAdmin: isAdmin
+                                    token: token
                                 }
                             })
                                 .then(
@@ -170,8 +169,7 @@ export default function Change_Username_Admin() {
                 await API.get(`admin/${id}`, {
                     headers: {
                         id: id,
-                        token: token,
-                        isAdmin: isAdmin
+                        token: token
                     }
                 })
                     .then(res => {

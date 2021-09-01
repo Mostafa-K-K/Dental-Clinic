@@ -80,7 +80,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Create_Clinic() {
 
     const classes = useStyles();
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const history = useHistory();
 
@@ -108,8 +108,7 @@ export default function Create_Clinic() {
             await API.get(`clinic`, {
                 headers: {
                     id: id,
-                    token: token,
-                    isAdmin: isAdmin
+                    token: token
                 }
             })
                 .then(async res => {
@@ -123,8 +122,7 @@ export default function Create_Clinic() {
                             await API.post(`clinic`, reqBody, {
                                 headers: {
                                     id: id,
-                                    token: token,
-                                    isAdmin: isAdmin
+                                    token: token
                                 }
                             })
                                 .then(toast.success("Added Clinic Successfuly"))

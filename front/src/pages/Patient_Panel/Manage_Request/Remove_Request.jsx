@@ -39,7 +39,7 @@ export default function Remove_Request() {
     const classes = useStyles();
     const history = useHistory();
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const [requests, setRequests] = useState([]);
 
@@ -48,8 +48,7 @@ export default function Remove_Request() {
             await API.delete(`request/${id_req}`, {
                 headers: {
                     id: id,
-                    token: token,
-                    isAdmin: isAdmin
+                    token: token
                 }
             });
             fetchData();
@@ -63,8 +62,7 @@ export default function Remove_Request() {
             await API.get('request', {
                 headers: {
                     id: id,
-                    token: token,
-                    isAdmin: isAdmin
+                    token: token
                 }
             })
                 .then(res => {
@@ -100,9 +98,9 @@ export default function Remove_Request() {
 
                         <TableHead>
                             <TableRow>
-                                <TableCell align="center">Date</TableCell>
-                                <TableCell align="center">Time</TableCell>
-                                <TableCell align="center">Description</TableCell>
+                                <TableCell>Date</TableCell>
+                                <TableCell>Time</TableCell>
+                                <TableCell>Description</TableCell>
                                 <TableCell align="center">Manage</TableCell>
                             </TableRow>
                         </TableHead>
@@ -112,11 +110,11 @@ export default function Remove_Request() {
                                 {requests.map(request =>
                                     <TableRow key={request.id}>
 
-                                        <TableCell align="center">
+                                        <TableCell>
                                             {moment(request.date).format("YYYY-MM-DD")}
                                         </TableCell>
 
-                                        <TableCell align="center">
+                                        <TableCell>
                                             {moment(request.date).format("h:mm A")}
                                         </TableCell>
 

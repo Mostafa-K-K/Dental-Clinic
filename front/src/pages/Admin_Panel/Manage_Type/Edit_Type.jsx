@@ -81,7 +81,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Edit_Type() {
 
     const classes = useStyles();
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const { id: id_type } = useParams();
     const history = useHistory();
@@ -110,8 +110,7 @@ export default function Edit_Type() {
             await API.get(`type`, {
                 headers: {
                     id: id,
-                    token: token,
-                    isAdmin: isAdmin
+                    token: token
                 }
             })
                 .then(async res => {
@@ -126,8 +125,7 @@ export default function Edit_Type() {
                             await API.put(`type/${id_type}`, reqBody, {
                                 headers: {
                                     id: id,
-                                    token: token,
-                                    isAdmin: isAdmin
+                                    token: token
                                 }
                             })
                                 .then(toast.success("Update Acl Successfuly"))
@@ -145,8 +143,7 @@ export default function Edit_Type() {
             await API.get(`type/${id_type}`, {
                 headers: {
                     id: id,
-                    token: token,
-                    isAdmin: isAdmin
+                    token: token
                 }
             })
                 .then(res => {

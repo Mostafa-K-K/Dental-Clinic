@@ -150,7 +150,7 @@ export default function List_Patient() {
     const classes = useStyles();
     const history = useHistory();
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const [state, updateState] = useState({
         patients: [],
@@ -191,8 +191,7 @@ export default function List_Patient() {
             await API.post(`paginpatient`, reqBody, {
                 headers: {
                     id: id,
-                    token: token,
-                    isAdmin: isAdmin
+                    token: token
                 }
             })
                 .then(res => {
@@ -205,8 +204,7 @@ export default function List_Patient() {
             await API.post(`patientcount`, reqBody, {
                 headers: {
                     id: id,
-                    token: token,
-                    isAdmin: isAdmin
+                    token: token
                 }
             })
                 .then(res => {

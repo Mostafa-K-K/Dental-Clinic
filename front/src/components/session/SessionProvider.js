@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import SessionContext from './SessionContext'
 import { getCookie } from '../../cookie'
-import { castBool } from '../../utils'
 import API from '../../API'
 
 export default function SessionProvider({ children }) {
@@ -9,9 +8,7 @@ export default function SessionProvider({ children }) {
     const [session, updateSession] = useState({
         user: {
             id: getCookie('id'),
-            username: getCookie('username'),
             token: getCookie('token'),
-            isAdmin: castBool(getCookie('isAdmin')),
             role_id: parseInt(getCookie('role_id'))
         }
     });
@@ -26,23 +23,18 @@ export default function SessionProvider({ children }) {
     useEffect(() => {
 
         async function initializeUser() {
+            let id = getCookie('id');
             let token = getCookie('token');
-            let username = getCookie('username');
-            let isAdmin = castBool(getCookie('isAdmin'));
 
             let reqBody = {
-                username: username,
-                isAdmin: isAdmin
+                id: id,
+                token: token
             }
 
-            // const body = JSON.stringify({ id, token, isAdmin });
-            // const headers = { 'Content-Type': 'application/json' };
-            // const response = await API.get('getUserData', { headers, body });
-
-            if (token && username) {
+            if (id && token) {
                 await API.post('getUserData', reqBody, {
                     headers: {
-                        username: username,
+                        id: id,
                         token: token
                     }
                 })
@@ -53,10 +45,9 @@ export default function SessionProvider({ children }) {
                                 ...prevSession,
                                 user: {
                                     ...prevSession.user,
+                                    id: data.id,
                                     token: data.token,
                                     role_id: data.role_id,
-                                    id: data.id,
-                                    username: data.username
                                 }
                             }));
                     });

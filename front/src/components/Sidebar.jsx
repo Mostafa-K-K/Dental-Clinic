@@ -3,7 +3,6 @@ import { getCookie, removeCookie } from '../cookie'
 import { Link } from 'react-router-dom'
 import API from '../API'
 import SessionContext from './session/SessionContext'
-import { toast } from "react-toastify"
 
 import {
     Container,
@@ -157,7 +156,7 @@ const useStyles = makeStyles(theme => ({
 export default function Sidebar(props) {
 
     let view = props.view;
-    const name = getCookie('username');
+
     const [show, setShow] = useState(true);
 
     const classes = useStyles({ show });
@@ -174,15 +173,22 @@ export default function Sidebar(props) {
     }
 
     async function handleLogout() {
+
+        const id = getCookie('id');
+        const token = getCookie('token');
+
+        let reqBody = {
+            id: id,
+            token: token
+        }
+
         try {
-            await API.post('logout', { username: name });
+            await API.post('logout', reqBody);
         } catch (e) {
             console.log(e);
         }
         removeCookie('id');
-        removeCookie('username');
         removeCookie('token');
-        removeCookie('isAdmin');
         removeCookie('role_id');
         setSession({ user: { } });
     }
@@ -196,29 +202,31 @@ export default function Sidebar(props) {
     }, [show])
 
     return (
-        <>
-            <AppBar
-                style={{ display: view ? 'block' : 'none' }}
-            >
-                <Toolbar className={classes.toolbar}>
+        <>{
+            (user.role_id === "_SuPE8/@DmIn&^%(0)__" || user.role_id === "AD&Mii#iin(,.<1)>mEe" || user.role_id === "paTI__enT?/@cc!untQq") ?
+                <AppBar
+                    style={{ display: view ? 'block' : 'none' }}
+                >
+                    <Toolbar className={classes.toolbar}>
 
-                    <img src={Logo} className={classes.smallLogo} alt="MOBAYED" />
-                    {/* <Typography variant="h6" className={classes.logo}>
+                        <img src={Logo} className={classes.smallLogo} alt="MOBAYED" />
+                        {/* <Typography variant="h6" className={classes.logo}>
                         MOBAYED CLINIC
                     </Typography> */}
 
-                    <div className={classes.icons}>
-                        <a onClick={handleHideShow}>
-                            <Menu className={classes.showIcon} />
-                            <ClearAll className={classes.hideIcon} />
-                        </a>
-                    </div>
+                        <div className={classes.icons}>
+                            <a onClick={handleHideShow}>
+                                <Menu className={classes.showIcon} />
+                                <ClearAll className={classes.hideIcon} />
+                            </a>
+                        </div>
 
-                </Toolbar>
-            </AppBar>
-
+                    </Toolbar>
+                </AppBar>
+                : null
+        }
             {
-                (user.isAdmin) ?
+                (user.role_id === "_SuPE8/@DmIn&^%(0)__" || user.role_id === "AD&Mii#iin(,.<1)>mEe") ?
 
                     <div style={{ display: view ? 'block' : 'none' }} >
 
@@ -333,7 +341,7 @@ export default function Sidebar(props) {
 
                             <div className={classes.bottomDiv}>
 
-                                <div style={{ 'display': (parseInt(user.role_id) === 0 ? 'block' : 'none') }}>
+                                <div style={{ 'display': user.role_id === "_SuPE8/@DmIn&^%(0)__" ? 'block' : 'none' }}>
 
                                     <Link
                                         to="/admin/list"
@@ -366,86 +374,89 @@ export default function Sidebar(props) {
                     </div >
 
                     :
+                    (user.role_id === "paTI__enT?/@cc!untQq" ?
+                        <div style={{ display: view ? 'block' : 'none' }} >
+                            <Container
+                                className={classes.container}
+                                style={{ display: show ? 'block' : 'none' }}
+                            >
 
-                    <div style={{ display: view ? 'block' : 'none' }} >
-                        <Container
-                            className={classes.container}
-                            style={{ display: show ? 'block' : 'none' }}
-                        >
+                                <img src={Logo} className={classes.bigLogo} alt="MOBAYED" />
 
-                            <img src={Logo} className={classes.bigLogo} alt="MOBAYED" />
-
-                            <div className={classes.topDiv}>
-
-
-                                <Link
-                                    to="/patient/panel"
-                                    className={classes.item}
-                                >
-                                    <Home className={classes.icon} />
-                                    <Typography className={classes.text}>HOME</Typography>
-                                </Link>
+                                <div className={classes.topDiv}>
 
 
-                                <Link
-                                    to="/request/create"
-                                    className={classes.item}
-                                >
-                                    <AddBox className={classes.icon} />
-                                    <Typography className={classes.text}>TAKE APPOINTMENT</Typography>
-                                </Link>
+                                    <Link
+                                        to="/patient/panel"
+                                        className={classes.item}
+                                    >
+                                        <Home className={classes.icon} />
+                                        <Typography className={classes.text}>HOME</Typography>
+                                    </Link>
 
 
-                                <Link
-                                    to="/request/remove"
-                                    className={classes.item}
-                                >
-                                    <Timer className={classes.icon} />
-                                    <Typography className={classes.text}> LIST REQUESTS</Typography>
-                                </Link>
+                                    <Link
+                                        to="/request/create"
+                                        className={classes.item}
+                                    >
+                                        <AddBox className={classes.icon} />
+                                        <Typography className={classes.text}>TAKE APPOINTMENT</Typography>
+                                    </Link>
 
 
-                                <Link
-                                    to="/patient/appointment"
-                                    className={classes.item}
-                                >
-                                    <InsertInvitation className={classes.icon} />
-                                    <Typography className={classes.text}>LIST APPOINTMENTS</Typography>
-                                </Link>
+                                    <Link
+                                        to="/request/remove"
+                                        className={classes.item}
+                                    >
+                                        <Timer className={classes.icon} />
+                                        <Typography className={classes.text}> LIST REQUESTS</Typography>
+                                    </Link>
 
 
-                                <Link
-                                    to="/patient/procedure"
-                                    className={classes.item}
-                                >
-                                    <AssignmentTurnedIn className={classes.icon} />
-                                    <Typography className={classes.text}>LIST PROCEDURES</Typography>
-                                </Link>
+                                    <Link
+                                        to="/patient/appointment"
+                                        className={classes.item}
+                                    >
+                                        <InsertInvitation className={classes.icon} />
+                                        <Typography className={classes.text}>LIST APPOINTMENTS</Typography>
+                                    </Link>
 
 
-                            </div>
+                                    <Link
+                                        to="/patient/procedure"
+                                        className={classes.item}
+                                    >
+                                        <AssignmentTurnedIn className={classes.icon} />
+                                        <Typography className={classes.text}>LIST PROCEDURES</Typography>
+                                    </Link>
 
-                            <div className={classes.bottomDiv}>
 
-                                <Link
-                                    to="/patient/profile"
-                                    className={classes.item2}
-                                >
-                                    <Settings className={classes.icon} />
-                                    <Typography className={classes.text}>PROFILE</Typography>
-                                </Link>
+                                </div>
 
-                                <a
-                                    onClick={handleLogout}
-                                    className={classes.item2}
-                                >
-                                    <ExitToApp className={classes.icon} />
-                                    <Typography className={classes.text}>LOGOUT</Typography>
-                                </a>
-                            </div>
+                                <div className={classes.bottomDiv}>
 
-                        </Container >
-                    </div >
+                                    <Link
+                                        to="/patient/profile"
+                                        className={classes.item2}
+                                    >
+                                        <Settings className={classes.icon} />
+                                        <Typography className={classes.text}>PROFILE</Typography>
+                                    </Link>
+
+                                    <a
+                                        onClick={handleLogout}
+                                        className={classes.item2}
+                                    >
+                                        <ExitToApp className={classes.icon} />
+                                        <Typography className={classes.text}>LOGOUT</Typography>
+                                    </a>
+                                </div>
+
+                            </Container >
+                        </div >
+                        : null
+                    )
+
             }
         </>
     );

@@ -73,7 +73,7 @@ export default function List_Clinic() {
     const classes = useStyles();
     const history = useHistory();
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const [clinics, setClinics] = useState([]);
 
@@ -82,8 +82,7 @@ export default function List_Clinic() {
             await API.get('clinic', {
                 headers: {
                     id: id,
-                    token: token,
-                    isAdmin: isAdmin
+                    token: token
                 }
             })
                 .then(res => {

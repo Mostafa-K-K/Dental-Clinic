@@ -62,7 +62,7 @@ export default function List_Request() {
     const classes = useStyles();
     const history = useHistory();
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const [requests, setRequests] = useState([]);
 
@@ -72,8 +72,7 @@ export default function List_Request() {
             if (del) await API.delete(`request/${id_req}`, {
                 headers: {
                     id: id,
-                    token: token,
-                    isAdmin: isAdmin
+                    token: token
                 }
             });
             fetchData();
@@ -87,15 +86,14 @@ export default function List_Request() {
             await API.get('RP', {
                 headers: {
                     id: id,
-                    token: token,
-                    isAdmin: isAdmin
+                    token: token
                 }
             })
                 .then(res => {
                     let data = res.data.result;
                     const success = res.data.success;
                     if (success) {
-                        data = data.filter(res => res.status !== "Watting");
+                        data = data.filter(res => res.status !== "Waiting");
                         setRequests(data);
                     }
                 });

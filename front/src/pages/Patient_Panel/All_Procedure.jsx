@@ -29,7 +29,7 @@ export default function All_Procedure() {
 
     const classes = useStyles();
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const [procedures, setProcedures] = useState([]);
     const [works, setWorks] = useState([]);
@@ -40,8 +40,7 @@ export default function All_Procedure() {
                 await API.get('PTCDP', {
                     headers: {
                         id: id,
-                        token: token,
-                        isAdmin: isAdmin
+                        token: token
                     }
                 })
                     .then(res => {
@@ -54,8 +53,7 @@ export default function All_Procedure() {
                 await API.get('PDP', {
                     headers: {
                         id: id,
-                        token: token,
-                        isAdmin: isAdmin
+                        token: token
                     }
                 })
                     .then(res => {

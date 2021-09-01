@@ -140,7 +140,7 @@ export default function Add_Procedure() {
     const history = useHistory();
     const { id_appointment, id_patient } = useParams();
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const date = moment().format("YYYY-MM-DDTHH:mm");
 
@@ -245,8 +245,7 @@ export default function Add_Procedure() {
             await API.post(`procedure`, reqBody, {
                 headers: {
                     id: id,
-                    token: token,
-                    isAdmin: isAdmin
+                    token: token
                 }
             })
                 .then(res => {
@@ -264,8 +263,7 @@ export default function Add_Procedure() {
                         API.post(`PTC`, PTCReqBody, {
                             headers: {
                                 id: id,
-                                token: token,
-                                isAdmin: isAdmin
+                                token: token
                             }
                         });
                     });
@@ -273,8 +271,7 @@ export default function Add_Procedure() {
                 .then(API.put(`appointment/${id_appointment}`, { status: "Present" }, {
                     headers: {
                         id: id,
-                        token: token,
-                        isAdmin: isAdmin
+                        token: token
                     }
                 }))
                 .then(history.push({ pathname: "/procedure/list" }));
@@ -288,8 +285,7 @@ export default function Add_Procedure() {
             await API.get(`patient/${state.id_patient}`, {
                 headers: {
                     id: id,
-                    token: token,
-                    isAdmin: isAdmin
+                    token: token
                 }
             })
                 .then(res => {

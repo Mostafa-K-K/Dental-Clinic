@@ -84,7 +84,7 @@ export default function List_Balance() {
     const classes = useStyles();
     const history = useHistory();
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const [state, updateState] = useState({
         isFetch: true,
@@ -92,8 +92,8 @@ export default function List_Balance() {
         name: "",
         dateFrom: "2000-01-01",
         dateTo: "2000-01-01",
-        max: '',
-        min: ''
+        max: "2000-01-01",
+        min: "2000-01-01"
     });
 
     function setState(nextState) {
@@ -116,20 +116,21 @@ export default function List_Balance() {
                     await API.get(`maxmindate`, {
                         headers: {
                             id: id,
-                            token: token,
-                            isAdmin: isAdmin
+                            token: token
                         }
                     })
                         .then(res => {
                             const result = res.data.result;
                             const success = res.data.success;
                             if (success)
-                                setState({
-                                    dateFrom: result.min.substring(0, 10),
-                                    dateTo: result.max.substring(0, 10),
-                                    min: result.min.substring(0, 10),
-                                    max: result.max.substring(0, 10)
-                                });
+                                if (result.max && result.min)
+                                    setState({
+                                        dateFrom: result.min.substring(0, 10),
+                                        dateTo: result.max.substring(0, 10),
+                                        min: result.min.substring(0, 10),
+                                        max: result.max.substring(0, 10)
+                                    });
+                            console.log({ result });
                         });
                     setState({ isFetch: false });
                 }
@@ -142,8 +143,7 @@ export default function List_Balance() {
                 await API.post(`balance`, reqBody, {
                     headers: {
                         id: id,
-                        token: token,
-                        isAdmin: isAdmin
+                        token: token
                     }
                 })
                     .then(res => {

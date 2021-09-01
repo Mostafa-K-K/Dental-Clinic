@@ -88,7 +88,7 @@ export default function Change_Password_Admin() {
     const classes = useStyles();
     const history = useHistory();
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const [state, updateState] = useState({
         id: id,
@@ -121,7 +121,7 @@ export default function Change_Password_Admin() {
         e.preventDefault();
         try {
             let reqBody = { password: state.newPass }
-            let isMatch = await bcrypt.compare(state.password, state.oldPass);
+            let isMatch = await bcrypt.compare(state.oldPass, state.password);
 
             if (!isMatch) toast.error("Password incorrect");
             if (state.newPass !== state.newPassC) toast.error("Confirm Password incorrect");
@@ -130,8 +130,7 @@ export default function Change_Password_Admin() {
                 await API.put(`admin/${id}`, reqBody, {
                     headers: {
                         id: id,
-                        token: token,
-                        isAdmin: isAdmin
+                        token: token
                     }
                 })
                     .then(toast.success("Update Password Successfuly"))
@@ -148,8 +147,7 @@ export default function Change_Password_Admin() {
                 await API.get(`admin/${id}`, {
                     headers: {
                         id: id,
-                        token: token,
-                        isAdmin: isAdmin
+                        token: token
                     }
                 })
                     .then(res => {

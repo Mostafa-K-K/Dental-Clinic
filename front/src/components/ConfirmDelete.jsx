@@ -69,14 +69,13 @@ const useStyles = makeStyles((theme) => ({
 export default function ConfirmDelete(props) {
 
     const classes = useStyles();
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     async function onDelete() {
         await API.delete(props.path, {
             headers: {
                 id: id,
-                token: token,
-                isAdmin: isAdmin
+                token: token
             }
         })
             .then(props.fetchData)

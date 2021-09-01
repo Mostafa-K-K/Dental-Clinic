@@ -125,7 +125,7 @@ export default function Create_Admin() {
     const classes = useStyles();
     const history = useHistory();
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const [state, updateState] = useState({
         username: "",
@@ -187,8 +187,7 @@ export default function Create_Admin() {
                                 await API.post(`admin`, reqBody, {
                                     headers: {
                                         id: id,
-                                        token: token,
-                                        isAdmin: isAdmin
+                                        token: token
                                     }
                                 })
                                     .then(toast.success("Added Admin Successfuly"))

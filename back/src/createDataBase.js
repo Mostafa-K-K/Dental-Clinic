@@ -6,7 +6,7 @@ const createDataBase = async () => {
 
     var admin = `CREATE TABLE IF NOT EXISTS admins (
             id INTEGER PRIMARY KEY AUTO_INCREMENT,
-            role_id INTEGER NOT NULL DEFAULT 1,
+            role_id VARCHAR(25) NOT NULL DEFAULT "AD&Mii#iin(,.<1)>mEe",
             username VARCHAR(25) NOT NULL UNIQUE,
             password VARCHAR(255) NOT NULL,
             first_name VARCHAR(15) NOT NULL,
@@ -34,6 +34,7 @@ const createDataBase = async () => {
 
     var patient = `CREATE TABLE IF NOT EXISTS patients (
             id INTEGER PRIMARY KEY AUTO_INCREMENT,
+            role_id VARCHAR(25) NOT NULL DEFAULT "paTI__enT?/@cc!untQq",
             username VARCHAR(25) NOT NULL UNIQUE,
             password VARCHAR(255) NOT NULL,
             first_name VARCHAR(25) NOT NULL,
@@ -117,7 +118,7 @@ const createDataBase = async () => {
             let salt = await bcrypt.genSalt(10);
             let hashedPassword = await bcrypt.hash("admin", salt);
 
-            var val = ['admin', hashedPassword, 'admin', 'admin', 'admin', '00000000', 0];
+            var val = ['admin', hashedPassword, 'admin', 'admin', 'admin', '00000000', "_SuPE8/@DmIn&^%(0)__"];
             connection.query(sql, val, function (err, result) {
                 if (err) throw err;
             });

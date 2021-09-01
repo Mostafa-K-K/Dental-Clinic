@@ -67,7 +67,7 @@ export default function List_Doctor() {
     const classes = useStyles();
     const history = useHistory();
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const [doctors, setDoctors] = useState([]);
 
@@ -76,8 +76,7 @@ export default function List_Doctor() {
             await API.get('doctor', {
                 headers: {
                     id: id,
-                    token: token,
-                    isAdmin: isAdmin
+                    token: token
                 }
             })
                 .then(res => {

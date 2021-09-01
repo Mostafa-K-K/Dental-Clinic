@@ -112,21 +112,20 @@ export default function List_Admin() {
 
     const [admins, setAdmins] = useState([]);
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
-    console.log({ id, token });
     async function fetchData() {
         try {
             await API.get('admin', {
                 headers: {
                     id: id,
-                    token: token,
-                    isAdmin: isAdmin
+                    token: token
                 }
             })
                 .then(res => {
                     const data = res.data.result;
                     const success = res.data.success;
+                    console.log(data);
                     if (success)
                         setAdmins(data);
                 });

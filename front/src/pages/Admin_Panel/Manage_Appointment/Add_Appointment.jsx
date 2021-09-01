@@ -112,7 +112,7 @@ export default function Add_Appointment() {
     const classes = useStyles();
     const history = useHistory();
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const { id: id_req, id_patient } = useParams();
 
@@ -160,8 +160,7 @@ export default function Add_Appointment() {
             await API.get('appointment', {
                 headers: {
                     id: id,
-                    token: token,
-                    isAdmin: isAdmin
+                    token: token
                 }
             })
                 .then(res => {
@@ -198,15 +197,13 @@ export default function Add_Appointment() {
                             API.post('appointment', reqBody, {
                                 headers: {
                                     id: id,
-                                    token: token,
-                                    isAdmin: isAdmin
+                                    token: token
                                 }
                             })
                                 .then(API.put(`request/${id_req}`, { status: "Accepted" }, {
                                     headers: {
                                         id: id,
-                                        token: token,
-                                        isAdmin: isAdmin
+                                        token: token
                                     }
                                 }))
                                 .then(history.push({ pathname: '/appointment/upcoming' }))
@@ -223,8 +220,7 @@ export default function Add_Appointment() {
             await API.get(`patient/${id_patient}`, {
                 headers: {
                     id: id,
-                    token: token,
-                    isAdmin: isAdmin
+                    token: token
                 }
             })
                 .then(res => {

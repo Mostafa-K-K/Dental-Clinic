@@ -100,7 +100,7 @@ export default function Details_Balance() {
     const history = useHistory();
     const { id: id_bal } = useParams();
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const [state, updateState] = useState({
         isTrue: true,
@@ -124,8 +124,7 @@ export default function Details_Balance() {
                     await API.post(`balance`, { id: id_bal }, {
                         headers: {
                             id: id,
-                            token: token,
-                            isAdmin: isAdmin
+                            token: token
                         }
                     })
                         .then(res => {
@@ -140,8 +139,7 @@ export default function Details_Balance() {
                 await API.get(`balance/${id_bal}`, {
                     headers: {
                         id: id,
-                        token: token,
-                        isAdmin: isAdmin
+                        token: token
                     }
                 })
                     .then(res => {

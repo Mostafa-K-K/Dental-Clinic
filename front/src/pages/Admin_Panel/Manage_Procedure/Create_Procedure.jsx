@@ -140,7 +140,7 @@ export default function Create_Procedure() {
     const classes = useStyles();
     const history = useHistory();
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const date = moment().format("YYYY-MM-DDTHH:mm");
 
@@ -244,8 +244,7 @@ export default function Create_Procedure() {
             await API.post(`procedure`, reqBody, {
                 headers: {
                     id: id,
-                    token: token,
-                    isAdmin: isAdmin
+                    token: token
                 }
             })
                 .then(res => {
@@ -263,8 +262,7 @@ export default function Create_Procedure() {
                         API.post(`PTC`, PTCReqBody, {
                             headers: {
                                 id: id,
-                                token: token,
-                                isAdmin: isAdmin
+                                token: token
                             }
                         });
                     });
@@ -280,7 +278,7 @@ export default function Create_Procedure() {
             <CssBaseline />
 
             <Typography variant="h3" align="center" className="titlePage">
-            Create Procedure
+                Create Procedure
             </Typography>
 
             <Container className={classes.container}>

@@ -151,7 +151,7 @@ export default function Today_Appointment() {
     const classes = useStyles();
     const history = useHistory();
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const [appointments, setAppointments] = useState([]);
 
@@ -177,8 +177,7 @@ export default function Today_Appointment() {
             await API.get('ACP', {
                 headers: {
                     id: id,
-                    token: token,
-                    isAdmin: isAdmin
+                    token: token
                 }
             })
                 .then(res => {

@@ -85,7 +85,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Create_Request() {
 
     const classes = useStyles();
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const history = useHistory();
     const date = moment().format("YYYY-MM-DD hh:mm:ss");
@@ -117,8 +117,7 @@ export default function Create_Request() {
                 await API.post(`request`, reqBody, {
                     headers: {
                         id: id,
-                        token: token,
-                        isAdmin: isAdmin
+                        token: token
                     }
                 })
                     .then(toast.success("Request Successfuly"))

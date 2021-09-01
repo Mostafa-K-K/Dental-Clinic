@@ -113,7 +113,7 @@ export default function Edit_Appointment() {
     const history = useHistory();
     const { id: id_app } = useParams();
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const [state, updateState] = useState({
         description: "",
@@ -156,8 +156,7 @@ export default function Edit_Appointment() {
             await API.get('appointment', {
                 headers: {
                     id: id,
-                    token: token,
-                    isAdmin: isAdmin
+                    token: token
                 }
             })
                 .then(res => {
@@ -197,8 +196,7 @@ export default function Edit_Appointment() {
                             API.put(`appointment/${id_app}`, reqBody, {
                                 headers: {
                                     id: id,
-                                    token: token,
-                                    isAdmin: isAdmin
+                                    token: token
                                 }
                             });
                             history.push({ pathname: '/appointment/upcoming' })
@@ -216,8 +214,7 @@ export default function Edit_Appointment() {
                 await API.get('ACP', {
                     headers: {
                         id: id,
-                        token: token,
-                        isAdmin: isAdmin
+                        token: token
                     }
                 })
                     .then(res => {

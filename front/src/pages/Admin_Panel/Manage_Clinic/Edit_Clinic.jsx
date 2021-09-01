@@ -81,7 +81,7 @@ export default function Edit_Clinic() {
 
     const classes = useStyles();
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const { id: id_cli } = useParams();
     const history = useHistory();
@@ -110,8 +110,7 @@ export default function Edit_Clinic() {
             await API.get(`clinic`, {
                 headers: {
                     id: id,
-                    token: token,
-                    isAdmin: isAdmin
+                    token: token
                 }
             })
                 .then(async res => {
@@ -124,8 +123,7 @@ export default function Edit_Clinic() {
                         await API.put(`clinic/${id_cli}`, reqBody, {
                             headers: {
                                 id: id,
-                                token: token,
-                                isAdmin: isAdmin
+                                token: token
                             }
                         })
                             .then(toast.success("Update Clinic Successfuly"))
@@ -143,8 +141,7 @@ export default function Edit_Clinic() {
                 await API.get(`clinic/${id_cli}`, {
                     headers: {
                         id: id,
-                        token: token,
-                        isAdmin: isAdmin
+                        token: token
                     }
                 })
                     .then(res => {

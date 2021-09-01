@@ -74,7 +74,7 @@ export default function Routes() {
 
     return (
         <div className="superContainer">
-            <Sidebar view={user.token ? true : false} />
+            <Sidebar view={user.token && user.role_id ? true : false} />
 
             <div className="miniContainer">
 
@@ -83,7 +83,6 @@ export default function Routes() {
                     <PublicRoute user={user} path="/" component={Home} exact />
                     <PublicRoute user={user} path="/login" component={Login} />
                     <PublicRoute user={user} path="/register" component={Register} />
-
 
 
                     {/* <PrivateRouteSuperAdmin user={user} path="/number/patient" component={Number_Patient} /> */}

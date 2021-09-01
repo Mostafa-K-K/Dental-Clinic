@@ -7,7 +7,7 @@ import { Autocomplete } from '@material-ui/lab'
 
 export default function Doctors(props) {
 
-  let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+  let { session: { user: { id, token } } } = useContext(SessionContext);
 
   const [doctors, setdoctors] = useState([]);
 
@@ -15,8 +15,7 @@ export default function Doctors(props) {
     await API.get(`doctor`, {
       headers: {
         id: id,
-        token: token,
-        isAdmin: isAdmin
+        token: token
       }
     })
       .then(res => {

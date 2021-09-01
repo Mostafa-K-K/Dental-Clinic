@@ -123,7 +123,7 @@ export default function Create_Patient() {
 
     const classes = useStyles();
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const history = useHistory();
 
@@ -192,8 +192,7 @@ export default function Create_Patient() {
                                         await API.post(`patient`, reqBody, {
                                             headers: {
                                                 id: id,
-                                                token: token,
-                                                isAdmin: isAdmin
+                                                token: token
                                             }
                                         })
                                             .then(toast.success("Added Patient Successfuly"))

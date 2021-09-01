@@ -77,7 +77,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Add_Payment() {
 
     const classes = useStyles();
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     let { id: id_pat } = useParams();
     let history = useHistory();
@@ -116,8 +116,7 @@ export default function Add_Payment() {
             await API.post(`procedure`, reqBody, {
                 headers: {
                     id: id,
-                    token: token,
-                    isAdmin: isAdmin
+                    token: token
                 }
             })
                 .then(toast.success("Pay Successfuly"))
@@ -133,8 +132,7 @@ export default function Add_Payment() {
                 await API.get(`patient/${id_pat}`, {
                     headers: {
                         id: id,
-                        token: token,
-                        isAdmin: isAdmin
+                        token: token
                     }
                 })
                     .then(res => {

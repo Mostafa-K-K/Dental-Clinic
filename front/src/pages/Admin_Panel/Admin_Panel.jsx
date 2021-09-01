@@ -85,7 +85,7 @@ export default function Admin_Panel() {
 
     const classes = useStyles();
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const [state, updateState] = useState({
         nbPatient: 0,
@@ -111,12 +111,10 @@ export default function Admin_Panel() {
             await API.post(`patientcount`, { name: "" }, {
                 headers: {
                     id: id,
-                    token: token,
-                    isAdmin: isAdmin
+                    token: token
                 }
             })
                 .then(res => {
-                    console.log(res);
                     const result = res.data.result;
                     const success = res.data.success;
                     if (success) {
@@ -127,8 +125,7 @@ export default function Admin_Panel() {
             await API.get(`clinic`, {
                 headers: {
                     id: id,
-                    token: token,
-                    isAdmin: isAdmin
+                    token: token
                 }
             })
                 .then(res => {
@@ -142,8 +139,7 @@ export default function Admin_Panel() {
             await API.get(`doctor`, {
                 headers: {
                     id: id,
-                    token: token,
-                    isAdmin: isAdmin
+                    token: token
                 }
             })
                 .then(res => {
@@ -158,8 +154,7 @@ export default function Admin_Panel() {
             await API.get(`type`, {
                 headers: {
                     id: id,
-                    token: token,
-                    isAdmin: isAdmin
+                    token: token
                 }
             })
                 .then(res => {

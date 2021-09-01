@@ -7,7 +7,7 @@ import SessionContext from "../../../components/session/SessionContext"
 import Patients from '../../../components/Patients'
 import Clinics from "../../../components/Clinics"
 
-import { toast } from "react-toastify" 
+import { toast } from "react-toastify"
 
 import {
     TextareaAutosize,
@@ -112,7 +112,7 @@ export default function Create_Appointment() {
     const classes = useStyles();
     const history = useHistory();
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const date = moment().format("YYYY-MM-DD");
     const date_start = moment();
@@ -156,8 +156,7 @@ export default function Create_Appointment() {
             await API.get('appointment', {
                 headers: {
                     id: id,
-                    token: token,
-                    isAdmin: isAdmin
+                    token: token
                 }
             })
                 .then(res => {
@@ -196,8 +195,7 @@ export default function Create_Appointment() {
                             API.post('appointment', reqBody, {
                                 headers: {
                                     id: id,
-                                    token: token,
-                                    isAdmin: isAdmin
+                                    token: token
                                 }
                             })
                                 .then(history.push({ pathname: '/appointment/upcoming' }))
@@ -214,7 +212,7 @@ export default function Create_Appointment() {
             <CssBaseline />
 
             <Typography variant="h3" align="center" className="titlePage">
-            Add Appointmemt
+                Add Appointmemt
             </Typography>
 
             <Container className={classes.container}>

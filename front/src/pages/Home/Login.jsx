@@ -129,7 +129,6 @@ export default function Login() {
 
     async function handleSubmit(e) {
         e.preventDefault();
-        console.log(":heyyyy");
         try {
             await API.post('login', state)
                 .then(res => {
@@ -138,38 +137,17 @@ export default function Login() {
                     console.log({ res });
                     const success = res.data.success;
                     if (success) {
-                        if (answer.isAdmin || answer.isAdmin == true) {
 
-                            let user = {
-                                id: answer.admin.id,
-                                username: state.username,
-                                token: answer.token,
-                                isAdmin: answer.isAdmin,
-                                role_id: `${answer.admin.role_id}`
-                            }
-
-                            setCookie('token', answer.token, 30);
-                            setCookie('username', state.username, 30);
-                            setCookie('id', answer.admin.id, 30);
-                            setCookie('isAdmin', answer.isAdmin, 30);
-                            setCookie('role_id', `${answer.admin.role_id}`, 30);
-                            setSession({ user });
+                        let user = {
+                            id: answer.userData.id,
+                            token: answer.token,
+                            role_id: answer.userData.role_id
                         }
-                        else if (!answer.isAdmin || answer.isAdmin == false) {
 
-                            let user = {
-                                id: answer.patient.id,
-                                username: state.username,
-                                token: answer.token,
-                                isAdmin: answer.isAdmin
-                            }
-
-                            setCookie('token', answer.token, 30);
-                            setCookie('username', state.username, 30);
-                            setCookie('id', answer.patient.id, 30);
-                            setCookie('isAdmin', answer.isAdmin, 30);
-                            setSession({ user });
-                        }
+                        setCookie('id', answer.userData.id, 30);
+                        setCookie('token', answer.token, 30);
+                        setCookie('role_id', `${answer.userData.role_id}`, 30);
+                        setSession({ user });
                     }
                     else {
                         toast.error("Wrong Username or Password")

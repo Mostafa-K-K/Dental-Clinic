@@ -98,7 +98,7 @@ export default function Create_Payment() {
 
     const classes = useStyles();
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     let history = useHistory();
     const date = moment().format("YYYY-MM-DDThh:mm:ss");
@@ -139,8 +139,7 @@ export default function Create_Payment() {
             await API.post(`procedure`, reqBody, {
                 headers: {
                     id: id,
-                    token: token,
-                    isAdmin: isAdmin
+                    token: token
                 }
             })
                 .then(toast.success("Pay Successfuly"))

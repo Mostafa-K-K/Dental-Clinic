@@ -4,7 +4,7 @@ import SessionContext from '../../components/session/SessionContext'
 
 export default function Patient_Panel() {
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const [remaining, setRemaining] = useState(0);
 
@@ -14,8 +14,7 @@ export default function Patient_Panel() {
                 await API.post(`balanceData`, { id: id }, {
                     headers: {
                         id: id,
-                        token: token,
-                        isAdmin: isAdmin
+                        token: token
                     }
                 })
                     .then(res => {

@@ -127,7 +127,7 @@ export default function Change_Information() {
     const classes = useStyles();
     const history = useHistory();
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const [state, updateState] = useState({
         username: "",
@@ -191,8 +191,7 @@ export default function Change_Information() {
                                 await API.put(`admin/${id_adm}`, reqBody, {
                                     headers: {
                                         id: id,
-                                        token: token,
-                                        isAdmin: isAdmin
+                                        token: token
                                     }
                                 })
                                     .then(toast.success("Update Admin Successfuly"))
@@ -211,8 +210,7 @@ export default function Change_Information() {
                 await API.get(`admin/${id_adm}`, {
                     headers: {
                         id: id,
-                        token: token,
-                        isAdmin: isAdmin
+                        token: token
                     }
                 })
                     .then(res => {

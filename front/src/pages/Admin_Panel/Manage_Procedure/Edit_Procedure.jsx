@@ -80,15 +80,15 @@ const useStyles = makeStyles((theme) => ({
         width: 400
     },
     root3: {
-        width:100,
-        padding:5,
-        border:"1px solid #BEF4F4",
-        borderRadius:"5px",
+        width: 100,
+        padding: 5,
+        border: "1px solid #BEF4F4",
+        borderRadius: "5px",
         '&:hover': {
-            border:"2px solid #BEF4F4",
+            border: "2px solid #BEF4F4",
         },
         '&:focus': {
-            border:"3px solid #BEF4F4",
+            border: "3px solid #BEF4F4",
         },
     },
     deleteIcon: {
@@ -105,8 +105,8 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: "row",
         justifyContent: "space-around"
     },
-    container:{
-        marginBottom:30
+    container: {
+        marginBottom: 30
     },
     addBoxIcon: {
         backgroundColor: "#8BE3D9",
@@ -144,7 +144,7 @@ export default function Edit_Procedure() {
     const history = useHistory();
     const { id: id_pro } = useParams();
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const [state, updateState] = useState({
         payment: "",
@@ -235,7 +235,6 @@ export default function Edit_Procedure() {
         e.preventDefault();
 
         console.log(state);
-        console.log("ddddata", state.patients.find(p => p.id == state.id_patient));
         // try {
 
         //     let dd = moment(state.date).format("YYYY-MM-DD HH:mm");
@@ -251,16 +250,14 @@ export default function Edit_Procedure() {
         //     await API.put(`procedure/${id_pro}`, reqBody, {
         //         headers: {
         //             id: id,
-        //             token: token,
-        //             isAdmin: isAdmin
-        //         }
+        //             token: token
+        //         } 
         //     })
         //         .then(
         //             API.delete(`PTCALL/${id_pro}`, {
         //                 headers: {
         //                     id: id,
-        //                     token: token,
-        //                     isAdmin: isAdmin
+        //                     token: token
         //                 }
         //             })
         //         )
@@ -275,8 +272,7 @@ export default function Edit_Procedure() {
         //                 API.post(`PTC`, PTCReqBody, {
         //                     headers: {
         //                         id: id,
-        //                         token: token,
-        //                         isAdmin: isAdmin
+        //                         token: token
         //                     }
         //                 });
         //             })
@@ -295,8 +291,7 @@ export default function Edit_Procedure() {
                 await API.get(`procedure/${id_pro}`, {
                     headers: {
                         id: id,
-                        token: token,
-                        isAdmin: isAdmin
+                        token: token
                     }
                 })
                     .then(res => {
@@ -316,15 +311,13 @@ export default function Edit_Procedure() {
                 await API.get('PTCDP', {
                     headers: {
                         id: id,
-                        token: token,
-                        isAdmin: isAdmin
+                        token: token
                     }
                 })
                     .then(res => {
                         let data = res.data.result;
                         const success = res.data.success;
                         if (success) {
-                            console.log(data);
                             data = data.filter(r => r.id_procedure == id_pro);
                             setState({ works: data });
                         }
@@ -341,7 +334,7 @@ export default function Edit_Procedure() {
             <CssBaseline />
 
             <Typography variant="h3" align="center" className="titlePage">
-            Edit Procedure
+                Edit Procedure
             </Typography>
 
             <Container className={classes.container}>
@@ -351,7 +344,7 @@ export default function Edit_Procedure() {
                     <Paper className={classes.paperFilter}>
 
                         <Patients
-                            value={state.id_patient}
+                            value={state.id_patient != "" ? state.id_patient : 1}
                             onChange={(event, newValue) => {
                                 setState({ id_patient: newValue ? newValue.id : "" });
                             }}
@@ -456,11 +449,11 @@ export default function Edit_Procedure() {
                                         </TableCell>
 
                                         <TableCell align="center">
-                                        {(work.id_teeth == 1 || work.id_teeth == 2) ? "All Teeth" : work.id_teeth}
+                                            {(work.id_teeth == 1 || work.id_teeth == 2) ? "All Teeth" : work.id_teeth}
                                         </TableCell>
 
                                         <TableCell align="center">
-                                          {work.description}
+                                            {work.description}
                                         </TableCell>
 
                                         <TableCell align="center">

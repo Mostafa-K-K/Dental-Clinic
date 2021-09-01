@@ -69,7 +69,7 @@ export default function List_Request() {
     const classes = useStyles();
     const history = useHistory();
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const [requests, setRequests] = useState([]);
 
@@ -85,8 +85,7 @@ export default function List_Request() {
                 await API.put(`request/${id_req}`, { status: "Rejected" }, {
                     headers: {
                         id: id,
-                        token: token,
-                        isAdmin: isAdmin
+                        token: token
                     }
                 });
             await fetchData();
@@ -100,8 +99,7 @@ export default function List_Request() {
             await API.get('RP', {
                 headers: {
                     id: id,
-                    token: token,
-                    isAdmin: isAdmin
+                    token: token
                 }
             })
                 .then(res => {

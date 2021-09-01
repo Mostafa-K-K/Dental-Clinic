@@ -6,8 +6,6 @@ import SessionContext from '../../components/session/SessionContext'
 import {
     TableContainer,
     Table,
-    TableHead,
-    TableBody,
     TableCell,
     TableRow,
     Container,
@@ -31,34 +29,35 @@ const useStyles = makeStyles((theme) => ({
 export default function Next_Appointment() {
 
     const classes = useStyles();
+    const date = moment().format("YYYY-MM-DD");
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const [appointment, setAppointment] = useState("");
 
-    async function fetchData() {
-        try {
-            await API.get('ACP', {
-                headers: {
-                    id: id,
-                    token: token,
-                    isAdmin: isAdmin
-                }
-            })
-                .then(res => {
-                    const data = res.data.result;
-                    const success = res.data.success;
-                    if (success) {
-                        let result = data.filter(d => d.status === "Waiting" && d.id_patient == id);
-                        setAppointment(result[0]);
-                    }
-                });
-        } catch (e) {
-            console.log("ERROR", e);
-        }
-    }
-
     useEffect(() => {
+
+        async function fetchData() {
+            try {
+                await API.get('ACP', {
+                    headers: {
+                        id: id,
+                        token: token
+                    }
+                })
+                    .then(res => {
+                        const data = res.data.result;
+                        const success = res.data.success;
+                        if (success) {
+                            let result = data.filter(d => d.status === "Waiting" && d.id_patient == id && date <= moment(d.date).format("YYYY-MM-DD"));
+                            setAppointment(result[0]);
+                        }
+                    });
+            } catch (e) {
+                console.log("ERROR", e);
+            }
+        }
+
         fetchData();
     }, [])
 
@@ -105,8 +104,8 @@ export default function Next_Appointment() {
                         <Typography variant="h6" align="center">
                             You don't have an appointment
                         </Typography>
-                        
-                        }
+
+                    }
 
                 </TableContainer>
             </Container>

@@ -124,7 +124,7 @@ export default function Edit_Patient() {
 
     const classes = useStyles();
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const { id: id_pat } = useParams();
     const history = useHistory();
@@ -189,8 +189,7 @@ export default function Edit_Patient() {
             await API.get(`username`, {
                 headers: {
                     id: id,
-                    token: token,
-                    isAdmin: isAdmin
+                    token: token
                 }
             })
                 .then(async res => {
@@ -203,8 +202,7 @@ export default function Edit_Patient() {
                         await API.get(`phonenumber`, {
                             headers: {
                                 id: id,
-                                token: token,
-                                isAdmin: isAdmin
+                                token: token
                             }
                         })
                             .then(async res => {
@@ -221,8 +219,7 @@ export default function Edit_Patient() {
                                         await API.put(`patient/${id_pat}`, reqBody, {
                                             headers: {
                                                 id: id,
-                                                token: token,
-                                                isAdmin: isAdmin
+                                                token: token
                                             }
                                         })
                                             .then(toast.success("Update Patient Successfuly"))
@@ -243,8 +240,7 @@ export default function Edit_Patient() {
                 await API.get(`patient/${id_pat}`, {
                     headers: {
                         id: id,
-                        token: token,
-                        isAdmin: isAdmin
+                        token: token
                     }
                 })
                     .then(res => {

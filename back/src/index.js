@@ -12,68 +12,91 @@ data.createDataBase();
 async function isLoggedInSuperAdmin(req, res, next) {
     const id = req.header("id");
     const token = req.header("token");
-    const isAdmin = req.header("isAdmin");
 
-    let sql = `SELECT * FROM admins WHERE token LIKE '${token}'`;
-    if (isAdmin && token) {
-        try {
-            const decoded = jwt.verify(token, "randomString", { ignoreExpiration: true });
-            if (id == decoded.id) {
-                connection.query(sql, function (err, result) {
-                    if (err) throw err;
-                    if (result && result[0].id && result[0].id == id && result[0].role_id == 0)
-                        next();
-                });
-            }
-        } catch (e) {
-            next(e);
-        }
-    } else { res.json({ success: false }); }
-}
-
-async function isLoggedInAdmin(req, res, next) {
-    const id = req.header("id");
-    const token = req.header("token");
-    const isAdmin = req.header("isAdmin");
-
-    let sql = `SELECT * FROM admins WHERE token LIKE '${token}'`;
-    if (isAdmin && token) {
-        try {
-            const decoded = jwt.verify(token, "randomString", { ignoreExpiration: true });
-            if (id == decoded.id) {
-                connection.query(sql, function (err, result) {
-                    if (err) throw err;
-                    if (result && result[0].id && result[0].id == id)
-                        next();
-                });
-            }
-        } catch (e) {
-            next(e);
-        }
-    } else { res.json({ success: false }); }
-}
-
-async function isLoggedIn(req, res, next) {
-    const id = req.header("id");
-    const token = req.header("token");
-    const isAdmin = req.header("isAdmin");
-
-    let sql = ``;
-
-    (isAdmin == true || isAdmin == "true") ?
-        sql = `SELECT * FROM admins WHERE token LIKE '${token}'` :
-        sql = `SELECT * FROM patients WHERE token LIKE '${token}'`;
+    let sql = `SELECT * FROM admins WHERE id = ${id} AND token LIKE '${token}'`;
 
     if (token) {
         try {
             const decoded = jwt.verify(token, "randomString", { ignoreExpiration: true });
             if (id == decoded.id) {
-                connection.query(sql, function (err, result) {
+
+                connection.query(sql, async function (err, data) {
                     if (err) throw err;
-                    if (result && result[0].id && result[0].id == id)
-                        next();
+                    if (data.length && data[0]) {
+                        (data && data[0].id && data[0].id == id && data[0].role_id == "_SuPE8/@DmIn&^%(0)__") ?
+                            next() :
+                            res.json({ success: false });
+                    }
+                    else { res.json({ success: false }) }
                 });
-            }
+
+            } else { res.json({ success: false }) }
+        } catch (e) {
+            next(e);
+        }
+    } else { res.json({ success: false }) }
+}
+
+async function isLoggedInAdmin(req, res, next) {
+    const id = req.header("id");
+    const token = req.header("token");
+
+    let sql = `SELECT * FROM admins WHERE id = ${id} AND token LIKE '${token}'`;
+
+    if (token) {
+        try {
+            const decoded = jwt.verify(token, "randomString", { ignoreExpiration: true });
+            if (id == decoded.id) {
+
+                connection.query(sql, async function (err, data) {
+                    if (err) throw err;
+                    if (data.length && data[0]) {
+                        (data && data[0].id && data[0].id == id && (data[0].role_id == "_SuPE8/@DmIn&^%(0)__" || data[0].role_id == "AD&Mii#iin(,.<1)>mEe")) ?
+                            next() :
+                            res.json({ success: false });
+                    }
+                    else { res.json({ success: false }) }
+                });
+
+            } else { res.json({ success: false }) }
+        } catch (e) {
+            next(e);
+        }
+    } else { res.json({ success: false }) }
+}
+
+async function isLoggedIn(req, res, next) {
+    const id = req.header("id");
+    const token = req.header("token");
+
+    let sql_a = `SELECT * FROM admins WHERE id = ${id} AND token LIKE '${token}'`;
+    let sql_p = `SELECT * FROM patients WHERE id = ${id} AND token LIKE '${token}'`;
+
+    if (token) {
+        try {
+
+            const decoded = jwt.verify(token, "randomString", { ignoreExpiration: true });
+            if (id == decoded.id) {
+
+                connection.query(sql_a, async function (err, data) {
+                    if (err) throw err;
+                    if (data.length && data[0]) {
+                        if (data && data[0].id && data[0].id == id)
+                            next();
+                    }
+                    else {
+                        connection.query(sql_p, async function (err, datas) {
+                            if (err) throw err;
+                            if (datas.length && datas[0]) {
+                                if (datas && datas[0].id && datas[0].id == id)
+                                    next();
+                            }
+                            else { res.json({ success: false }); }
+                        });
+                    }
+                });
+
+            } else { res.json({ success: false }); }
         } catch (e) {
             next(e);
         }
@@ -86,21 +109,32 @@ const start = async () => {
 
     // GET BY USERNAME
     app.post("/getUserData", isLoggedIn, async (req, res, next) => {
-        try {
-            const { username, isAdmin } = req.body;
-            let sql = ``;
-            try {
-                (isAdmin == true) ?
-                    sql = `SELECT * FROM admins WHERE username = '${username}'` :
-                    sql = `SELECT * FROM patients WHERE username = '${username}'`;
+        const { id, token } = req.body;
 
-                connection.query(sql, function (err, result) {
+        let sql_a = `SELECT * FROM admins WHERE id = ${id} AND token LIKE '${token}'`;
+        let sql_p = `SELECT * FROM patients WHERE id = ${id} AND token LIKE '${token}'`;
+
+        try {
+            const decoded = jwt.verify(token, "randomString", { ignoreExpiration: true });
+            if (id == decoded.id) {
+
+                connection.query(sql_a, async function (err, data) {
                     if (err) throw err;
-                    res.json({ success: true, result: result[0] });
+                    if (data.length && data[0]) {
+                        res.json({ success: true, result: data[0] });
+                    }
+                    else {
+                        connection.query(sql_p, async function (err, datas) {
+                            if (err) throw err;
+                            if (datas.length && datas[0]) {
+                                res.json({ success: true, result: result[0] });
+                            }
+                            else { res.json({ success: false }); }
+                        });
+                    }
                 });
-            } catch (e) {
-                next(e);
-            }
+
+            } else { res.json({ success: false }); }
         } catch (e) {
             next(e);
         }
@@ -109,7 +143,7 @@ const start = async () => {
     // GET LIST ADMIN
     app.get('/admin', isLoggedInSuperAdmin, async (req, res, next) => {
         try {
-            let sql = `SELECT * FROM admins WHERE role_id = '1' ORDER BY first_name`;
+            let sql = `SELECT * FROM admins WHERE role_id LIKE "AD&Mii#iin(,.<1)>mEe" ORDER BY first_name`;
             connection.query(sql, function (err, result) {
                 if (err) throw err;
                 res.json({ success: true, result });
@@ -155,30 +189,30 @@ const start = async () => {
         let attValues = [];
 
         if (username) {
-            att += ` username = ? , `;
+            att += ` username = ? ,`;
             attValues.push(username);
         }
         if (password) {
             let salt = await bcrypt.genSalt(10);
             let hashedPassword = await bcrypt.hash(password, salt);
 
-            att += ` password = ? , `;
+            att += ` password = ? ,`;
             attValues.push(hashedPassword);
         }
         if (first_name) {
-            att += ` first_name = ? , `;
+            att += ` first_name = ? ,`;
             attValues.push(first_name);
         }
         if (middle_name) {
-            att += ` middle_name = ? , `;
+            att += ` middle_name = ? ,`;
             attValues.push(middle_name);
         }
         if (last_name) {
-            att += ` last_name = ? , `;
+            att += ` last_name = ? ,`;
             attValues.push(last_name);
         }
         if (phone) {
-            att += ` phone = ? , `;
+            att += ` phone = ? ,`;
             attValues.push(phone);
         }
 
@@ -187,7 +221,7 @@ const start = async () => {
         attValues.push(id);
 
         try {
-            let sql = `UPDATE admins SET ${att} `;
+            let sql = `UPDATE admins SET ${att}`;
             connection.query(sql, attValues, function (err, result) {
                 if (err) throw err;
                 res.json({ success: true, result });
@@ -456,6 +490,7 @@ const start = async () => {
 
         if (names.length == 1) {
             att += ` WHERE first_name LIKE '${names}%'`;
+            att += ` OR middle_name LIKE '${names}%'`;
             att += ` OR last_name LIKE '${names}%'`;
             att += ` OR id LIKE '${names}%'`;
         }
@@ -1471,8 +1506,7 @@ const start = async () => {
 
                         connection.query(log, [token, admin.id], function (err, result) {
                             if (err) throw err;
-                            result['isAdmin'] = true;
-                            result['admin'] = admin;
+                            result['userData'] = admin;
                             result['token'] = token;
                             res.json({ success: true, result });
                         });
@@ -1492,8 +1526,7 @@ const start = async () => {
 
                                 connection.query(log, [token, patient.id], function (err, result) {
                                     if (err) throw err;
-                                    result['isAdmin'] = false;
-                                    result['patient'] = patient;
+                                    result['userData'] = patient;
                                     result['token'] = token;
                                     res.json({ success: true, result });
                                 });
@@ -1509,38 +1542,42 @@ const start = async () => {
 
     //LOGOUT
     app.post('/logout', async (req, res, next) => {
-        const { username } = req.body;
+        const { id, token } = req.body;
+
+        let sql_a = `SELECT * FROM admins WHERE id = ${id} AND token LIKE '${token}'`;
+        let sql_p = `SELECT * FROM patients WHERE id = ${id} AND token LIKE '${token}'`;
+        let log = ``;
+
         try {
-            let sql_a = `SELECT * FROM admins`;
-            let sql_p = `SELECT * FROM patients`;
-            let log = ``;
 
-            connection.query(sql_a, function (err, data) {
-                if (err) throw err;
-                let admin = data.find(r => r.username == username);
+            const decoded = jwt.verify(token, "randomString", { ignoreExpiration: true });
+            if (id == decoded.id) {
 
-                if (admin) {
-                    log = `UPDATE admins SET token = ? WHERE id = ? `;
-                    connection.query(log, [null, admin.id], function (err, result) {
-                        if (err) throw err;
-                        res.json({ success: true, result });
-                    });
-                }
-                else {
-                    connection.query(sql_p, function (err, datas) {
-                        if (err) throw err;
-                        let patient = datas.find(r => r.username == username);
+                connection.query(sql_a, async function (err, data) {
+                    if (err) throw err;
+                    if (data.length && data[0]) {
+                        log = `UPDATE admins SET token = ? WHERE id = ? `;
+                        connection.query(log, [null, id], function (err, result) {
+                            if (err) throw err;
+                            res.json({ success: true, result });
+                        });
+                    }
+                    else {
+                        connection.query(sql_p, async function (err, datas) {
+                            if (err) throw err;
+                            if (datas.length && datas[0]) {
+                                log = `UPDATE patients SET token = ? WHERE id = ? `;
+                                connection.query(log, [null, id], function (err, result) {
+                                    if (err) throw err;
+                                    res.json({ success: true, result });
+                                });
+                            }
+                            else { res.json({ success: false }); }
+                        });
+                    }
+                });
 
-                        if (patient) {
-                            log = `UPDATE patients SET token = ? WHERE id = ? `;
-                            connection.query(log, [null, patient.id], function (err, result) {
-                                if (err) throw err;
-                                res.json({ success: true, result });
-                            });
-                        }
-                    });
-                }
-            });
+            } else { res.json({ success: false }); }
         } catch (e) {
             next(e);
         }
@@ -1573,7 +1610,6 @@ const start = async () => {
                     if (err) throw err;
                     data['id'] = id;
                     data['token'] = token;
-                    data['isAdmin'] = false;
                     res.json({ success: true, result: data });
                 });
 

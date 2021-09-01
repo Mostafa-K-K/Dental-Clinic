@@ -102,7 +102,7 @@ export default function Update_Profile() {
     const classes = useStyles();
     const history = useHistory();
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const [state, updateState] = useState({
         phone: "",
@@ -146,8 +146,7 @@ export default function Update_Profile() {
                         await API.put(`patient/${id}`, reqBody, {
                             headers: {
                                 id: id,
-                                token: token,
-                                isAdmin: isAdmin
+                                token: token
                             }
                         })
                             .then(toast.success("Profile Update Successfuly"))
@@ -166,8 +165,7 @@ export default function Update_Profile() {
                 await API.get(`patient/${id}`, {
                     headers: {
                         id: id,
-                        token: token,
-                        isAdmin: isAdmin
+                        token: token
                     }
                 })
                     .then(res => {

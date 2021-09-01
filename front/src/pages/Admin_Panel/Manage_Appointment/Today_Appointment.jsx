@@ -77,7 +77,7 @@ export default function Today_Appointment() {
     const classes = useStyles();
     const history = useHistory();
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const date = moment().format("YYYY-MM-DD");
 
@@ -89,8 +89,7 @@ export default function Today_Appointment() {
             if (del) await API.put(`appointment/${id_app}`, { status: "Absent" }, {
                 headers: {
                     id: id,
-                    token: token,
-                    isAdmin: isAdmin
+                    token: token
                 }
             });
             await fetchData();
@@ -113,8 +112,7 @@ export default function Today_Appointment() {
             await API.get('ACP', {
                 headers: {
                     id: id,
-                    token: token,
-                    isAdmin: isAdmin
+                    token: token
                 }
             })
                 .then(res => {

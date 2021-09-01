@@ -7,7 +7,7 @@ import { Autocomplete } from '@material-ui/lab'
 
 export default function Clinics(props) {
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const [clinics, setClinics] = useState([]);
 
@@ -15,8 +15,7 @@ export default function Clinics(props) {
         await API.get(`clinic`, {
             headers: {
                 id: id,
-                token: token,
-                isAdmin: isAdmin
+                token: token
             }
         })
             .then(res => {
@@ -37,6 +36,7 @@ export default function Clinics(props) {
             onChange={props.onChange}
             renderInput={(params) =>
                 <TextField
+                    required
                     {...params}
                     variant="outlined"
                     label="Clinic"

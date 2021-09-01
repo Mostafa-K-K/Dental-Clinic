@@ -198,15 +198,13 @@ export default function Register() {
 
                                         let user = {
                                             id: answer.id,
-                                            username: state.username,
                                             token: answer.token,
-                                            isAdmin: answer.isAdmin
+                                            role_id: answer.role_id
                                         }
 
                                         setCookie('id', answer.id, 30);
-                                        setCookie('username', state.username, 30);
                                         setCookie('token', answer.token, 30);
-                                        setCookie('isAdmin', answer.isAdmin, 30);
+                                        setCookie('role_id', answer.role_id, 30);
                                         setSession({ user });
                                     })
                                     .then(toast.success("Welcome!"));

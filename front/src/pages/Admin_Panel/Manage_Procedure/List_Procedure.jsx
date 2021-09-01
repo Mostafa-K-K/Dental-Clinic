@@ -106,7 +106,7 @@ export default function List_Procedure() {
     const classes = useStyles();
     const history = useHistory();
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const [procedures, setProcedures] = useState([]);
     const [works, setWorks] = useState([]);
@@ -116,8 +116,7 @@ export default function List_Procedure() {
             await API.get('PDP', {
                 headers: {
                     id: id,
-                    token: token,
-                    isAdmin: isAdmin
+                    token: token
                 }
             })
                 .then(res => {
@@ -130,8 +129,7 @@ export default function List_Procedure() {
             await API.get('PTCDP', {
                 headers: {
                     id: id,
-                    token: token,
-                    isAdmin: isAdmin
+                    token: token
                 }
             })
                 .then(res => {
@@ -161,7 +159,7 @@ export default function List_Procedure() {
             <Container className={classes.container}>
 
                 <Link
-                    onClick={() => history.push({ pathname: '/procedure/create' })}
+                    to='/procedure/create'
                     className={classes.ddBoxIconBtnLink}
                 >
 

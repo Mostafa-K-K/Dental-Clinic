@@ -115,7 +115,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Create_Doctor() {
 
     const classes = useStyles();
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const history = useHistory();
 
@@ -153,8 +153,7 @@ export default function Create_Doctor() {
                         await API.post(`doctor`, reqBody, {
                             headers: {
                                 id: id,
-                                token: token,
-                                isAdmin: isAdmin
+                                token: token
                             }
                         })
                             .then(toast.success("Added Doctor Successfuly"))

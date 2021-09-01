@@ -78,7 +78,7 @@ export default function Create_Type() {
 
     const classes = useStyles();
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const history = useHistory();
 
@@ -106,8 +106,7 @@ export default function Create_Type() {
             await API.get(`type`, {
                 headers: {
                     id: id,
-                    token: token,
-                    isAdmin: isAdmin
+                    token: token
                 }
             })
                 .then(async res => {
@@ -120,8 +119,7 @@ export default function Create_Type() {
                         await API.post(`type`, reqBody, {
                             headers: {
                                 id: id,
-                                token: token,
-                                isAdmin: isAdmin
+                                token: token
                             }
                         })
                             .then(toast.success("Added Acl Successfuly"))

@@ -7,7 +7,7 @@ import { Autocomplete } from '@material-ui/lab'
 
 export default function Teeth(props) {
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const [teeth, setTeeth] = useState([]);
 
@@ -20,14 +20,12 @@ export default function Teeth(props) {
                 await API.post(`tooth`, reqBody, {
                     headers: {
                         id: id,
-                        token: token,
-                        isAdmin: isAdmin
+                        token: token
                     }
                 })
                     .then(res => {
                         const result = res.data.result;
                         setTeeth(result);
-                        console.log({result});
                     });
             } else {
                 setTeeth([]);
@@ -39,9 +37,8 @@ export default function Teeth(props) {
     return (
         <Autocomplete
             options={teeth}
-            getOptionLabel={(option) =>  option.id}
-            // defaultvalue={teeth.find(t => t.id == props.value)}
-            // defaultValue={props.value}
+            getOptionLabel={(option) => (option.id)?((option.id == 1 || option.id == 2) ? "All Teeth" : (option.id).toString()):null}
+            defaultValue={props.value}
             variant="outlined"
             onChange={props.onChange}
             renderInput={(params) =>

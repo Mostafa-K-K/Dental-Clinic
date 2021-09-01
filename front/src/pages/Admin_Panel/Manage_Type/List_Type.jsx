@@ -72,7 +72,7 @@ export default function List_Type() {
     const classes = useStyles();
     const history = useHistory();
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const [types, setTypes] = useState([]);
 
@@ -81,8 +81,7 @@ export default function List_Type() {
             await API.get('type', {
                 headers: {
                     id: id,
-                    token: token,
-                    isAdmin: isAdmin
+                    token: token
                 }
             })
                 .then(res => {

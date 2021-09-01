@@ -1,30 +1,4 @@
-import { Route, Redirect } from 'react-router-dom';
-
-/**
- * Cast variable to Boolean
- * @param {String|Boolean} bool 
- * @returns Boolean
- */
-export function castBool(bool) {
-    if (bool === 'true' || bool === true) return true;
-    return false;
-}
-
-
-/**
- * 
- * @param {Obj|Component | Props} Route 
- * @returns Route 
- */ 
-export function PublicRoute({ user, component, ...props }) {
-    let Comp = component;
-    return (
-        <Route {...props} render={props => user.token ?
-            <Redirect {...props} to={(user.isAdmin) ? "/admin/panel" : "/patient/panel"} /> :
-            <Comp {...props} />
-        } />
-    )
-}
+import { Route, Redirect } from 'react-router-dom'
 
 
 /**
@@ -35,7 +9,7 @@ export function PublicRoute({ user, component, ...props }) {
 export function PrivateRouteSuperAdmin({ user, component, ...props }) {
     let Comp = component;
     return (
-        <Route {...props} render={props => user.token && user.isAdmin && parseInt(user.role_id) === 0 ?
+        <Route {...props} render={props => user.token && user.role_id === "_SuPE8/@DmIn&^%(0)__" ?
             <Comp {...props} /> :
             <Redirect {...props} to="/" />
         } />
@@ -51,12 +25,13 @@ export function PrivateRouteSuperAdmin({ user, component, ...props }) {
 export function PrivateRouteAdmin({ user, component, ...props }) {
     let Comp = component;
     return (
-        <Route {...props} render={props => user.token && user.isAdmin ?
+        <Route {...props} render={props => user.token && (user.role_id === "_SuPE8/@DmIn&^%(0)__" || user.role_id === "AD&Mii#iin(,.<1)>mEe") ?
             <Comp {...props} /> :
             <Redirect {...props} to="/" />
         } />
     )
 }
+
 
 /**
  * 
@@ -66,9 +41,25 @@ export function PrivateRouteAdmin({ user, component, ...props }) {
 export function PrivateRoutePatient({ user, component, ...props }) {
     let Comp = component;
     return (
-        <Route {...props} render={props => user.token && !user.isAdmin ?
+        <Route {...props} render={props => user.token && user.role_id === "paTI__enT?/@cc!untQq" ?
             <Comp {...props} /> :
             <Redirect {...props} to="/" />
+        } />
+    )
+}
+
+
+/**
+ * 
+ * @param {Obj|Component | Props} Route 
+ * @returns Route 
+ */
+export function PublicRoute({ user, component, ...props }) {
+    let Comp = component;
+    return (
+        <Route {...props} render={props => user.token ?
+            <Redirect {...props} to={(user.role_id === "_SuPE8/@DmIn&^%(0)__" || user.role_id === "AD&Mii#iin(,.<1)>mEe") ? "/admin/panel" : ((user.role_id === "paTI__enT?/@cc!untQq") ? "/patient/panel" : "/")} /> :
+            <Comp {...props} />
         } />
     )
 }

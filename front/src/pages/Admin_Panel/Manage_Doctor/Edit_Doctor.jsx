@@ -116,7 +116,7 @@ export default function Edit_Doctor() {
 
     const classes = useStyles();
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const { id: id_doc } = useParams();
     const history = useHistory();
@@ -148,8 +148,7 @@ export default function Edit_Doctor() {
             await API.get(`doctor`, {
                 headers: {
                     id: id,
-                    token: token,
-                    isAdmin: isAdmin
+                    token: token
                 }
             })
                 .then(async res => {
@@ -163,8 +162,7 @@ export default function Edit_Doctor() {
                             await API.put(`doctor/${id_doc}`, reqBody, {
                                 headers: {
                                     id: id,
-                                    token: token,
-                                    isAdmin: isAdmin
+                                    token: token
                                 }
                             })
                                 .then(toast.success("Update Doctor Successfuly"))
@@ -183,8 +181,7 @@ export default function Edit_Doctor() {
                 await API.get(`doctor/${id_doc}`, {
                     headers: {
                         id: id,
-                        token: token,
-                        isAdmin: isAdmin
+                        token: token
                     }
                 })
                     .then(res => {

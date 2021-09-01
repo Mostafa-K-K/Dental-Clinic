@@ -75,7 +75,7 @@ export default function Number_Patient() {
     const classes = useStyles();
     const history = useHistory();
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const [number, setNumber] = useState("");
 
@@ -85,8 +85,7 @@ export default function Number_Patient() {
             await API.post(`intialpatient`, { number: number }, {
                 headers: {
                     id: id,
-                    token: token,
-                    isAdmin: isAdmin
+                    token: token
                 }
             })
                 .then(toast.success("Initial Patients Successfuly"))

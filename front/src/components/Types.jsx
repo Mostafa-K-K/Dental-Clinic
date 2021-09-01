@@ -7,7 +7,7 @@ import { Autocomplete } from '@material-ui/lab'
 
 export default function Types(props) {
 
-    let { session: { user: { id, token, isAdmin } } } = useContext(SessionContext);
+    let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const [types, setTypes] = useState([]);
 
@@ -16,8 +16,7 @@ export default function Types(props) {
             await API.get(`type`, {
                 headers: {
                     id: id,
-                    token: token,
-                    isAdmin: isAdmin
+                    token: token
                 }
             })
                 .then(res => {
@@ -34,6 +33,7 @@ export default function Types(props) {
             variant="outlined"
             options={types}
             getOptionLabel={(option) => option.description}
+            defaultValue={props.value}
             onChange={props.onChange}
             renderInput={(params) =>
                 <TextField
@@ -42,7 +42,7 @@ export default function Types(props) {
                     label="Acts"
                     className={props.className}
                 />
-            } 
+            }
         />
     )
 }
