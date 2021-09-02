@@ -32,13 +32,14 @@ export default function Teeth(props) {
             }
         }
         fetchData();
-    }, [props.category])
+    }, [JSON.stringify(props.category, props.value)])
 
     return (
         <Autocomplete
+            id="teethValue"
             options={teeth}
-            getOptionLabel={(option) => (option.id)?((option.id == 1 || option.id == 2) ? "All Teeth" : (option.id).toString()):null}
-            defaultValue={props.value}
+            getOptionLabel={(option) => (option.id) ? ((option.id == 1 || option.id == 2) ? "All Teeth" : (option.id).toString()) : null}
+            value={props.value != "" ? teeth.find(t => t.id == props.value) : null}
             variant="outlined"
             onChange={props.onChange}
             renderInput={(params) =>

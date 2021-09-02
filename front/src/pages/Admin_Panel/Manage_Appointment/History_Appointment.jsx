@@ -266,10 +266,8 @@ export default function Today_Appointment() {
 
                     <Link
                         onClick={() => {
-                            setState({
-                                date: null,
-                                status: ""
-                            })
+                            setState({ date: null});
+                            setState({status: ""});
                         }}
                     >
                         <RefreshIcon className={classes.resetSearch} />

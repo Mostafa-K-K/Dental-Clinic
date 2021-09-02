@@ -141,14 +141,12 @@ export default function Change_Username_Admin() {
                                     token: token
                                 }
                             })
-                                .then(
-                                    setState({
-                                        username: "",
-                                        lastUsername: "",
-                                        conPass: "",
-                                        password: ""
-                                    })
-                                )
+                                .then(() => {
+                                    setState({ username: "" });
+                                    setState({ lastUsername: "" });
+                                    setState({ conPass: "" });
+                                    setState({ password: "" });
+                                })
                                 .then(toast.success("Update Username Successfuly"))
                                 .then(history.push({ pathname: '/admin/profile' }));
                         }
@@ -175,13 +173,12 @@ export default function Change_Username_Admin() {
                     .then(res => {
                         const result = res.data.result;
                         const success = res.data.success;
-                        if (success)
-                            setState({
-                                id: result.id,
-                                username: result.username,
-                                lastUsername: result.username,
-                                password: result.password
-                            });
+                        if (success) {
+                            setState({ id: result.id });
+                            setState({ username: result.username });
+                            setState({ lastUsername: result.username });
+                            setState({ password: result.password });
+                        }
                     });
             } catch (e) {
                 console.log("ERROR", e);
@@ -193,7 +190,7 @@ export default function Change_Username_Admin() {
     return (
         <Container component="main" maxWidth="xs" className={classes.container}>
 
-                        <Typography variant="h3" align="center" className="titlePage">
+            <Typography variant="h3" align="center" className="titlePage">
             </Typography>
 
             <CssBaseline />

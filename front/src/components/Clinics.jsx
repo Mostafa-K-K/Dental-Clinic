@@ -11,22 +11,24 @@ export default function Clinics(props) {
 
     const [clinics, setClinics] = useState([]);
 
-    const fetchdata = async () => {
-        await API.get(`clinic`, {
-            headers: {
-                id: id,
-                token: token
-            }
-        })
-            .then(res => {
-                const result = res.data.result;
-                setClinics(result);
-            });
-    }
-
     useEffect(() => {
-        fetchdata();
-    }, []);
+
+        async function fetchData() {
+            await API.get(`clinic`, {
+                headers: {
+                    id: id,
+                    token: token
+                }
+            })
+                .then(res => {
+                    const result = res.data.result;
+                    setClinics(result);
+                });
+
+        }
+
+        fetchData();
+    }, [props.value]);
 
     return (
         <Autocomplete
@@ -34,6 +36,7 @@ export default function Clinics(props) {
             options={clinics}
             getOptionLabel={(option) => option.name}
             onChange={props.onChange}
+            value={props.value != "" ? clinics.find(c => c.id == props.value) : null}
             renderInput={(params) =>
                 <TextField
                     required

@@ -143,14 +143,13 @@ export default function Change_Information_Admin() {
                     .then(res => {
                         const data = res.data.result;
                         const success = res.data.success;
-                        if (success)
-                            setState({
-                                first_name: data.first_name,
-                                middle_name: data.middle_name,
-                                last_name: data.last_name,
-                                phone: data.phone,
-                                lastPhone: data.phone
-                            });
+                        if (success) {
+                            setState({ first_name: data.first_name });
+                            setState({ middle_name: data.middle_name });
+                            setState({ last_name: data.last_name });
+                            setState({ phone: data.phone });
+                            setState({ lastPhone: data.phone });
+                        }
                     });
             } catch (e) {
                 console.log("ERROR", e);

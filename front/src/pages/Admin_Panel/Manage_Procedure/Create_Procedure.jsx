@@ -153,7 +153,7 @@ export default function Create_Procedure() {
         works: [],
         total: 0,
 
-        category: "",
+        category: "Adult",
         id_teeth: "",
         types: "",
         price: ""
@@ -202,11 +202,9 @@ export default function Create_Procedure() {
 
                 setState({ works: work });
 
-                setState({
-                    category: "Adult",
-                    id_teeth: "",
-                    types: ""
-                });
+                setState({ category: "Adult" });
+                setState({ id_teeth: "" });
+                setState({ types: "" });
 
                 let total = 0;
                 work.map(w => { if (w.price != "") total += parseInt(w.price) });
@@ -299,9 +297,9 @@ export default function Create_Procedure() {
                             <KeyboardDateTimePicker
                                 value={state.date}
                                 inputVariant="outlined"
-                                onChange={(date) => setState({ date: moment(date).format("YYYY/MM/DD hh:mm a") })}
+                                onChange={(date) => setState({ date: moment(date).format("YYYY/MM/DD HH:mm") })}
                                 label="Date Time"
-                                format="YYYY/MM/DD hh:mm a"
+                                format="YYYY/MM/DD hh:mm A"
                                 className={classes.root2}
                             />
                         </MuiPickersUtilsProvider>
@@ -340,6 +338,7 @@ export default function Create_Procedure() {
                             options={["Adult", "Child"]}
                             getOptionLabel={(option) => option}
                             onChange={(event, newValue) => setState({ category: newValue })}
+                            value={state.category != "" ? state.category : null}
                             renderInput={(params) =>
                                 <TextField
                                     {...params}
@@ -358,7 +357,7 @@ export default function Create_Procedure() {
                         />
 
                         <Types
-                            value={state.id_doctor}
+                            value={state.types}
                             onChange={(event, newValue) => setState({ types: newValue ? newValue : "" })}
                             className={classes.root}
                         />

@@ -140,16 +140,14 @@ export default function Edit_Appointment() {
     async function handleSubmit(e) {
         e.preventDefault();
         try {
-            let arr = state.id_patient.split('-');
-            let id_p = arr[1];
 
             let reqBody = {
                 description: state.description,
                 date: state.date,
-                start_at: moment(state.start_at, "HH:mm").format('hh:mm:ss'),
-                end_at: moment(state.end_at, "HH:mm").format('hh:mm:ss'),
+                start_at: moment(state.start_at, "HH:mm").format('HH:mm'),
+                end_at: moment(state.end_at, "HH:mm").format('HH:mm'),
                 status: state.status,
-                id_patient: id_p,
+                id_patient: state.id_patient,
                 id_clinic: state.id_clinic,
             };
 
@@ -163,36 +161,85 @@ export default function Edit_Appointment() {
                     const data = res.data.result;
                     const success = res.data.success;
                     if (success) {
+                        const result = data.filter(d => d.id != id_app);
 
-                        let isApp = data.find(d => (
+                        let isApp = result.find(d => (
                             (
                                 (
-                                    (moment(state.start_at) > moment(d.start_at))
-                                    &&
-                                    (moment(state.start_at) < moment(d.end_at))
+                                    (
+                                        (
+                                            moment(state.start_at, "HH:mm").format("HH:mm")
+                                            >
+                                            moment(d.start_at, "HH:mm").format("HH:mm")
+                                        )
+                                        &&
+                                        (
+                                            moment(state.start_at, "HH:mm").format("HH:mm")
+                                            <
+                                            moment(d.end_at, "HH:mm").format("HH:mm")
+                                        )
+                                    )
+                                    ||
+                                    (
+                                        (
+                                            moment(state.end_at, "HH:mm").format("HH:mm")
+                                            >
+                                            moment(d.start_at, "HH:mm").format("HH:mm")
+                                        )
+                                        &&
+                                        (
+                                            moment(state.end_at, "HH:mm").format("HH:mm")
+                                            <
+                                            moment(d.end_at, "HH:mm").format("HH:mm")
+                                        )
+                                    )
+                                    ||
+                                    (
+                                        (
+                                            moment(state.start_at, "HH:mm").format("HH:mm")
+                                            <
+                                            moment(d.start_at, "HH:mm").format("HH:mm")
+                                        )
+                                        &&
+                                        (
+                                            moment(state.end_at, "HH:mm").format("HH:mm")
+                                            >
+                                            moment(d.end_at, "HH:mm").format("HH:mm")
+                                        )
+                                    )
+                                    ||
+                                    (
+                                        moment(state.start_at, "HH:mm").format("HH:mm")
+                                        ==
+                                        moment(d.start_at, "HH:mm").format("HH:mm")
+                                    )
+                                    ||
+                                    (
+                                        moment(state.end_at, "HH:mm").format("HH:mm")
+                                        ==
+                                        moment(d.end_at, "HH:mm").format("HH:mm")
+                                    )
                                 )
-                                ||
+                                &&
                                 (
-                                    (moment(state.end_at) > moment(d.start_at))
+                                    moment(d.date).format("YYYY-MM-DD") == moment(state.date).format("YYYY-MM-DD")
                                     &&
-                                    (moment(state.end_at) < moment(d.end_at))
+                                    (d.id_clinic == state.id_clinic)
                                 )
                             )
-                            &&
+                            ||
                             (
-                                moment(d.date).format("YYYY-MM-DD") === moment(state.date).format("YYYY-MM-DD")
-                                &&
-                                (String(d.id_clinic) === String(state.id_clinic))
+                                moment(state.start_at, "HH:mm").format("HH:mm")
+                                >
+                                moment(state.end_at, "HH:mm").format("HH:mm")
                             )
                         ));
 
+
                         if (isApp)
                             toast.warning("Time not available");
-                        if (state.id_patient === "" || !state.id_patient)
-                            toast.warning("Select a patient");
 
-
-                        if (!isApp && state.id_patient !== "") {
+                        if (!isApp) {
                             API.put(`appointment/${id_app}`, reqBody, {
                                 headers: {
                                     id: id,
@@ -221,16 +268,14 @@ export default function Edit_Appointment() {
                         const data = res.data.result;
                         const success = res.data.success;
                         if (success) {
-                            const result = data.find(d => String(d.id) === String(id_app))
-                            setState({
-                                description: result.description,
-                                date: moment(result.date).format("YYYY-MM-DD"),
-                                start_at: "2000-01-01T" + (moment(result.start_at)._i).toString(),
-                                end_at: "2000-01-01T" + (moment(result.end_at)._i).toString(),
-                                status: result.status,
-                                id_patient: result.id_patient,
-                                id_clinic: result.id_clinic,
-                            });
+                            const result = data.find(d => String(d.id) === String(id_app));
+                            setState({ description: result.description });
+                            setState({ date: moment(result.date).format("YYYY-MM-DD") });
+                            setState({ start_at: "2000-01-01T" + result.start_at.toString() });
+                            setState({ end_at: "2000-01-01T" + result.end_at.toString() });
+                            setState({ status: result.status });
+                            setState({ id_patient: result.id_patient });
+                            setState({ id_clinic: result.id_clinic });
                         }
                     });
             } catch (e) {
@@ -258,6 +303,7 @@ export default function Edit_Appointment() {
                             setState({ id_patient: newValue ? newValue.id : "" });
                         }}
                         className={classes.root}
+                        value={state.id_patient}
                     />
 
                     <Clinics
@@ -265,6 +311,7 @@ export default function Edit_Appointment() {
                             setState({ id_clinic: newValue ? newValue.id : "" });
                         }}
                         className={classes.root}
+                        value={state.id_clinic}
                     />
 
                     <MuiPickersUtilsProvider utils={MomentUtils} >

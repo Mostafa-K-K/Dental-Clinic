@@ -171,29 +171,79 @@ export default function Add_Appointment() {
                         let isApp = data.find(d => (
                             (
                                 (
-                                    (moment(state.start_at) > moment(d.start_at))
-                                    &&
-                                    (moment(state.start_at) < moment(d.end_at))
+                                    (
+                                        (
+                                            moment(state.start_at, "HH:mm").format("HH:mm")
+                                            >
+                                            moment(d.start_at, "HH:mm").format("HH:mm")
+                                        )
+                                        &&
+                                        (
+                                            moment(state.start_at, "HH:mm").format("HH:mm")
+                                            <
+                                            moment(d.end_at, "HH:mm").format("HH:mm")
+                                        )
+                                    )
+                                    ||
+                                    (
+                                        (
+                                            moment(state.end_at, "HH:mm").format("HH:mm")
+                                            >
+                                            moment(d.start_at, "HH:mm").format("HH:mm")
+                                        )
+                                        &&
+                                        (
+                                            moment(state.end_at, "HH:mm").format("HH:mm")
+                                            <
+                                            moment(d.end_at, "HH:mm").format("HH:mm")
+                                        )
+                                    )
+                                    ||
+                                    (
+                                        (
+                                            moment(state.start_at, "HH:mm").format("HH:mm")
+                                            <
+                                            moment(d.start_at, "HH:mm").format("HH:mm")
+                                        )
+                                        &&
+                                        (
+                                            moment(state.end_at, "HH:mm").format("HH:mm")
+                                            >
+                                            moment(d.end_at, "HH:mm").format("HH:mm")
+                                        )
+                                    )
+                                    ||
+                                    (
+                                        moment(state.start_at, "HH:mm").format("HH:mm")
+                                        ==
+                                        moment(d.start_at, "HH:mm").format("HH:mm")
+                                    )
+                                    ||
+                                    (
+                                        moment(state.end_at, "HH:mm").format("HH:mm")
+                                        ==
+                                        moment(d.end_at, "HH:mm").format("HH:mm")
+                                    )
                                 )
-                                ||
+                                &&
                                 (
-                                    (moment(state.end_at) > moment(d.start_at))
+                                    moment(d.date).format("YYYY-MM-DD") == moment(state.date).format("YYYY-MM-DD")
                                     &&
-                                    (moment(state.end_at) < moment(d.end_at))
+                                    (d.id_clinic == state.id_clinic)
                                 )
                             )
-                            &&
+                            ||
                             (
-                                moment(d.date).format("YYYY-MM-DD") === moment(state.date).format("YYYY-MM-DD")
-                                &&
-                                (String(d.id_clinic) === String(state.id_clinic))
+                                moment(state.start_at, "HH:mm").format("HH:mm")
+                                >
+                                moment(state.end_at, "HH:mm").format("HH:mm")
                             )
                         ));
 
                         if (isApp)
                             toast.warning("Time not available");
 
-                        if (!isApp && state.id_patient !== "") {
+                        if (!isApp) {
                             API.post('appointment', reqBody, {
                                 headers: {
                                     id: id,

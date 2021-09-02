@@ -203,11 +203,9 @@ export default function Add_Procedure() {
 
                 setState({ works: work });
 
-                setState({
-                    category: "Adult",
-                    id_teeth: "",
-                    types: ""
-                });
+                setState({ category: "Adult" });
+                setState({ id_teeth: "" });
+                setState({ types: "" });
 
                 let total = 0;
                 work.map(w => { if (w.price != "") total += parseInt(w.price) });
@@ -326,9 +324,9 @@ export default function Add_Procedure() {
                             <KeyboardDateTimePicker
                                 value={state.date}
                                 inputVariant="outlined"
-                                onChange={(date) => setState({ date: moment(date).format("YYYY/MM/DD hh:mm a") })}
+                                onChange={(date) => setState({ date: moment(date).format("YYYY/MM/DD HH:mm") })}
                                 label="Date Time"
-                                format="YYYY/MM/DD hh:mm a"
+                                format="YYYY/MM/DD hh:mm A"
                                 className={classes.root2}
                             />
                         </MuiPickersUtilsProvider>
@@ -362,11 +360,12 @@ export default function Add_Procedure() {
 
                     <Paper className={classes.paperFilter}>
 
-                        <Autocomplete
+                    <Autocomplete
                             variant="outlined"
                             options={["Adult", "Child"]}
                             getOptionLabel={(option) => option}
                             onChange={(event, newValue) => setState({ category: newValue })}
+                            value={state.category != "" ? state.category : null}
                             renderInput={(params) =>
                                 <TextField
                                     {...params}
@@ -385,7 +384,7 @@ export default function Add_Procedure() {
                         />
 
                         <Types
-                            value={state.id_doctor}
+                            value={state.types}
                             onChange={(event, newValue) => setState({ types: newValue ? newValue : "" })}
                             className={classes.root}
                         />

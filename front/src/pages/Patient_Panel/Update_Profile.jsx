@@ -171,14 +171,13 @@ export default function Update_Profile() {
                     .then(res => {
                         const data = res.data.result;
                         const success = res.data.success;
-                        if (success)
-                            setState({
-                                phone: data.phone,
-                                marital: data.marital,
-                                health: data.health,
-                                address: data.address,
-                                lastPhone: data.phone
-                            });
+                        if (success) {
+                            setState({ phone: data.phone });
+                            setState({ marital: data.marital });
+                            setState({ health: data.health });
+                            setState({ address: data.address });
+                            setState({ lastPhone: data.phone });
+                        }
                     });
             } catch (e) {
                 console.log("ERROR", e);

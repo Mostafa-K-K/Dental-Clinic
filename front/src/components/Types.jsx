@@ -26,14 +26,14 @@ export default function Types(props) {
         }
 
         fetchData();
-    }, [])
+    }, [props.value])
 
     return (
         <Autocomplete
             variant="outlined"
             options={types}
             getOptionLabel={(option) => option.description}
-            defaultValue={props.value}
+            value={props.value != "" ? types.find(t => t.id == props.value) : null}
             onChange={props.onChange}
             renderInput={(params) =>
                 <TextField

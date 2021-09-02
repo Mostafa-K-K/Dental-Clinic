@@ -204,11 +204,9 @@ export default function Edit_Procedure() {
 
                 setState({ works: work });
 
-                setState({
-                    category: "Adult",
-                    id_teeth: "",
-                    types: ""
-                });
+                setState({ category: "Adult" });
+                setState({ id_teeth: "" });
+                setState({ types: "" });
 
                 let total = 0;
                 work.map(w => { if (w.price != "") total += parseInt(w.price) });
@@ -234,53 +232,50 @@ export default function Edit_Procedure() {
     async function handleSubmit(e) {
         e.preventDefault();
 
-        console.log(state);
-        // try {
+        try {
 
-        //     let dd = moment(state.date).format("YYYY-MM-DD HH:mm");
+            let reqBody = {
+                payment: state.payment,
+                date: moment(state.date).format("YYYY-MM-DD HH:mm"),
+                id_patient: state.id_patient,
+                id_doctor: state.id_doctor,
+                balance: state.total
+            };
 
-        //     let reqBody = {
-        //         payment: state.payment,
-        //         date: dd,
-        //         id_patient: state.id_patient,
-        //         id_doctor: state.id_doctor,
-        //         balance: state.total
-        //     };
-
-        //     await API.put(`procedure/${id_pro}`, reqBody, {
-        //         headers: {
-        //             id: id,
-        //             token: token
-        //         } 
-        //     })
-        //         .then(
-        //             API.delete(`PTCALL/${id_pro}`, {
-        //                 headers: {
-        //                     id: id,
-        //                     token: token
-        //                 }
-        //             })
-        //         )
-        //         .then(
-        //             state.works.map(work => {
-        //                 let PTCReqBody = {
-        //                     id_procedure: id_pro,
-        //                     id_type: work.id_type,
-        //                     id_teeth: work.id_teeth,
-        //                     price: (work.price == "" || !work.price) ? 0 : work.price
-        //                 };
-        //                 API.post(`PTC`, PTCReqBody, {
-        //                     headers: {
-        //                         id: id,
-        //                         token: token
-        //                     }
-        //                 });
-        //             })
-        //         )
-        //         .then(history.push({ pathname: "/procedure/list" }));
-        // } catch (e) {
-        //     console.log("ERROR", e);
-        // }
+            await API.put(`procedure/${id_pro}`, reqBody, {
+                headers: {
+                    id: id,
+                    token: token
+                }
+            })
+                .then(
+                    API.delete(`PTCALL/${id_pro}`, {
+                        headers: {
+                            id: id,
+                            token: token
+                        }
+                    })
+                )
+                .then(
+                    state.works.map(work => {
+                        let PTCReqBody = {
+                            id_procedure: id_pro,
+                            id_type: work.id_type,
+                            id_teeth: work.id_teeth,
+                            price: (work.price == "" || !work.price) ? 0 : work.price
+                        };
+                        API.post(`PTC`, PTCReqBody, {
+                            headers: {
+                                id: id,
+                                token: token
+                            }
+                        });
+                    })
+                )
+                .then(history.push({ pathname: "/procedure/list" }));
+        } catch (e) {
+            console.log("ERROR", e);
+        }
 
     }
 
@@ -298,13 +293,11 @@ export default function Edit_Procedure() {
                         const result = res.data.result;
                         const success = res.data.success;
                         if (success) {
-                            setState({
-                                id_patient: result.id_patient,
-                                id_doctor: result.id_doctor,
-                                payment: result.payment,
-                                date: moment(result.date).format("YYYY-MM-DDTHH:mm"),
-                                total: result.balance
-                            });
+                            setState({ id_patient: result.id_patient });
+                            setState({ id_doctor: result.id_doctor });
+                            setState({ payment: result.payment });
+                            setState({ date: moment(result.date).format("YYYY-MM-DDTHH:mm") });
+                            setState({ total: result.balance });
                         }
                     });
 
@@ -344,20 +337,20 @@ export default function Edit_Procedure() {
                     <Paper className={classes.paperFilter}>
 
                         <Patients
-                            value={state.id_patient != "" ? state.id_patient : 1}
                             onChange={(event, newValue) => {
                                 setState({ id_patient: newValue ? newValue.id : "" });
                             }}
                             className={classes.root2}
+                            value={state.id_patient}
                         />
 
                         <MuiPickersUtilsProvider utils={MomentUtils} >
                             <KeyboardDateTimePicker
                                 value={state.date}
                                 inputVariant="outlined"
-                                onChange={(date) => setState({ date: moment(date).format("YYYY/MM/DD hh:mm a") })}
+                                onChange={(date) => setState({ date: moment(date).format("YYYY/MM/DD HH:mm") })}
                                 label="Date Time"
-                                format="YYYY/MM/DD hh:mm a"
+                                format="YYYY/MM/DD hh:mm A"
                                 className={classes.root2}
                             />
                         </MuiPickersUtilsProvider>
@@ -379,11 +372,11 @@ export default function Edit_Procedure() {
                         />
 
                         <Doctors
-                            value={state.id_doctor}
                             onChange={(event, newValue) => {
                                 setState({ id_doctor: newValue ? newValue.id : "" });
                             }}
                             className={classes.root2}
+                            value={state.id_doctor}
                         />
 
                     </Paper>
@@ -396,6 +389,7 @@ export default function Edit_Procedure() {
                             options={["Adult", "Child"]}
                             getOptionLabel={(option) => option}
                             onChange={(event, newValue) => setState({ category: newValue })}
+                            value={state.category != "" ? state.category : null}
                             renderInput={(params) =>
                                 <TextField
                                     {...params}
@@ -414,7 +408,7 @@ export default function Edit_Procedure() {
                         />
 
                         <Types
-                            value={state.id_doctor}
+                            value={state.types}
                             onChange={(event, newValue) => setState({ types: newValue ? newValue : "" })}
                             className={classes.root}
                         />

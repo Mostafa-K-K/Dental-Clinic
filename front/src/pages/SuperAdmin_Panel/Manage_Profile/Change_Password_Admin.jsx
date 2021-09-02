@@ -153,11 +153,10 @@ export default function Change_Password_Admin() {
                     .then(res => {
                         const result = res.data.result;
                         const success = res.data.success;
-                        if (success)
-                            setState({
-                                id: result.id,
-                                password: result.password
-                            });
+                        if (success) {
+                            setState({ id: result.id });
+                            setState({ password: result.password });
+                        }
                     });
             } catch (e) {
                 console.log("ERROR", e);

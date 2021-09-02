@@ -245,20 +245,18 @@ export default function Edit_Patient() {
                 })
                     .then(res => {
                         const data = res.data.result;
-                        setState({
-                            username: data.username,
-                            lastUsername: data.username,
-                            first_name: data.first_name,
-                            middle_name: data.middle_name,
-                            last_name: data.last_name,
-                            phone: data.phone,
-                            lastPhone: data.phone,
-                            birth: moment(data.birth).format("YYYY-MM-DD"),
-                            gender: data.gender,
-                            marital: data.marital,
-                            health: data.health,
-                            address: data.address
-                        });
+                        setState({ username: data.username });
+                        setState({ lastUsername: data.username });
+                        setState({ first_name: data.first_name });
+                        setState({ middle_name: data.middle_name });
+                        setState({ last_name: data.last_name });
+                        setState({ phone: data.phone });
+                        setState({ lastPhone: data.phone });
+                        setState({ birth: moment(data.birth).format("YYYY-MM-DD") });
+                        setState({ gender: data.gender });
+                        setState({ marital: data.marital });
+                        setState({ health: data.health });
+                        setState({ address: data.address });
                     });
             } catch (e) {
                 console.log("ERROR", e);

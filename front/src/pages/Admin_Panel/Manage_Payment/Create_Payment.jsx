@@ -106,7 +106,7 @@ export default function Create_Payment() {
     const [state, updateState] = useState({
         payment: "",
         date: date,
-        patient: ""
+        id_patient: ""
     });
 
     function setState(nextState) {
@@ -124,14 +124,11 @@ export default function Create_Payment() {
     async function handleSubmit(e) {
         e.preventDefault();
         try {
-            let p_id = state.patient.id;
-
-            let dd = moment(state.date).format("YYYY-MM-DD HH:mm");
 
             let reqBody = {
                 payment: state.payment,
-                date: dd,
-                id_patient: p_id
+                date: moment(state.date).format("YYYY-MM-DD HH:mm"),
+                id_patient: state.id_patient
             };
 
             console.log(reqBody);
@@ -167,9 +164,9 @@ export default function Create_Payment() {
 
                     <Grid item xs={12} >
                         <Patients
-                            value={state.patient}
+                            value={state.id_patient}
                             onChange={(event, newValue) => {
-                                setState({ patient: newValue });
+                                setState({ id_patient: newValue ? newValue.id : "" });
                             }}
                             className={classes.root}
                         />

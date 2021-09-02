@@ -9,31 +9,31 @@ export default function Doctors(props) {
 
   let { session: { user: { id, token } } } = useContext(SessionContext);
 
-  const [doctors, setdoctors] = useState([]);
-
-  const fetchdata = async () => {
-    await API.get(`doctor`, {
-      headers: {
-        id: id,
-        token: token
-      }
-    })
-      .then(res => {
-        const result = res.data.result;
-        setdoctors(result);
-      });
-  }
+  const [doctors, setDoctors] = useState([]);
 
   useEffect(() => {
-    fetchdata();
-  }, []);
+
+    async function fetchData() {
+      await API.get(`doctor`, {
+        headers: {
+          id: id,
+          token: token
+        }
+      })
+        .then(res => {
+          const result = res.data.result;
+          setDoctors(result);
+        });
+    }
+
+    fetchData();
+  }, [props.value]);
 
   return (
     <Autocomplete
       options={doctors}
       getOptionLabel={(option) => option.first_name + " " + option.middle_name + " " + option.last_name}
-      // defaultvalue={doctors.find(p => p.id == props.value)}
-      // defaultValue={props.value}
+      value={props.value != "" ? doctors.find(d => d.id == props.value) : null}
       variant="outlined"
       onChange={props.onChange}
       renderInput={(params) =>

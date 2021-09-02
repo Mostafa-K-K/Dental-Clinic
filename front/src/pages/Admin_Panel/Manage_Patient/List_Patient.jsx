@@ -240,10 +240,8 @@ export default function List_Patient() {
 
     async function handlePagination(pg) {
         if ((pg >= 1) && (pg <= state.pages)) {
-            setState({
-                page: pg,
-                rows: (pg - 1) * 10
-            });
+            setState({ page: pg, });
+            setState({ rows: (pg - 1) * 10 });
 
             let arr = [];
             if (pg > state.pagination[9]) {

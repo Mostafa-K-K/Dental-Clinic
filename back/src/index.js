@@ -1037,27 +1037,27 @@ const start = async () => {
         let attValues = [];
 
         if (date) {
-            att += ` date = ? , `;
+            att += ` date = ? ,`;
             attValues.push(date);
         }
         if (payment) {
-            att += ` payment = ? , `;
+            att += ` payment = ? ,`;
             attValues.push(payment);
         }
         if (id_patient) {
-            att += ` id_patient = ? , `;
+            att += ` id_patient = ? ,`;
             attValues.push(id_patient);
         }
         if (id_doctor) {
-            att += ` id_doctor = ? , `;
+            att += ` id_doctor = ? ,`;
             attValues.push(id_doctor);
         }
         if (id_clinic) {
-            att += ` id_clinic = ? , `;
+            att += ` id_clinic = ? ,`;
             attValues.push(id_clinic);
         }
         if (balance) {
-            att += ` balance = ? , `;
+            att += ` balance = ? ,`;
             attValues.push(balance);
         }
 

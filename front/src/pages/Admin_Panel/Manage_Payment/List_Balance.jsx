@@ -123,13 +123,12 @@ export default function List_Balance() {
                             const result = res.data.result;
                             const success = res.data.success;
                             if (success)
-                                if (result.max && result.min)
-                                    setState({
-                                        dateFrom: result.min.substring(0, 10),
-                                        dateTo: result.max.substring(0, 10),
-                                        min: result.min.substring(0, 10),
-                                        max: result.max.substring(0, 10)
-                                    });
+                                if (result.max && result.min) {
+                                    setState({ dateFrom: result.min.substring(0, 10) });
+                                    setState({ dateTo: result.max.substring(0, 10) });
+                                    setState({ min: result.min.substring(0, 10) });
+                                    setState({ max: result.max.substring(0, 10) });
+                                }
                             console.log({ result });
                         });
                     setState({ isFetch: false });
@@ -234,11 +233,9 @@ export default function List_Balance() {
 
                     <Link
                         onClick={() => {
-                            setState({
-                                dateFrom: state.min,
-                                dateTo: state.max,
-                                name: ""
-                            })
+                            setState({ dateFrom: state.min });
+                            setState({ dateTo: state.max });
+                            setState({ name: "" });
                         }}
                     >
                         <RefreshIcon className={classes.resetSearch} />

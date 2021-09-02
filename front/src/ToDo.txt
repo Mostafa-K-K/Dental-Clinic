@@ -1,24 +1,31 @@
-Upcoming Appointment 
+Upcoming Appointment
    ->  Search by Name
    ->  Search by Clinic
-
 
 History Appointment 
    ->  Search by Name
    ->  Search by Clinic
 
-
 History Appointment 
    ->  Search by Name
    ->  Search by Clinic
-
 
 Procedures 
    ->  Pagination
    ->  Filter by Name
    ->  Filter by Date
 
+calendar
 
+
+
+
+
+Done:
+
+Time
+Default select
+Security
 role_id :
    -> super admin :   "_SuPE8/@DmIn&^%(0)__"
    -> admin       :   "AD&Mii#iin(,.<1)>mEe"
