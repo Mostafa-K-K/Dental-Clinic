@@ -5,6 +5,9 @@ import { Link } from "react-router-dom"
 import moment from "moment"
 import SessionContext from "../../../components/session/SessionContext"
 
+import Patients from '../../../components/Patients'
+import Clinics from "../../../components/Clinics"
+
 import {
     TableContainer,
     Table,
@@ -60,7 +63,66 @@ const useStyles = makeStyles((theme) => ({
         },
         '& .PrivateNotchedOutline-root-28': {
             borderColor: "#8BE3D9 !important",
-        }
+        },
+        width: 250
+    },
+    root1: {
+        '& label.Mui-focused': {
+            color: theme.palette.primary.main,
+        },
+        '& .MuiInput-underline:after': {
+            borderBottomColor: theme.palette.primary.main,
+        },
+        '& .MuiOutlinedInput-root': {
+            '& fieldset': {
+                borderColor: theme.palette.primary.main,
+            },
+            '&:hover fieldset': {
+                borderColor: theme.palette.primary.main,
+            },
+            '&.Mui-focused fieldset': {
+                borderColor: theme.palette.primary.main,
+            },
+        },
+        '& .MuiFormHelperText-contained': {
+            display: "none"
+        },
+        '& label': {
+            color: "#8BE3D9 !important",
+        },
+        '& .PrivateNotchedOutline-root-28': {
+            borderColor: "#8BE3D9 !important",
+        },
+        width: 300
+    },
+    root2: {
+        '& label.Mui-focused': {
+            color: theme.palette.primary.main,
+        },
+        '& .MuiInput-underline:after': {
+            borderBottomColor: theme.palette.primary.main,
+        },
+        '& .MuiOutlinedInput-root': {
+            '& fieldset': {
+                borderColor: theme.palette.primary.main,
+            },
+            '&:hover fieldset': {
+                borderColor: theme.palette.primary.main,
+            },
+            '&.Mui-focused fieldset': {
+                borderColor: theme.palette.primary.main,
+            },
+        },
+        '& .MuiFormHelperText-contained': {
+            display: "none"
+        },
+        '& label': {
+            color: "#8BE3D9 !important",
+        },
+        '& .PrivateNotchedOutline-root-28': {
+            borderColor: "#8BE3D9 !important",
+        },
+        width: 200
     },
     container: {
         width: "100%"
@@ -144,7 +206,20 @@ export default function Upcoming_Appointment() {
     let { session: { user: { id, token } } } = useContext(SessionContext);
 
     const [appointments, setAppointments] = useState([]);
-    const [date, setDate] = useState(null)
+
+    const [state, updateState] = useState({
+        date: null,
+        status: "",
+        id_clinic: "",
+        id_patient: ""
+    })
+
+    function setState(nextState) {
+        updateState(prevState => ({
+            ...prevState,
+            ...nextState
+        }));
+    }
 
     async function fetchData() {
         try {
@@ -155,11 +230,20 @@ export default function Upcoming_Appointment() {
                 }
             })
                 .then(res => {
-                    const data = res.data.result;
+                    const data = res.data.result; 
                     const success = res.data.success;
                     if (success) {
                         let result = data.filter(d => d.status === "Waiting");
-                        if (date && date !== "") result = result.filter(d => d.date.substring(0, 10) === date);
+
+                        if (state.date && state.date !== "")
+                            result = result.filter(d => d.start_at.substring(0, 10) === state.date);
+
+                        if (state.id_clinic && state.id_clinic !== "")
+                            result = result.filter(d => d.id_clinic === state.id_clinic);
+
+                        if (state.id_patient && state.id_patient !== "")
+                            result = result.filter(d => d.id_patient === state.id_patient);
+
                         setAppointments(result);
                     }
                 });
@@ -170,7 +254,7 @@ export default function Upcoming_Appointment() {
 
     useEffect(() => {
         fetchData();
-    }, [date])
+    }, [JSON.stringify(state)])
 
     return (
         <>
@@ -207,16 +291,31 @@ export default function Upcoming_Appointment() {
 
                 <Paper className={classes.paperFilter}>
 
+                    <Patients
+                        value={state.id_patient}
+                        onChange={(event, newValue) => {
+                            setState({ id_patient: newValue ? newValue.id : "" });
+                        }}
+                        className={classes.root1}
+                    />
+
+                    <Clinics
+                        value={state.id_clinic}
+                        onChange={(event, newValue) => {
+                            setState({ id_clinic: newValue ? newValue.id : "" });
+                        }}
+                        className={classes.root2}
+                    />
 
                     <MuiPickersUtilsProvider utils={MomentUtils} >
                         <KeyboardDatePicker
-                            focused={date != null}
+                            focused={state.date != null}
                             label="Date"
                             variant="outlined"
                             inputVariant="outlined"
                             format="YYYY/MM/DD"
-                            value={date}
-                            onChange={date => setDate(moment(date).format("YYYY-MM-DD"))}
+                            value={state.date}
+                            onChange={(date) => setState({ date: moment(date).format("YYYY-MM-DD") })}
                             KeyboardButtonProps={{
                                 'aria-label': 'change date',
                             }}
@@ -225,7 +324,12 @@ export default function Upcoming_Appointment() {
                     </MuiPickersUtilsProvider>
 
                     <Link
-                        onClick={() => setDate(null)}
+                        onClick={() => {
+                            setState({ date: null });
+                            setState({ status: "" });
+                            setState({ id_clinic: "" });
+                            setState({ id_patient: "" });
+                        }}
                     >
                         <RefreshIcon className={classes.resetSearch} />
                     </Link>

@@ -164,7 +164,6 @@ export default function Create_Procedure() {
             ...prevState,
             ...nextState
         }));
-        console.log(state);
     }
 
     function handleChange(e) {

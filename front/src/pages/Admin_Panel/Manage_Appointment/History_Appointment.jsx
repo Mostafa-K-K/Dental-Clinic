@@ -5,6 +5,9 @@ import { Link } from "react-router-dom"
 import moment from "moment"
 import SessionContext from "../../../components/session/SessionContext"
 
+import Patients from '../../../components/Patients'
+import Clinics from "../../../components/Clinics"
+
 import {
     TableContainer,
     Table,
@@ -60,7 +63,66 @@ const useStyles = makeStyles((theme) => ({
         },
         '& .PrivateNotchedOutline-root-28': {
             borderColor: "#8BE3D9 !important",
-        }
+        },
+        width: 200
+    },
+    root1: {
+        '& label.Mui-focused': {
+            color: theme.palette.primary.main,
+        },
+        '& .MuiInput-underline:after': {
+            borderBottomColor: theme.palette.primary.main,
+        },
+        '& .MuiOutlinedInput-root': {
+            '& fieldset': {
+                borderColor: theme.palette.primary.main,
+            },
+            '&:hover fieldset': {
+                borderColor: theme.palette.primary.main,
+            },
+            '&.Mui-focused fieldset': {
+                borderColor: theme.palette.primary.main,
+            },
+        },
+        '& .MuiFormHelperText-contained': {
+            display: "none"
+        },
+        '& label': {
+            color: "#8BE3D9 !important",
+        },
+        '& .PrivateNotchedOutline-root-28': {
+            borderColor: "#8BE3D9 !important",
+        },
+        width: 260
+    },
+    root2: {
+        '& label.Mui-focused': {
+            color: theme.palette.primary.main,
+        },
+        '& .MuiInput-underline:after': {
+            borderBottomColor: theme.palette.primary.main,
+        },
+        '& .MuiOutlinedInput-root': {
+            '& fieldset': {
+                borderColor: theme.palette.primary.main,
+            },
+            '&:hover fieldset': {
+                borderColor: theme.palette.primary.main,
+            },
+            '&.Mui-focused fieldset': {
+                borderColor: theme.palette.primary.main,
+            },
+        },
+        '& .MuiFormHelperText-contained': {
+            display: "none"
+        },
+        '& label': {
+            color: "#8BE3D9 !important",
+        },
+        '& .PrivateNotchedOutline-root-28': {
+            borderColor: "#8BE3D9 !important",
+        },
+        width: 150
     },
     container: {
         width: "100%",
@@ -126,22 +188,13 @@ const useStyles = makeStyles((theme) => ({
     FormControl: {
         display: "flex",
         flexFlow: "row",
-        marginLeft: 20,
         '& .radioR1': {
             display: "flex",
-            flexFlow: "row",
-            marginLeft: 70,
-            '& .MuiFormControlLabel-root:nth-child(2)': {
-                marginLeft: 35
-            }
+            flexFlow: "row"
         },
         '& .radioR2': {
             display: "flex",
-            flexFlow: "row",
-            marginLeft: 75,
-            '& .MuiFormControlLabel-root:nth-child(2)': {
-                marginLeft: 25
-            }
+            flexFlow: "row"
         }
     },
 }));
@@ -157,7 +210,9 @@ export default function Today_Appointment() {
 
     const [state, updateState] = useState({
         date: null,
-        status: ""
+        status: "",
+        id_clinic: "",
+        id_patient: ""
     })
 
     function setState(nextState) {
@@ -184,11 +239,21 @@ export default function Today_Appointment() {
                     const data = res.data.result;
                     const success = res.data.success;
                     if (success) {
+
                         let result = data.filter(d => d.status !== "Waiting");
+
                         if (state.date && state.date !== "")
                             result = result.filter(d => d.start_at.substring(0, 10) === state.date);
+
                         if (state.status && state.status !== "")
                             result = result.filter(d => d.status === state.status);
+
+                        if (state.id_clinic && state.id_clinic !== "")
+                            result = result.filter(d => d.id_clinic === state.id_clinic);
+
+                        if (state.id_patient && state.id_patient !== "")
+                            result = result.filter(d => d.id_patient === state.id_patient);
+
                         setAppointments(result);
                     }
                 });
@@ -236,6 +301,22 @@ export default function Today_Appointment() {
 
                 <Paper className={classes.paperFilter}>
 
+                    <Patients
+                        value={state.id_patient}
+                        onChange={(event, newValue) => {
+                            setState({ id_patient: newValue ? newValue.id : "" });
+                        }}
+                        className={classes.root1}
+                    />
+
+                    <Clinics
+                        value={state.id_clinic}
+                        onChange={(event, newValue) => {
+                            setState({ id_clinic: newValue ? newValue.id : "" });
+                        }}
+                        className={classes.root2}
+                    />
+
                     <MuiPickersUtilsProvider utils={MomentUtils} >
                         <KeyboardDatePicker
                             focused={state.date != null}
@@ -266,8 +347,10 @@ export default function Today_Appointment() {
 
                     <Link
                         onClick={() => {
-                            setState({ date: null});
-                            setState({status: ""});
+                            setState({ date: null });
+                            setState({ status: "" });
+                            setState({ id_clinic: "" });
+                            setState({ id_patient: "" });
                         }}
                     >
                         <RefreshIcon className={classes.resetSearch} />

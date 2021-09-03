@@ -5,6 +5,8 @@ import API from "../../../API"
 import moment from "moment"
 import SessionContext from "../../../components/session/SessionContext"
 
+import Patients from '../../../components/Patients'
+
 import {
     TableContainer,
     Table,
@@ -23,6 +25,15 @@ import {
 import AddBoxIcon from '@material-ui/icons/AddBox'
 import EditIcon from '@material-ui/icons/Edit'
 
+import RefreshIcon from '@material-ui/icons/Refresh'
+
+import MomentUtils from '@date-io/moment'
+
+import {
+    KeyboardDatePicker,
+    MuiPickersUtilsProvider
+} from '@material-ui/pickers'
+
 import ConfirmDelete from "../../../components/ConfirmDelete"
 
 const useStyles = makeStyles((theme) => ({
@@ -33,6 +44,35 @@ const useStyles = makeStyles((theme) => ({
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between"
+    },
+    root1: {
+        '& label.Mui-focused': {
+            color: theme.palette.primary.main,
+        },
+        '& .MuiInput-underline:after': {
+            borderBottomColor: theme.palette.primary.main,
+        },
+        '& .MuiOutlinedInput-root': {
+            '& fieldset': {
+                borderColor: theme.palette.primary.main,
+            },
+            '&:hover fieldset': {
+                borderColor: theme.palette.primary.main,
+            },
+            '&.Mui-focused fieldset': {
+                borderColor: theme.palette.primary.main,
+            },
+        },
+        '& .MuiFormHelperText-contained': {
+            display: "none"
+        },
+        '& label': {
+            color: "#8BE3D9 !important",
+        },
+        '& .PrivateNotchedOutline-root-28': {
+            borderColor: "#8BE3D9 !important",
+        },
+        width: 400
     },
     root: {
         '& label.Mui-focused': {
@@ -60,6 +100,17 @@ const useStyles = makeStyles((theme) => ({
         },
         '& .PrivateNotchedOutline-root-28': {
             borderColor: "#8BE3D9 !important",
+        },
+        width: 300
+    },
+    resetSearch: {
+        backgroundColor: "#8BE3D9",
+        color: "#FFFFFF",
+        padding: 6,
+        fontSize: 53,
+        borderRadius: "5px",
+        '&:hover': {
+            backgroundColor: "#BEF4F4"
         }
     },
     ddBoxIconBtn: {
@@ -108,8 +159,19 @@ export default function List_Procedure() {
 
     let { session: { user: { id, token } } } = useContext(SessionContext);
 
-    const [procedures, setProcedures] = useState([]);
-    const [works, setWorks] = useState([]);
+    const [state, updateState] = useState({
+        procedures: [],
+        works: [],
+        id_patient: "",
+        date: null
+    });
+
+    function setState(nextState) {
+        updateState(prevState => ({
+            ...prevState,
+            ...nextState
+        }));
+    }
 
     async function fetchData() {
         try {
@@ -120,10 +182,18 @@ export default function List_Procedure() {
                 }
             })
                 .then(res => {
-                    const result = res.data.result;
+                    let result = res.data.result;
                     const success = res.data.success;
-                    if (success)
-                        setProcedures(result);
+                    console.log(result);
+                    if (success) {
+                        if (state.date && state.date !== "")
+                            result = result.filter(d => d.date.substring(0, 10) === state.date);
+
+                        if (state.id_patient && state.id_patient !== "")
+                            result = result.filter(d => d.id_patient === state.id_patient);
+
+                        setState({ procedures: result });
+                    }
                 });
 
             await API.get('PTCDP', {
@@ -136,9 +206,8 @@ export default function List_Procedure() {
                     const result = res.data.result;
                     const success = res.data.success;
                     if (success)
-                        setWorks(result);
+                        setState({ works: result });
                 });
-
         } catch (e) {
             console.log("ERROR", e);
         }
@@ -146,7 +215,7 @@ export default function List_Procedure() {
 
     useEffect(() => {
         fetchData();
-    }, [])
+    }, [JSON.stringify({ id_patient: state.id_patient, date: state.date })])
 
     return (
         <>
@@ -169,6 +238,43 @@ export default function List_Procedure() {
                     </Paper>
                 </Link>
 
+                <Paper className={classes.paperFilter}>
+
+                    <Patients
+                        value={state.id_patient}
+                        onChange={(event, newValue) => {
+                            setState({ id_patient: newValue ? newValue.id : "" });
+                        }}
+                        className={classes.root1}
+                    />
+
+                    <MuiPickersUtilsProvider utils={MomentUtils} >
+                        <KeyboardDatePicker
+                            focused={state.date != null}
+                            label="Date"
+                            variant="outlined"
+                            inputVariant="outlined"
+                            format="YYYY/MM/DD"
+                            value={state.date}
+                            onChange={(date) => setState({ date: moment(date).format("YYYY-MM-DD") })}
+                            KeyboardButtonProps={{
+                                'aria-label': 'change date',
+                            }}
+                            className={classes.root}
+                        />
+                    </MuiPickersUtilsProvider>
+
+                    <Link
+                        onClick={() => {
+                            setState({ date: null });
+                            setState({ id_patient: "" });
+                        }}
+                    >
+                        <RefreshIcon className={classes.resetSearch} />
+                    </Link>
+
+                </Paper>
+
                 <TableContainer component={Paper}>
                     <Table>
 
@@ -188,7 +294,7 @@ export default function List_Procedure() {
 
 
                         <TableBody>
-                            {procedures.map(procedure =>
+                            {state.procedures.map(procedure =>
                                 <TableRow key={procedure.id}>
 
                                     <TableCell align="center">
@@ -212,7 +318,7 @@ export default function List_Procedure() {
                                     </TableCell>
 
                                     <TableCell align="center">
-                                        {works.filter(work => work.id_procedure == procedure.id).map(work => (
+                                        {state.works.filter(work => work.id_procedure == procedure.id).map(work => (
                                             <div key={work.id}>
                                                 <span key={work.id}>
                                                     {(work.id_teeth == 1 || work.id_teeth == 2) ? "All" : work.id_teeth}
@@ -223,7 +329,7 @@ export default function List_Procedure() {
                                     </TableCell>
 
                                     <TableCell align="center">
-                                        {works.filter(work => work.id_procedure == procedure.id).map(work => (
+                                        {state.works.filter(work => work.id_procedure == procedure.id).map(work => (
                                             <div key={work.id}>
                                                 <span>
                                                     {work.description}
@@ -234,7 +340,7 @@ export default function List_Procedure() {
                                     </TableCell>
 
                                     <TableCell align="center">
-                                        {works.filter(work => work.id_procedure == procedure.id).map(work => (
+                                        {state.works.filter(work => work.id_procedure == procedure.id).map(work => (
                                             <div key={work.id}>
                                                 <span key={work.id}>
                                                     {work.price}
