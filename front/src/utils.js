@@ -9,7 +9,7 @@ import { Route, Redirect } from 'react-router-dom'
 export function PrivateRouteSuperAdmin({ user, component, ...props }) {
     let Comp = component;
     return (
-        <Route {...props} render={props => user.token && user.role_id === "_SuPE8/@DmIn&^%(0)__" ?
+        <Route {...props} render={props => (user.token && user.role_id == "_SuPE8/@DmIn&^%(0)__") ?
             <Comp {...props} /> :
             <Redirect {...props} to="/" />
         } />
@@ -24,8 +24,9 @@ export function PrivateRouteSuperAdmin({ user, component, ...props }) {
  */
 export function PrivateRouteAdmin({ user, component, ...props }) {
     let Comp = component;
+    console.log("heyyy userrr", user);
     return (
-        <Route {...props} render={props => user.token && (user.role_id === "_SuPE8/@DmIn&^%(0)__" || user.role_id === "AD&Mii#iin(,.<1)>mEe") ?
+        <Route {...props} render={props => (user.token && (user.role_id == "_SuPE8/@DmIn&^%(0)__" || user.role_id == "AD&Mii#iin(,.<1)>mEe")) ?
             <Comp {...props} /> :
             <Redirect {...props} to="/" />
         } />
@@ -41,7 +42,7 @@ export function PrivateRouteAdmin({ user, component, ...props }) {
 export function PrivateRoutePatient({ user, component, ...props }) {
     let Comp = component;
     return (
-        <Route {...props} render={props => user.token && user.role_id === "paTI__enT?/@cc!untQq" ?
+        <Route {...props} render={props => (user.token && user.role_id === "paTI__enT?/@cc!untQq") ?
             <Comp {...props} /> :
             <Redirect {...props} to="/" />
         } />

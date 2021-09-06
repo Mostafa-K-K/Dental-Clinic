@@ -9,7 +9,7 @@ export default function SessionProvider({ children }) {
         user: {
             id: getCookie('id'),
             token: getCookie('token'),
-            role_id: parseInt(getCookie('role_id'))
+            role_id: getCookie('role_id')
         }
     });
 
